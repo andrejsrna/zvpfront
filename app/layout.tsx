@@ -33,12 +33,17 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
           data-ad-client="ca-pub-7459831240640476"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
+          onLoad={() => {
+            console.log('AdSense loaded');
+          }}
         />
       </head>
       <body>
         <Header />
-        {children}
+        <main className="min-h-screen">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>
