@@ -34,9 +34,6 @@ export default function RootLayout({
           data-ad-client="ca-pub-7459831240640476"
           crossOrigin="anonymous"
           strategy="lazyOnload"
-          onLoad={() => {
-            console.log('AdSense loaded');
-          }}
         />
       </head>
       <body>
