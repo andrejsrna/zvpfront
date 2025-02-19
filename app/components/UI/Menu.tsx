@@ -36,14 +36,12 @@ export default function Menu() {
 
   return (
     <header className="bg-white/95 backdrop-blur-sm shadow-md fixed w-full top-0 z-50">
-      {/* Top Navigation */}
-      <div className="border-b border-gray-100">
+      {/* Desktop Top Navigation */}
+      <div className="border-b border-gray-100 hidden md:block">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center h-12">
-            {/* Desktop menu items */}
-            <div className="hidden md:flex items-center space-x-6">
-              <Link href="/" 
-                className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">
+            <div className="flex items-center space-x-6">
+              <Link href="/" className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">
                 Domov
               </Link>
               <Link href="/kontakt" 
@@ -63,26 +61,6 @@ export default function Menu() {
                 Cookies
               </Link>
             </div>
-
-            {/* Mobile top menu - only essential items */}
-            <div className="md:hidden flex items-center space-x-4">
-              <Link href="/" 
-                className="text-sm text-gray-600 hover:text-emerald-600 transition-colors">
-                Domov
-              </Link>
-            </div>
-
-            {/* Search button */}
-            <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-1.5 text-gray-600 hover:text-emerald-600 transition-colors"
-              aria-label="Vyhľadávanie"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
           </div>
         </div>
       </div>
@@ -92,11 +70,8 @@ export default function Menu() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center p-4" >
-              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-500 
-                bg-clip-text text-transparent">
-                <Image src="/logos/zvp.png" alt="Logo" width={80} height={80} /> 
-              </span>
+            <Link href="/" className="flex items-center">
+              <Image src="/logos/zvp.png" alt="Logo" width={60} height={60} className="md:w-[80px] md:h-[80px]" />
             </Link>
           </div>
 
@@ -141,17 +116,30 @@ export default function Menu() {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-2"
-            aria-label="Menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
-            </svg>
-          </button>
+          {/* Mobile Actions */}
+          <div className="flex items-center space-x-4 lg:hidden">
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="p-2 text-gray-600 hover:text-emerald-600 transition-colors"
+              aria-label="Vyhľadávanie"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 text-gray-600 hover:text-emerald-600 transition-colors"
+              aria-label="Menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Search Bar */}
