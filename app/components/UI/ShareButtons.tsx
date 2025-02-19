@@ -8,29 +8,13 @@ interface ShareButtonsProps {
   description?: string;
 }
 
-export default function ShareButtons({ url, title, description }: ShareButtonsProps) {
+export default function ShareButtons({ url, title }: ShareButtonsProps) {
   const [isClient, setIsClient] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const shareData = {
-    url: url,
-    title: title,
-    text: description || title,
-  };
-
-  const handleNativeShare = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      }
-    } catch (error) {
-      console.error('Error sharing:', error);
-    }
-  };
 
   const handleCopyLink = async () => {
     try {
@@ -78,9 +62,9 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
   if (!isClient) return null;
 
   return (
-    <div className="flex flex-col items-center space-y-4 fixed left-8 top-1/2 
-      transform -translate-y-1/2 z-10">
-      {/* Share buttons */}
+    <div className="hidden md:flex flex-col items-center space-y-4 fixed left-8 
+      top-1/2 transform -translate-y-1/2 z-10">
+      {/* Desktop Share buttons */}
       <div className="flex flex-col space-y-2">
         {shareButtons.map((button) => (
           <a
@@ -102,7 +86,7 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
           </a>
         ))}
 
-        {/* Copy Link Button */}
+        {/* Copy Link Button - only on desktop */}
         <button
           onClick={handleCopyLink}
           className="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full 
@@ -116,35 +100,10 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
           </svg>
           <span className={`absolute left-full ml-2 px-2 py-1 bg-gray-900 
             text-white text-sm rounded transition-all duration-200 
-            whitespace-nowrap ${
-              showTooltip 
-                ? 'opacity-100 visible' 
-                : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'
-            }`}>
+            whitespace-nowrap ${showTooltip ? 'opacity-100 visible' : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'}`}>
             {showTooltip ? 'Odkaz skopírovaný!' : 'Kopírovať odkaz'}
           </span>
         </button>
-
-        {/* Native Share Button (mobile) */}
-        {typeof navigator !== 'undefined' && 'share' in navigator && (
-          <button
-            onClick={handleNativeShare}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white p-3 
-              rounded-full transform transition-all duration-200 hover:scale-110 
-              hover:shadow-lg group relative md:hidden"
-            aria-label="Zdieľať"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-            </svg>
-            <span className="absolute left-full ml-2 px-2 py-1 bg-gray-900 
-              text-white text-sm rounded opacity-0 invisible group-hover:opacity-100 
-              group-hover:visible transition-all duration-200 whitespace-nowrap">
-              Zdieľať
-            </span>
-          </button>
-        )}
       </div>
     </div>
   );
