@@ -14,8 +14,8 @@ interface WeRecommendProps {
 const defaultProduct = {
   productName: "Najsilnejšia kĺbová výživa",
   description: "Komplexná formula pre zdravie vašich kĺbov s obsahom glukozamínu, chondroitínu, MSM a kolagénu.",
-  imageUrl: "/images/products/klbova-vyziva.jpg",
-  productUrl: "https://vitalvibe.eu/klbova-vyziva",
+  imageUrl: "/products/klbova-vyziva.webp",
+  productUrl: "https://najsilnejsiaklbovavyziva.sk",
   benefits: [
     "Podporuje zdravie kĺbov a chrupaviek",
     "Pomáha pri regenerácii kĺbového tkaniva",
