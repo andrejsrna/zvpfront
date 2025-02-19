@@ -3,6 +3,7 @@ import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Script from 'next/script';
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -26,11 +27,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sk" className={`${inter.variable} ${sora.variable} font-sans antialiased`}>
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+          data-ad-client="ca-pub-7459831240640476"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body>
         <Header />
-        <main className="min-h-screen">
-          {children}
-        </main>
+        {children}
         <Footer />
       </body>
     </html>
