@@ -71,7 +71,7 @@ export default function Menu() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <Image src="/logos/zvp.png" alt="Logo" width={60} height={60} className="md:w-[80px] md:h-[80px]" />
+              <Image src="/logos/zvp.png" alt="Logo" width={60} height={60} className="md:w-[80px] md:h-[50px]" />
             </Link>
           </div>
 
