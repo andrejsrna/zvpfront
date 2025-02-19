@@ -30,6 +30,10 @@ export default function Menu() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 3);
 
+  const handleMenuItemClick = () => {
+    setIsMenuOpen(false);
+  };
+
   return (
     <header className="bg-white/95 backdrop-blur-sm shadow-md fixed w-full top-0 z-50">
       {/* Top Navigation */}
@@ -161,8 +165,9 @@ export default function Menu() {
         {/* Mobile Menu */}
         <div className={`lg:hidden transform transition-all duration-300 
           ${isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 hidden'}`}>
-          <div className="pt-2 pb-4 border-t border-gray-100">
+          <div className="pt-2 pb-4 border-t border-gray-100 max-h-[calc(100vh-8rem)] overflow-y-auto">
             <Link href="/kontakt"
+              onClick={handleMenuItemClick}
               className="block px-4 py-2 text-gray-700 hover:bg-teal-50 
                 hover:text-teal-600 transition-colors"
             >
@@ -172,18 +177,21 @@ export default function Menu() {
             {/* Legal links */}
             <div className="border-t border-gray-100 mt-2 pt-2">
               <Link href="/ochrana-sukromia"
+                onClick={handleMenuItemClick}
                 className="block px-4 py-2 text-gray-700 hover:bg-teal-50 
                   hover:text-teal-600 transition-colors"
               >
                 Ochrana súkromia
               </Link>
               <Link href="/podmienky-pouzivania"
+                onClick={handleMenuItemClick}
                 className="block px-4 py-2 text-gray-700 hover:bg-teal-50 
                   hover:text-teal-600 transition-colors"
               >
                 Podmienky používania
               </Link>
               <Link href="/cookies"
+                onClick={handleMenuItemClick}
                 className="block px-4 py-2 text-gray-700 hover:bg-teal-50 
                   hover:text-teal-600 transition-colors"
               >
@@ -198,6 +206,7 @@ export default function Menu() {
                 <div key={category.id}>
                   <Link
                     href={`/kategoria/${category.slug}`}
+                    onClick={handleMenuItemClick}
                     className="block px-4 py-2 text-gray-700 hover:bg-teal-50 
                       hover:text-teal-600 transition-colors"
                   >
@@ -208,6 +217,7 @@ export default function Menu() {
             </div>
 
             <Link href="/o-nas"
+              onClick={handleMenuItemClick}
               className="block px-4 py-3 text-gray-700 hover:bg-teal-50 
                 hover:text-teal-600 transition-colors"
             >
