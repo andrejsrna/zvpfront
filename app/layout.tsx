@@ -16,8 +16,27 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
-  title: "Zdravie v praxi",
-  description: "Zdravie v praxi - váš sprievodca zdravým životným štýlom",
+  metadataBase: new URL('https://zdravievpraxi.sk'),
+  title: {
+    default: 'Zdravie v praxi',
+    template: '%s | Zdravie v praxi'
+  },
+  description: 'Váš sprievodca zdravým životným štýlom - overené informácie, tipy a rady od odborníkov',
+  openGraph: {
+    type: 'website',
+    locale: 'sk_SK',
+    url: 'https://zdravievpraxi.sk',
+    siteName: 'Zdravie v praxi',
+    images: [{
+      url: '/og-image.jpg',
+      width: 1200,
+      height: 630,
+    }]
+  },
+  robots: {
+    index: true,
+    follow: true,
+  }
 };
 
 export default function RootLayout({
@@ -35,6 +54,21 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
+        
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=G-RECTFBNLLS`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-RECTFBNLLS', {
+              page_path: window.location.pathname,
+            });
+          `}
+        </Script>
       </head>
       <body>
         <Header />

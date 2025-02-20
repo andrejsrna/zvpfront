@@ -53,135 +53,109 @@ export type WordPressCategory = {
   children?: WordPressCategory[];
 };
 
+const REVALIDATE_TIME = {
+  POSTS: 3600,        // 1 hodina
+  CATEGORIES: 7200,   // 2 hodiny
+  SINGLE_POST: 1800,  // 30 minút
+  SEARCH: 0           // bez cache
+};
+
+const API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
+
+if (!API_URL) {
+  throw new Error('WordPress API URL is not configured');
+}
+
+async function fetchAPI(endpoint: string, options: RequestInit = {}) {
+  try {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...options,
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
+    }
+
+    return response;
+  } catch (error) {
+    console.error(`Failed fetching ${endpoint}:`, error);
+    throw error;
+  }
+}
+
 export async function getPosts(
-  perPage: number = 100, 
+  perPage: number = 12,
   orderby: string = 'date',
   categoryId?: number,
   page: number = 1
 ): Promise<WordPressPost[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
-
-  if (!apiUrl) {
-    throw new Error('WordPress API URL is not configured');
-  }
-
   const categoryParam = categoryId ? `&categories=${categoryId}&include_children=true` : '';
-  const pageParam = `&page=${page}`;
-
-  try {
-    const response = await fetch(
-      `${apiUrl}/wp/v2/posts?_embed&per_page=${perPage}&orderby=${orderby}&order=desc${categoryParam}${pageParam}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        next: {
-          revalidate: 3600,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  const response = await fetchAPI(
+    `/wp/v2/posts?_embed&per_page=${perPage}&orderby=${orderby}&order=desc${categoryParam}&page=${page}`,
+    {
+      next: {
+        revalidate: REVALIDATE_TIME.POSTS,
+        tags: ['posts', categoryId ? `category-${categoryId}` : 'all-posts'],
+      },
     }
+  );
 
-    const posts = await response.json();
-    return posts;
-  } catch (error) {
-    console.error('Error fetching WordPress posts:', error);
-    throw error;
-  }
+  return response.json();
 }
 
 export async function getPostBySlug(slug: string): Promise<WordPressPost | null> {
-  const apiUrl = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
+  const response = await fetchAPI(
+    `/wp/v2/posts?_embed&slug=${slug}`,
+    {
+      next: {
+        revalidate: REVALIDATE_TIME.SINGLE_POST,
+        tags: [`post-${slug}`],
+      },
+    }
+  );
 
-  if (!apiUrl) {
-    throw new Error('WordPress API URL is not configured');
+  const posts = await response.json();
+  if (posts.length === 0) return null;
+
+  const post = posts[0];
+  
+  if (post._embedded?.['wp:term']) {
+    post.categories = post._embedded['wp:term'][0] || [];
+    post.tags = post._embedded['wp:term'][1] || [];
   }
 
-  try {
-    const response = await fetch(
-      `${apiUrl}/wp/v2/posts?_embed&slug=${slug}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        next: {
-          revalidate: 3600,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const posts = await response.json();
-    if (posts.length === 0) return null;
-
-    const post = posts[0];
-    
-    // Map embedded terms to categories and tags
-    if (post._embedded && post._embedded['wp:term']) {
-      // Categories are typically the first array in wp:term
-      post.categories = post._embedded['wp:term'][0] || [];
-      // Tags are typically the second array in wp:term
-      post.tags = post._embedded['wp:term'][1] || [];
-    }
-
-    return post;
-  } catch (error) {
-    console.error('Error fetching WordPress post:', error);
-    throw error;
-  }
+  return post;
 }
 
-
 export async function getCategories(): Promise<WordPressCategory[]> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_WORDPRESS_API_URL}/wp/v2/categories?parent=0&per_page=100`,
-    { next: { revalidate: 3600 } }
+  const response = await fetchAPI(
+    '/wp/v2/categories?per_page=100&orderby=count&order=desc',
+    {
+      next: {
+        revalidate: REVALIDATE_TIME.CATEGORIES,
+        tags: ['categories'],
+      },
+    }
   );
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch categories');
-  }
 
   return response.json();
 }
 
 export async function getRandomPost(): Promise<WordPressPost[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
-
-  if (!apiUrl) {
-    throw new Error('WordPress API URL is not configured');
-  }
-
-  try {
-    const response = await fetch(
-      `${apiUrl}/custom/v1/random-posts`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        next: {
-          revalidate: 3600, // Cache for 1 hour
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  const response = await fetchAPI(
+    '/custom/v1/random-posts',
+    {
+      next: {
+        revalidate: 60, // Cache na 1 minútu
+        tags: ['random-posts'],
+      },
     }
+  );
 
-    const posts = await response.json();
-    return posts;
-  } catch (error) {
-    console.error('Error fetching WordPress posts:', error);
-    throw error;
-  }
-
+  return response.json();
 }
 
 interface SearchResult {
@@ -195,42 +169,22 @@ export async function searchPosts(
   perPage: number = 10,
   page: number = 1
 ): Promise<SearchResult> {
-  const apiUrl = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
-
-  if (!apiUrl) {
-    throw new Error('WordPress API URL is not configured');
-  }
-
-  try {
-    const response = await fetch(
-      `${apiUrl}/wp/v2/posts?_embed&search=${encodeURIComponent(query)}&per_page=${perPage}&page=${page}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        next: {
-          revalidate: 0, // Nebudeme cachovať výsledky vyhľadávania
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  const response = await fetchAPI(
+    `/wp/v2/posts?_embed&search=${encodeURIComponent(query)}&per_page=${perPage}&page=${page}`,
+    {
+      next: {
+        revalidate: REVALIDATE_TIME.SEARCH,
+      },
     }
+  );
 
-    const posts = await response.json();
-    
-    // Pridáme informáciu o celkovom počte výsledkov z hlavičky
-    const total = parseInt(response.headers.get('X-WP-Total') || '0');
-    const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '0');
+  const posts = await response.json();
+  const total = parseInt(response.headers.get('X-WP-Total') || '0');
+  const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '0');
 
-    return {
-      posts,
-      total,
-      totalPages
-    };
-  } catch (error) {
-    console.error('Error searching WordPress posts:', error);
-    throw error;
-  }
+  return {
+    posts,
+    total,
+    totalPages
+  };
 } 
