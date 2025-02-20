@@ -86,7 +86,6 @@ const nextConfig: NextConfig = {
   // Optimalizácie
   poweredByHeader: false,
   reactStrictMode: true,
-  swcMinify: true,
   
   // Experimentálne features
   experimental: {
