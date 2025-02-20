@@ -47,14 +47,7 @@ export default function RootLayout({
   return (
     <html lang="sk" className={`${inter.variable} ${sora.variable} font-sans antialiased`}>
       <head>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-          data-ad-client="ca-pub-7459831240640476"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-        
+        {/* Google Analytics - load immediately */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=G-RECTFBNLLS`}
           strategy="afterInteractive"
@@ -67,6 +60,34 @@ export default function RootLayout({
             gtag('config', 'G-RECTFBNLLS', {
               page_path: window.location.pathname,
             });
+          `}
+        </Script>
+
+        {/* Google AdSense - load on interaction */}
+        <Script id="adsense-init">
+          {`
+            let adsbygoogleInitialized = false;
+            
+            function initAdsense() {
+              if (adsbygoogleInitialized) return;
+              
+              const script = document.createElement('script');
+              script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+              script.async = true;
+              script.crossOrigin = 'anonymous';
+              script.dataset.adClient = 'ca-pub-7459831240640476';
+              
+              document.head.appendChild(script);
+              adsbygoogleInitialized = true;
+            }
+
+            // Initialize on user interaction
+            ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(event => {
+              document.addEventListener(event, initAdsense, { once: true });
+            });
+
+            // Fallback initialization after 3 seconds
+            setTimeout(initAdsense, 3000);
           `}
         </Script>
       </head>
