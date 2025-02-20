@@ -8,7 +8,7 @@ import Image from "next/image";
 // Definujeme obrázky a farby pre každú kategóriu
 const CATEGORY_DETAILS = {
   "vyziva": {
-    image: "/images/categories/nutrition.jpg",
+    image: "/categories/nutrition.jpeg",
     gradient: "from-green-500/80 to-emerald-700/80",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -18,7 +18,7 @@ const CATEGORY_DETAILS = {
     )
   },
   "pohyb": {
-    image: "/images/categories/exercise.jpg",
+    image: "/categories/exercise.jpeg",
     gradient: "from-blue-500/80 to-cyan-700/80",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,7 +28,7 @@ const CATEGORY_DETAILS = {
     )
   },
   "zdravie": {
-    image: "/images/categories/health.jpg",
+    image: "/categories/health.jpeg",
     gradient: "from-rose-500/80 to-red-700/80",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,7 +38,7 @@ const CATEGORY_DETAILS = {
     )
   },
   "lifestyle": {
-    image: "/images/categories/lifestyle.jpg",
+    image: "/categories/lifestyle.jpeg",
     gradient: "from-purple-500/80 to-indigo-700/80",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,7 +48,7 @@ const CATEGORY_DETAILS = {
     )
   },
   "default": {
-    image: "/images/categories/default.jpg",
+    image: "/categories/default.jpeg",
     gradient: "from-gray-500/80 to-gray-700/80",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
