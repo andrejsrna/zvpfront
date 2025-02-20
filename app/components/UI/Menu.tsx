@@ -10,7 +10,6 @@ export default function Menu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [categories, setCategories] = useState<WordPressCategory[]>([]);
-  const [showAllCategories, setShowAllCategories] = useState(false);
 
   useEffect(() => {
     async function fetchCategories() {
@@ -61,6 +60,7 @@ export default function Menu() {
                 Cookies
               </Link>
             </div>
+			
           </div>
         </div>
       </div>
@@ -88,32 +88,28 @@ export default function Menu() {
               </div>
             ))}
             
-            {/* Dropdown pre všetky kategórie */}
-            <div className="relative group">
-              <button 
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium flex items-center"
-                onClick={() => setShowAllCategories(!showAllCategories)}
-              >
-                Všetky kategórie
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+            {/* Statický link na všetky kategórie */}
+            <Link
+              href="/kategorie"
+              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium flex items-center"
+            >
+              Všetky kategórie
+              <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
 
-              {showAllCategories && (
-                <div className="absolute top-full left-0 w-64 mt-2 py-2 bg-white shadow-lg rounded-lg">
-                  {categories.map((category) => (
-                    <Link
-                      key={category.id}
-                      href={`/kategoria/${category.slug}`}
-                      className="block px-4 py-2 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600"
-                    >
-                      {category.name} ({category.count})
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Desktop Search Button */}
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="p-2 text-gray-600 hover:text-emerald-600 transition-colors"
+              aria-label="Vyhľadávanie"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
           </div>
 
           {/* Mobile Actions */}

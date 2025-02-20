@@ -36,6 +36,9 @@ export default async function CategoryPage({ params: paramsPromise, searchParams
     notFound();
   }
 
+  // Získaj podkategórie aktuálnej kategórie
+  const subCategories = categories.filter(cat => cat.parent === category.id);
+  
   const page = Number(searchParamsResolved.page) || 1;
   const posts = await getPosts(POSTS_PER_PAGE, 'date', category.id, page);
   const totalPosts = category.count;
@@ -62,6 +65,34 @@ export default async function CategoryPage({ params: paramsPromise, searchParams
           </div>
         </div>
       </div>
+
+      {/* Subcategories Filter - zobrazí sa len ak existujú podkategórie */}
+      {subCategories.length > 0 && (
+        <div className="border-b">
+          <div className="container mx-auto px-4">
+            <div className="flex overflow-x-auto py-4 -mx-4 px-4 gap-2 scrollbar-hide">
+              <Link
+                href={`/kategoria/${category.slug}`}
+                className={`px-4 py-2 rounded-full whitespace-nowrap text-sm 
+                  font-medium transition-colors bg-emerald-600 text-white`}
+              >
+                Všetky v {category.name}
+              </Link>
+              {subCategories.map((subCat) => (
+                <Link
+                  key={subCat.id}
+                  href={`/kategoria/${subCat.slug}`}
+                  className="px-4 py-2 rounded-full whitespace-nowrap text-sm 
+                    font-medium transition-colors bg-gray-100 text-gray-700 
+                    hover:bg-gray-200"
+                >
+                  {subCat.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Posts Grid */}
       <div className="py-16">
