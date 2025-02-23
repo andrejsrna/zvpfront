@@ -16,10 +16,15 @@ interface PageProps {
   }>;
 }
 
+interface Reference {
+  nazov: string;
+  odkaz: string;
+}
+
 export default async function PostPage({ params: paramsPromise }: PageProps) {
   const params = await paramsPromise;
   const post = await Promise.resolve(getPostBySlug(params.slug));
-
+  console.log(post);
   if (!post) {
     notFound();
   }
@@ -50,6 +55,9 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
     }
   };
     
+  // Parse references from meta
+  const references: Reference[] = post.meta?._zdroje_referencie || [];
+
   return (
     <article className="bg-white">
       {/* Schema.org markup */}
@@ -148,6 +156,38 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
               prose-strong:text-gray-900"
             dangerouslySetInnerHTML={{ __html: content }}
           />
+
+          {/* References Section */}
+          {references.length > 0 && (
+            <div className="mt-12 pt-8 border-t">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Zdroje a referencie
+              </h2>
+              <div className="space-y-4">
+                {references.map((ref, index) => (
+                  <div key={index} className="flex items-start">
+                    <span className="text-sm text-gray-500 mr-2">
+                      [{index + 1}]
+                    </span>
+                    <div>
+                      <a
+                        href={ref.odkaz}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-600 hover:text-emerald-700 
+                          transition-colors hover:underline"
+                      >
+                        {ref.nazov}
+                      </a>
+                      <span className="text-gray-400 text-sm ml-2">
+                        {new URL(ref.odkaz).hostname}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (

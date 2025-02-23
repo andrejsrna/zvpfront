@@ -19,6 +19,10 @@ export type WordPressPost = {
   }[];
   meta: {
     post_views: number;
+    _zdroje_referencie: {
+      nazov: string;
+      odkaz: string;
+    }[];
   };
   tags: {
     id: number;
@@ -108,7 +112,7 @@ export async function getPosts(
 
 export async function getPostBySlug(slug: string): Promise<WordPressPost | null> {
   const response = await fetchAPI(
-    `/wp/v2/posts?_embed&slug=${slug}`,
+    `/wp/v2/posts?_embed&slug=${slug}&_fields=id,date,modified,title,content,excerpt,slug,categories,tags,meta,_embedded`,
     {
       next: {
         revalidate: REVALIDATE_TIME.SINGLE_POST,
