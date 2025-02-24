@@ -23,8 +23,14 @@ interface Reference {
 
 export default async function PostPage({ params: paramsPromise }: PageProps) {
   const params = await paramsPromise;
-  const post = await Promise.resolve(getPostBySlug(params.slug));
-  console.log(post);
+  const post = await getPostBySlug(params.slug);
+  
+  // Debug log
+  console.log('Post data in component:', {
+    categories: post?.categories,
+    embedded: post?._embedded?.['wp:term']
+  });
+
   if (!post) {
     notFound();
   }
@@ -83,7 +89,7 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-emerald-500 
             to-teal-600" />
-        )}
+        )}      
 
         {/* Hero Content */}
         <div className="absolute bottom-0 left-0 right-0 p-8">

@@ -111,27 +111,49 @@ export async function getPosts(
 }
 
 export async function getPostBySlug(slug: string): Promise<WordPressPost | null> {
-  const response = await fetchAPI(
-    `/wp/v2/posts?_embed&slug=${slug}&_fields=id,date,modified,title,content,excerpt,slug,categories,tags,meta,_embedded`,
-    {
-      next: {
-        revalidate: REVALIDATE_TIME.SINGLE_POST,
-        tags: [`post-${slug}`],
-      },
+  try {
+    // Najprv získame post
+    const postResponse = await fetchAPI(
+      `/wp/v2/posts?_embed&slug=${slug}`,
+      {
+        next: {
+          revalidate: REVALIDATE_TIME.SINGLE_POST,
+          tags: [`post-${slug}`],
+        },
+      }
+    );
+
+    const posts = await postResponse.json();
+    if (posts.length === 0) return null;
+
+    const post = posts[0];
+
+    // Získame informácie o kategóriách
+    if (post.categories && post.categories.length > 0) {
+      const categoryIds = post.categories.join(',');
+      const categoriesResponse = await fetchAPI(
+        `/wp/v2/categories?include=${categoryIds}`,
+        {
+          next: {
+            revalidate: REVALIDATE_TIME.CATEGORIES,
+          },
+        }
+      );
+
+      const categoriesData = await categoriesResponse.json();
+      post.categories = categoriesData;
     }
-  );
 
-  const posts = await response.json();
-  if (posts.length === 0) return null;
+    // Spracuj tagy z _embedded
+    if (post._embedded?.['wp:term']) {
+      post.tags = post._embedded['wp:term'][1] || [];
+    }
 
-  const post = posts[0];
-  
-  if (post._embedded?.['wp:term']) {
-    post.categories = post._embedded['wp:term'][0] || [];
-    post.tags = post._embedded['wp:term'][1] || [];
+    return post;
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    return null;
   }
-
-  return post;
 }
 
 export async function getCategories(): Promise<WordPressCategory[]> {
