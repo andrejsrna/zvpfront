@@ -34,7 +34,7 @@ export default function Menu() {
   };
 
   return (
-    <header className="bg-white/95 backdrop-blur-sm shadow-md fixed w-full top-0 z-50">
+    <header className="bg-white/95 backdrop-blur-sm shadow-md w-full top-0 z-50">
       {/* Desktop Top Navigation */}
       <div className="border-b border-gray-100 hidden md:block">
         <div className="container mx-auto px-4">
