@@ -24,12 +24,6 @@ interface Reference {
 export default async function PostPage({ params: paramsPromise }: PageProps) {
   const params = await paramsPromise;
   const post = await getPostBySlug(params.slug);
-  
-  // Debug log
-  console.log('Post data in component:', {
-    categories: post?.categories,
-    embedded: post?._embedded?.['wp:term']
-  });
 
   if (!post) {
     notFound();
@@ -257,12 +251,33 @@ export async function generateMetadata({ params: paramsPromise }: PageProps) {
     };
   }
 
+  // Create a temporary element to decode HTML entities
+  const decodeHTML = (html: string) => {
+    if (typeof window === 'undefined') {
+      const entities: { [key: string]: string } = {
+        '&ndash;': '–',
+        '&mdash;': '—',
+        '&nbsp;': ' ',
+        '&quot;': '"',
+        '&amp;': '&',
+        '&lt;': '<',
+        '&gt;': '>',
+      };
+      return html.replace(/&[^;]+;/g, match => entities[match] || match);
+    }
+    const txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
+  };
+
+  const cleanDescription = decodeHTML(post.excerpt.rendered.replace(/<[^>]*>/g, '')).slice(0, 160);
+
   return {
-    title: post.title.rendered,
-    description: post.excerpt.rendered.replace(/<[^>]*>/g, '').slice(0, 160),
+    title: decodeHTML(post.title.rendered),
+    description: cleanDescription,
     openGraph: {
-      title: post.title.rendered,
-      description: post.excerpt.rendered.replace(/<[^>]*>/g, '').slice(0, 160),
+      title: decodeHTML(post.title.rendered),
+      description: cleanDescription,
       images: post._embedded?.['wp:featuredmedia'] 
         ? [post._embedded['wp:featuredmedia'][0].source_url] 
         : [],

@@ -19,7 +19,6 @@ export default function RecommendedReads({ currentPostId, currentCategoryId }: R
       try {
         const posts = await getRandomPost();
         setRecommendedPost(posts[0] || null);
-        console.log(posts);
       } catch (error) {
         console.error('Error loading recommended post:', error);
       } finally {
