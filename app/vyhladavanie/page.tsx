@@ -1,6 +1,7 @@
 import { searchPosts } from '@/app/lib/WordPress';
 import Link from 'next/link';
 import Image from 'next/image';
+import he from 'he';
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -18,7 +19,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <div className="bg-white pt-24 pb-16">
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          Výsledky vyhľadávania: {query}
+          Výsledky vyhľadávania: {he.decode(query)}
         </h1>
         
         {total > 0 ? (
@@ -33,14 +34,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   <div className="relative aspect-video mb-4 overflow-hidden rounded-lg">
                     <Image
                       src={(post._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '/placeholder.jpg')}
-                      alt={post.title.rendered}
+                      alt={he.decode(post.title.rendered)}
                       fill
                       className="object-cover transition-transform group-hover:scale-105"
                     />
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600">
-                    {post.title.rendered}
-                  </h2>
+                  <h2 
+                    className="text-xl font-semibold text-gray-900 group-hover:text-blue-600"
+                    dangerouslySetInnerHTML={{ __html: he.decode(post.title.rendered) }}
+                  />
                 </Link>
               ))}
             </div>
@@ -66,7 +68,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         ) : (
           <div className="text-center py-12">
             <p className="text-gray-600">
-              Pre vyhľadávanie &quot;{query}&quot; neboli nájdené žiadne výsledky
+              Pre vyhľadávanie &quot;{he.decode(query)}&quot; neboli nájdené žiadne výsledky
             </p>
           </div>
         )}

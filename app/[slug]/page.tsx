@@ -9,6 +9,7 @@ import ShareButtons from "../components/UI/ShareButtons";
 import Comments from "@/app/components/UI/Comments";
 import WeRecommend from "@/app/components/UI/WeRecommend";
 import ReadMore from "@/app/components/UI/ReadMore";
+import he from 'he';
 
 interface PageProps {
   params: Promise<{
@@ -30,14 +31,14 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
   }
 
   // Extract headings from content
-  const { headings, content } = parseHeadings(post.content.rendered);
+  const { headings, content } = parseHeadings(he.decode(post.content.rendered));
     
   // Schema.org Article markup
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": post.title.rendered,
-    "description": post.excerpt.rendered.replace(/<[^>]*>/g, ''),
+    "headline": he.decode(post.title.rendered),
+    "description": he.decode(post.excerpt.rendered.replace(/<[^>]*>/g, '')),
     "image": post._embedded?.['wp:featuredmedia']?.[0]?.source_url,
     "datePublished": post.date,
     "dateModified": post.modified,
@@ -100,7 +101,7 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
             )}
             <h1 
               className="text-4xl md:text-5xl font-bold text-white mb-4"
-              dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+              dangerouslySetInnerHTML={{ __html: he.decode(post.title.rendered) }}
             />
             <div className="flex items-center text-white/90 space-x-4 text-sm">
               <time dateTime={post.date}>
@@ -154,7 +155,7 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
               prose-headings:text-gray-900 prose-a:text-emerald-600 
               hover:prose-a:text-emerald-700 prose-img:rounded-xl 
               prose-strong:text-gray-900"
-            dangerouslySetInnerHTML={{ __html: content }}
+            dangerouslySetInnerHTML={{ __html: he.decode(content) }}
           />
 
           {/* References Section */}
@@ -251,32 +252,13 @@ export async function generateMetadata({ params: paramsPromise }: PageProps) {
     };
   }
 
-  // Create a temporary element to decode HTML entities
-  const decodeHTML = (html: string) => {
-    if (typeof window === 'undefined') {
-      const entities: { [key: string]: string } = {
-        '&ndash;': '–',
-        '&mdash;': '—',
-        '&nbsp;': ' ',
-        '&quot;': '"',
-        '&amp;': '&',
-        '&lt;': '<',
-        '&gt;': '>',
-      };
-      return html.replace(/&[^;]+;/g, match => entities[match] || match);
-    }
-    const txt = document.createElement('textarea');
-    txt.innerHTML = html;
-    return txt.value;
-  };
-
-  const cleanDescription = decodeHTML(post.excerpt.rendered.replace(/<[^>]*>/g, '')).slice(0, 160);
+  const cleanDescription = he.decode(post.excerpt.rendered.replace(/<[^>]*>/g, '')).slice(0, 160);
 
   return {
-    title: decodeHTML(post.title.rendered),
+    title: he.decode(post.title.rendered),
     description: cleanDescription,
     openGraph: {
-      title: decodeHTML(post.title.rendered),
+      title: he.decode(post.title.rendered),
       description: cleanDescription,
       images: post._embedded?.['wp:featuredmedia'] 
         ? [post._embedded['wp:featuredmedia'][0].source_url] 
