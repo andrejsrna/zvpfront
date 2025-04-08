@@ -34,16 +34,26 @@ export type WordPressPost = {
     'wp:featuredmedia'?: Array<{
       source_url: string;
       alt_text: string;
+      media_details?: {
+        sizes?: {
+          [key: string]: {
+            source_url: string;
+            width: number;
+            height: number;
+          };
+        };
+      };
     }>;
-    'wp:term'?: Array<Array<{
-      id: number;
-      name: string;
-      slug: string;
-      taxonomy: 'category' | 'post_tag';
-    }>>;
+    'wp:term'?: Array<
+      Array<{
+        id: number;
+        name: string;
+        slug: string;
+        taxonomy: 'category' | 'post_tag';
+      }>
+    >;
   };
 };
-
 
 export type WordPressCategory = {
   id: number;
@@ -58,10 +68,10 @@ export type WordPressCategory = {
 };
 
 const REVALIDATE_TIME = {
-  POSTS: 3600,        // 1 hodina
-  CATEGORIES: 7200,   // 2 hodiny
-  SINGLE_POST: 1800,  // 30 minút
-  SEARCH: 0           // bez cache
+  POSTS: 3600, // 1 hodina
+  CATEGORIES: 7200, // 2 hodiny
+  SINGLE_POST: 1800, // 30 minút
+  SEARCH: 0, // bez cache
 };
 
 const API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
@@ -96,7 +106,9 @@ export async function getPosts(
   categoryId?: number,
   page: number = 1
 ): Promise<WordPressPost[]> {
-  const categoryParam = categoryId ? `&categories=${categoryId}&include_children=true` : '';
+  const categoryParam = categoryId
+    ? `&categories=${categoryId}&include_children=true`
+    : '';
   const response = await fetchAPI(
     `/wp/v2/posts?_embed&per_page=${perPage}&orderby=${orderby}&order=desc${categoryParam}&page=${page}`,
     {
@@ -110,18 +122,17 @@ export async function getPosts(
   return response.json();
 }
 
-export async function getPostBySlug(slug: string): Promise<WordPressPost | null> {
+export async function getPostBySlug(
+  slug: string
+): Promise<WordPressPost | null> {
   try {
     // Najprv získame post
-    const postResponse = await fetchAPI(
-      `/wp/v2/posts?_embed&slug=${slug}`,
-      {
-        next: {
-          revalidate: REVALIDATE_TIME.SINGLE_POST,
-          tags: [`post-${slug}`],
-        },
-      }
-    );
+    const postResponse = await fetchAPI(`/wp/v2/posts?_embed&slug=${slug}`, {
+      next: {
+        revalidate: REVALIDATE_TIME.SINGLE_POST,
+        tags: [`post-${slug}`],
+      },
+    });
 
     const posts = await postResponse.json();
     if (posts.length === 0) return null;
@@ -171,15 +182,12 @@ export async function getCategories(): Promise<WordPressCategory[]> {
 }
 
 export async function getRandomPost(): Promise<WordPressPost[]> {
-  const response = await fetchAPI(
-    '/custom/v1/random-posts',
-    {
-      next: {
-        revalidate: 60, // Cache na 1 minútu
-        tags: ['random-posts'],
-      },
-    }
-  );
+  const response = await fetchAPI('/custom/v1/random-posts', {
+    next: {
+      revalidate: 60, // Cache na 1 minútu
+      tags: ['random-posts'],
+    },
+  });
 
   return response.json();
 }
@@ -211,6 +219,6 @@ export async function searchPosts(
   return {
     posts,
     total,
-    totalPages
+    totalPages,
   };
-} 
+}
