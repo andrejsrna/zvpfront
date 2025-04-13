@@ -1,5 +1,5 @@
-import type { NextConfig } from "next";
-import withPWA from 'next-pwa'; 
+import type { NextConfig } from 'next';
+import withPWA from 'next-pwa';
 
 const nextConfig: NextConfig = {
   images: {
@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60,
     formats: ['image/webp'],
   },
-  
+
   // Cache handler
   cacheHandler: require.resolve(
     'next/dist/server/lib/incremental-cache/file-system-cache.js'
@@ -20,34 +20,34 @@ const nextConfig: NextConfig = {
       headers: [
         {
           key: 'X-DNS-Prefetch-Control',
-          value: 'on'
+          value: 'on',
         },
         {
           key: 'Strict-Transport-Security',
-          value: 'max-age=63072000; includeSubDomains; preload'
+          value: 'max-age=63072000; includeSubDomains; preload',
         },
         {
           key: 'X-XSS-Protection',
-          value: '1; mode=block'
+          value: '1; mode=block',
         },
         {
           key: 'X-Frame-Options',
-          value: 'SAMEORIGIN'
+          value: 'SAMEORIGIN',
         },
         {
           key: 'X-Content-Type-Options',
-          value: 'nosniff'
-        },
-        {
-          key: 'Referrer-Policy',
-          value: 'origin-when-cross-origin'
+          value: 'nosniff',
         },
         {
           key: 'Permissions-Policy',
-          value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
-        }
-      ]
-    }
+          value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+        },
+        {
+          key: 'Referrer-Policy',
+          value: 'strict-origin-when-cross-origin',
+        },
+      ],
+    },
   ],
 
   // Redirects
@@ -56,7 +56,7 @@ const nextConfig: NextConfig = {
       source: '/home',
       destination: '/',
       permanent: true,
-    }
+    },
   ],
 
   // Compression
@@ -76,22 +76,22 @@ const nextConfig: NextConfig = {
           cacheName: 'wordpress-images',
           expiration: {
             maxEntries: 100,
-            maxAgeSeconds: 7 * 24 * 60 * 60 // 7 dní
-          }
-        }
-      }
-    ]
+            maxAgeSeconds: 7 * 24 * 60 * 60, // 7 dní
+          },
+        },
+      },
+    ],
   }),
 
   // Optimalizácie
   poweredByHeader: false,
   reactStrictMode: true,
-  
+
   // Experimentálne features
   experimental: {
     optimizeCss: true,
     scrollRestoration: true,
-  }
+  },
 };
 
 export default nextConfig;
