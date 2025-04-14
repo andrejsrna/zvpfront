@@ -42,10 +42,6 @@ const nextConfig: NextConfig = {
           key: 'Permissions-Policy',
           value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
         },
-        {
-          key: 'Referrer-Policy',
-          value: 'no-referrer-when-downgrade',
-        },
       ],
     },
   ],
