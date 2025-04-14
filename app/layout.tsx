@@ -5,6 +5,10 @@ import Footer from './components/Footer';
 import Header from './components/Header';
 import './globals.css';
 
+// Import WordPress block library styles
+import '@wordpress/block-library/build-style/style.css';
+import '@wordpress/block-library/build-style/theme.css';
+
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-inter',

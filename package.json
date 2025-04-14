@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.16",
+    "@wordpress/block-library": "^9.22.0",
     "critters": "^0.0.23",
     "disqus-react": "^1.1.5",
     "next": "15.1.6",
