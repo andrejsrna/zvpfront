@@ -44,7 +44,7 @@ const nextConfig: NextConfig = {
         },
         {
           key: 'Referrer-Policy',
-          value: 'strict-origin-when-cross-origin',
+          value: 'no-referrer-when-downgrade',
         },
       ],
     },
