@@ -28,7 +28,6 @@ export default function AdUnit({
   useEffect(() => {
     if (canShowAds) {
       try {
-        // @ts-expect-error - AdSense global variable
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       } catch (err) {
         console.error('AdSense error:', err);
