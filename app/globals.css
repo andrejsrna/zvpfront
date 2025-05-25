@@ -8,6 +8,9 @@
 /* Import cookie modal styles */
 @import './styles/cookie-modal.css';
 
+/* Import table of contents styles */
+@import './styles/table-of-contents.css';
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

@@ -1,0 +1,73 @@
+/* Table of Contents Animations */
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Offset for fixed header */
+:target {
+  scroll-margin-top: 100px;
+}
+
+/* Collapsible animation */
+.toc-collapsible {
+  transition:
+    max-height 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+.toc-collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.toc-expanded {
+  max-height: 600px;
+  opacity: 1;
+}
+
+/* Hover effects */
+.toc-item {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.toc-item::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 0;
+  background-color: #10b981;
+  transition: height 0.2s ease;
+}
+
+.toc-item:hover::before {
+  height: 100%;
+}
+
+/* Number badges */
+.toc-number {
+  transition: all 0.2s ease;
+}
+
+.toc-item:hover .toc-number {
+  transform: scale(1.1);
+  background-color: #d1fae5;
+  color: #10b981;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  :target {
+    scroll-margin-top: 80px;
+  }
+
+  .toc-collapsible {
+    max-height: 400px;
+  }
+}

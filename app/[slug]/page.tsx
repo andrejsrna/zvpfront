@@ -11,6 +11,7 @@ import { notFound } from 'next/navigation';
 import ShareButtons from '../components/UI/ShareButtons';
 import StickyAd from '@/app/components/ads/StickyAd';
 import ArticleContent from '@/app/components/ArticleContent';
+import TableOfContents from '@/app/components/TableOfContents';
 import { AD_SLOTS } from '@/app/config/adSlots';
 
 interface PageProps {
@@ -137,31 +138,7 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Table of Contents */}
-          {headings.length > 0 && (
-            <div className="mb-12 p-6 bg-gray-50 rounded-xl">
-              <h2 className="text-xl font-heading font-bold text-gray-900 mb-4">
-                Obsah článku
-              </h2>
-              <nav>
-                <ul className="space-y-2">
-                  {headings.map((heading, index) => (
-                    <li
-                      key={index}
-                      className={`${heading.level === 2 ? 'ml-0' : 'ml-4'}`}
-                    >
-                      <a
-                        href={`#${heading.id}`}
-                        className="text-emerald-600 hover:text-emerald-700
-                          transition-colors text-sm"
-                      >
-                        {heading.text}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            </div>
-          )}
+          <TableOfContents headings={headings} />
 
           {/* Main Content */}
           <ArticleContent
