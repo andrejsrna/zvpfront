@@ -3,6 +3,8 @@ import { Inter, Sora } from 'next/font/google';
 import Script from 'next/script';
 import Footer from './components/Footer';
 import Header from './components/Header';
+import CookieConsent from './components/CookieConsent';
+import CookieConsentInit from './components/CookieConsentInit';
 import './globals.css';
 
 // Import WordPress block library styles
@@ -57,7 +59,27 @@ export default function RootLayout({
       className={`${inter.variable} ${sora.variable} font-sans antialiased`}
     >
       <head>
-        {/* Google Analytics - load immediately */}
+        {/* Google Consent Mode - must be loaded first */}
+        <Script id="google-consent-mode" strategy="beforeInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            
+            // Default consent state
+            gtag('consent', 'default', {
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied',
+              'analytics_storage': 'denied',
+              'functionality_storage': 'denied',
+              'personalization_storage': 'denied',
+              'security_storage': 'granted',
+              'wait_for_update': 500
+            });
+          `}
+        </Script>
+
+        {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=G-RECTFBNLLS`}
           strategy="afterInteractive"
@@ -73,7 +95,7 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Google AdSense - use next/script with lazyOnload */}
+        {/* Google AdSense - will only show ads if consent is given */}
         <Script
           id="adsbygoogle-init"
           strategy="lazyOnload"
@@ -85,6 +107,8 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
+        <CookieConsent />
+        <CookieConsentInit />
       </body>
     </html>
   );

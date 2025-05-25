@@ -1,0 +1,84 @@
+/* Google AdSense Styles */
+
+/* Base ad container */
+.ad-container {
+  margin: 1.5rem 0;
+  text-align: center;
+  min-height: 90px;
+  position: relative;
+}
+
+/* Prevent layout shift */
+.adsbygoogle {
+  background-color: #f8f9fa;
+  min-height: inherit;
+}
+
+/* In-article ads */
+.in-article-ad-placeholder {
+  margin: 2rem 0;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  min-height: 250px;
+}
+
+/* Native ad styling */
+.native-ad {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Sticky ad animation */
+.sticky-ad-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.sticky-ad-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 300ms ease-out;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .ad-container {
+    margin: 1rem -1rem;
+    padding: 0 1rem;
+  }
+
+  .in-article-ad-placeholder {
+    margin: 1.5rem -1rem;
+    border-radius: 0;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .adsbygoogle,
+  .in-article-ad-placeholder {
+    background-color: #1f2937;
+  }
+
+  .native-ad {
+    border-color: #374151;
+  }
+}
+
+/* Loading skeleton */
+.ad-loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

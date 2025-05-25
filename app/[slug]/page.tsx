@@ -1,6 +1,5 @@
 import Newsletter from '@/app/components/Newsletter';
 import RecommendedReads from '@/app/components/RecommendedReads';
-import Comments from '@/app/components/UI/Comments';
 import ReadMore from '@/app/components/UI/ReadMore';
 import WeRecommend from '@/app/components/UI/WeRecommend';
 import { getPostBySlug } from '@/app/lib/WordPress';
@@ -10,6 +9,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ShareButtons from '../components/UI/ShareButtons';
+import StickyAd from '@/app/components/ads/StickyAd';
+import ArticleContent from '@/app/components/ArticleContent';
+import { AD_SLOTS } from '@/app/config/adSlots';
 
 interface PageProps {
   params: Promise<{
@@ -71,6 +73,9 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
+
+      {/* Sticky Ad */}
+      <StickyAd slot={AD_SLOTS.SIDEBAR_STICKY} position="right" />
 
       {/* Hero Section */}
       <div className="relative h-[60vh] min-h-[400px] w-full">
@@ -159,12 +164,12 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
           )}
 
           {/* Main Content */}
-          <div
+          <ArticleContent
+            content={he.decode(content)}
             className="prose prose-lg max-w-none prose-headings:font-heading
               prose-headings:text-gray-900 prose-a:text-emerald-600
               hover:prose-a:text-emerald-700 prose-img:rounded-xl
               prose-strong:text-gray-900"
-            dangerouslySetInnerHTML={{ __html: he.decode(content) }}
           />
 
           {/* References Section */}
@@ -224,11 +229,6 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
         description={he.decode(post.excerpt.rendered.replace(/<[^>]*>/g, ''))}
       />
       {post.tags?.some(tag => tag.slug === 'klby') && <WeRecommend />}
-      <Comments
-        url={`${process.env.NEXT_PUBLIC_SITE_URL}/${post.slug}`}
-        identifier={post.slug}
-        title={he.decode(post.title.rendered)}
-      />
       {/* Related Posts */}
       <RecommendedReads
         currentPostId={post.id}
