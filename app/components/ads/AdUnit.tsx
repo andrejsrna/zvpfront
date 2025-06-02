@@ -73,17 +73,10 @@ export default function AdUnit({
   useEffect(() => {
     if (!canShowAds || !isVisible || adsScriptLoaded) return;
 
-    // Ensure AdSense script is loaded
-    const loadAds = window.loadAds;
-    if (typeof loadAds === 'function') {
-      loadAds();
-    }
-
-    // Check if script is loaded
+    // Check if AdSense script is loaded
     const checkAdsLoaded = setInterval(() => {
-      const adsLoaded = window.adsLoaded;
       const adsbygoogle = window.adsbygoogle;
-      if (adsLoaded && adsbygoogle) {
+      if (adsbygoogle) {
         setAdsScriptLoaded(true);
         clearInterval(checkAdsLoaded);
       }

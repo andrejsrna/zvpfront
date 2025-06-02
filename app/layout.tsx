@@ -216,14 +216,18 @@ export default function RootLayout({
                 script.src = 'https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}';
                 document.head.appendChild(script);
                 
-                const adsScript = document.createElement('script');
-                adsScript.async = true;
-                adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7459831240640476';
-                adsScript.crossOrigin = 'anonymous';
-                document.head.appendChild(adsScript);
+                window.adsLoaded = true;
               }, 5000);
             `,
           }}
+        />
+
+        {/* Google AdSense Script - separate from analytics */}
+        <Script
+          id="google-adsense"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7459831240640476"
+          strategy="afterInteractive"
+          async
         />
       </body>
     </html>

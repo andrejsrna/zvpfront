@@ -53,6 +53,11 @@ const nextConfig: NextConfig = {
           key: 'Referrer-Policy',
           value: 'strict-origin-when-cross-origin',
         },
+        {
+          key: 'Content-Security-Policy',
+          value:
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://pagead2.googlesyndication.com https://www.google-analytics.com https://admin.zdravievpraxi.sk; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; img-src 'self' data: https: *; object-src 'none'; base-uri 'self';",
+        },
       ],
     },
     // Static assets cache policy
