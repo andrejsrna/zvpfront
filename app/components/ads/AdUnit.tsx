@@ -48,13 +48,18 @@ export default function AdUnit({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
+        if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
+          // Only set visible if the container has actual width
+          const rect = entry.target.getBoundingClientRect();
+          if (rect.width > 250) {
+            setIsVisible(true);
+            observer.disconnect();
+          }
         }
       },
       {
-        rootMargin: '100px', // Load ads 100px before they come into view
+        rootMargin: '100px',
+        threshold: 0.1,
       }
     );
 
@@ -75,8 +80,9 @@ export default function AdUnit({
 
     // Check if AdSense script is loaded
     const checkAdsLoaded = setInterval(() => {
+      const adsLoaded = window.adsLoaded;
       const adsbygoogle = window.adsbygoogle;
-      if (adsbygoogle) {
+      if ((adsLoaded && adsbygoogle) || adsbygoogle) {
         setAdsScriptLoaded(true);
         clearInterval(checkAdsLoaded);
       }
@@ -92,13 +98,25 @@ export default function AdUnit({
   useEffect(() => {
     if (!adsScriptLoaded || !canShowAds || !isVisible) return;
 
+    // Double-check container width before initializing
+    if (adRef.current) {
+      const rect = adRef.current.getBoundingClientRect();
+      if (rect.width < 250 && format === 'fluid') {
+        console.warn(
+          'AdSense: Container too narrow for fluid ads:',
+          rect.width
+        );
+        return;
+      }
+    }
+
     try {
       const adsbygoogle = window.adsbygoogle || [];
       adsbygoogle.push({});
     } catch (err) {
       console.error('AdSense error:', err);
     }
-  }, [adsScriptLoaded, canShowAds, isVisible]);
+  }, [adsScriptLoaded, canShowAds, isVisible, format]);
 
   if (isLoading) {
     return (
@@ -133,7 +151,13 @@ export default function AdUnit({
     <div
       ref={adRef}
       className={`ad-container ${className}`}
-      style={{ minHeight: adMinHeight, ...style }}
+      style={{
+        minHeight: adMinHeight,
+        minWidth: format === 'fluid' ? '300px' : '250px',
+        width: '100%',
+        maxWidth: '100%',
+        ...style,
+      }}
     >
       {isVisible ? (
         <ins
@@ -142,6 +166,7 @@ export default function AdUnit({
             display: 'block',
             minHeight: adMinHeight,
             width: '100%',
+            minWidth: format === 'fluid' ? '300px' : '250px',
             ...style,
           }}
           data-ad-client="ca-pub-7459831240640476"
@@ -152,7 +177,10 @@ export default function AdUnit({
       ) : (
         <div
           className="ad-placeholder bg-gray-100 rounded-lg flex items-center justify-center"
-          style={{ minHeight: adMinHeight }}
+          style={{
+            minHeight: adMinHeight,
+            minWidth: format === 'fluid' ? '300px' : '250px',
+          }}
         >
           <div className="text-sm text-gray-500">Loading ad...</div>
         </div>

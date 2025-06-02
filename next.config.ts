@@ -56,7 +56,7 @@ const nextConfig: NextConfig = {
         {
           key: 'Content-Security-Policy',
           value:
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://pagead2.googlesyndication.com https://www.google-analytics.com https://admin.zdravievpraxi.sk; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; img-src 'self' data: https: *; object-src 'none'; base-uri 'self';",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com https://fundingchoicesmessages.google.com; connect-src 'self' https://pagead2.googlesyndication.com https://www.google-analytics.com https://admin.zdravievpraxi.sk https://fundingchoicesmessages.google.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://fundingchoicesmessages.google.com; img-src 'self' data: https: *; object-src 'none'; base-uri 'self';",
         },
       ],
     },
