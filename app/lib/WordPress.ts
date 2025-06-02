@@ -155,7 +155,8 @@ class WordPressClient {
     );
   }
 
-  static getPosts = unstable_cache(
+  // Server-side cached versions
+  private static getPostsCached = unstable_cache(
     async (
       perPage: number = 12,
       orderby: string = 'date',
@@ -176,7 +177,7 @@ class WordPressClient {
     }
   );
 
-  static getCategories = unstable_cache(
+  private static getCategoriesCached = unstable_cache(
     async () => {
       try {
         return await this.getCategoriesUncached();
@@ -192,11 +193,45 @@ class WordPressClient {
     }
   );
 
+  // Public methods that choose cached or uncached based on environment
+  static async getPosts(
+    perPage: number = 12,
+    orderby: string = 'date',
+    categoryId?: number,
+    page: number = 1
+  ): Promise<WordPressPost[]> {
+    // Use cached version only on server-side
+    if (typeof window === 'undefined') {
+      return this.getPostsCached(perPage, orderby, categoryId, page);
+    }
+    // Use uncached version on client-side
+    try {
+      return await this.getPostsUncached(perPage, orderby, categoryId, page);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      return [];
+    }
+  }
+
+  static async getCategories(): Promise<WordPressCategory[]> {
+    // Use cached version only on server-side
+    if (typeof window === 'undefined') {
+      return this.getCategoriesCached();
+    }
+    // Use uncached version on client-side
+    try {
+      return await this.getCategoriesUncached();
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      return [];
+    }
+  }
+
   static async getPostBySlug(slug: string): Promise<WordPressPost | null> {
     try {
-      const posts = await this.fetch<WordPressPost[]>(
-        `/wp/v2/posts?_embed&slug=${slug}`
-      );
+      const url = `${this.getApiUrl()}/wp/v2/posts?_embed&slug=${slug}`;
+      const response = await this.fetchWithTimeout(url);
+      const posts = await response.json();
 
       if (posts.length === 0) return null;
       const post = posts[0];
@@ -215,7 +250,9 @@ class WordPressClient {
 
   static async getRandomPost(): Promise<WordPressPost[]> {
     try {
-      return await this.fetch<WordPressPost[]>('/custom/v1/random-posts');
+      const url = `${this.getApiUrl()}/custom/v1/random-posts`;
+      const response = await this.fetchWithTimeout(url);
+      return response.json();
     } catch (error) {
       console.error('Error fetching random posts:', error);
       return [];
@@ -251,12 +288,13 @@ class WordPressClient {
   }
 }
 
-// Export public API
-export const {
-  transformUrl,
-  getPosts,
-  getPostBySlug,
-  getCategories,
-  getRandomPost,
-  searchPosts,
-} = WordPressClient;
+// Export public API with proper context binding
+export const transformUrl = WordPressClient.transformUrl.bind(WordPressClient);
+export const getPosts = WordPressClient.getPosts.bind(WordPressClient);
+export const getPostBySlug =
+  WordPressClient.getPostBySlug.bind(WordPressClient);
+export const getCategories =
+  WordPressClient.getCategories.bind(WordPressClient);
+export const getRandomPost =
+  WordPressClient.getRandomPost.bind(WordPressClient);
+export const searchPosts = WordPressClient.searchPosts.bind(WordPressClient);
