@@ -65,13 +65,6 @@ const nextConfig: NextConfig = {
           key: 'Cross-Origin-Resource-Policy',
           value: 'cross-origin',
         },
-        {
-          key: 'Content-Security-Policy',
-          value:
-            process.env.NODE_ENV === 'development'
-              ? "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:; connect-src 'self' https: wss: data:; frame-src 'self' https:; img-src 'self' data: blob: https: *; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; object-src 'none'; base-uri 'self'; worker-src 'self' blob:; child-src 'self' https:;"
-              : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.google.com https://*.googlesyndication.com https://*.googletagmanager.com https://*.googleadservices.com https://*.doubleclick.net https://*.gstatic.com https://*.googleapis.com https://*.adsystem.com; connect-src 'self' https://*.google.com https://*.googlesyndication.com https://*.googletagmanager.com https://*.googleadservices.com https://*.doubleclick.net https://*.gstatic.com https://*.googleapis.com https://*.adsystem.com https://admin.zdravievpraxi.sk; frame-src https://*.google.com https://*.googlesyndication.com https://*.googleadservices.com https://*.doubleclick.net https://*.gstatic.com https://*.adsystem.com; img-src 'self' data: blob: https: *; style-src 'self' 'unsafe-inline' https://*.google.com https://*.googleapis.com https://*.gstatic.com; font-src 'self' https://*.gstatic.com https://*.googleapis.com; object-src 'none'; base-uri 'self'; worker-src 'self' blob:; child-src https://*.google.com https://*.googlesyndication.com https://*.doubleclick.net https://*.adsystem.com;",
-        },
       ],
     },
     // Static assets cache policy
