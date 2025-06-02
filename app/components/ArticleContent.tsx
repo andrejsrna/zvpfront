@@ -21,6 +21,32 @@ export default function ArticleContent({
       const parser = new DOMParser();
       const doc = parser.parseFromString(content, 'text/html');
 
+      // Optimize images in content
+      const images = doc.querySelectorAll('img');
+      images.forEach((img, index) => {
+        // Add loading optimization
+        img.loading = index < 2 ? 'eager' : 'lazy';
+        img.decoding = 'async';
+
+        // Add proper sizes attribute
+        if (!img.getAttribute('sizes')) {
+          img.setAttribute(
+            'sizes',
+            '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px'
+          );
+        }
+
+        // Add aspect ratio styles to prevent CLS
+        if (!img.style.aspectRatio && img.width && img.height) {
+          img.style.aspectRatio = `${img.width}/${img.height}`;
+        }
+
+        // Add error handling
+        img.onerror = function () {
+          this.style.display = 'none';
+        };
+      });
+
       // Find all paragraphs
       const paragraphs = Array.from(doc.querySelectorAll('p'));
       const totalParagraphs = paragraphs.length;
@@ -28,7 +54,11 @@ export default function ArticleContent({
       // Don't insert ads if article is too short
       if (totalParagraphs < 5) {
         setProcessedContent([
-          <div key="content" dangerouslySetInnerHTML={{ __html: content }} />,
+          <div
+            key="content"
+            className="article-content"
+            dangerouslySetInnerHTML={{ __html: doc.body.innerHTML }}
+          />,
         ]);
         return;
       }
@@ -57,6 +87,7 @@ export default function ArticleContent({
             sections.push(
               <div
                 key={`content-${index}`}
+                className="article-content"
                 dangerouslySetInnerHTML={{ __html: beforeAdContent }}
               />
             );
@@ -81,6 +112,7 @@ export default function ArticleContent({
         sections.push(
           <div
             key="content-final"
+            className="article-content"
             dangerouslySetInnerHTML={{ __html: remainingContent }}
           />
         );
@@ -92,7 +124,32 @@ export default function ArticleContent({
     insertAds();
   }, [content]);
 
-  return <div className={className}>{processedContent}</div>;
+  return (
+    <div className={`article-wrapper ${className}`}>
+      <style jsx>{`
+        .article-content img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 0.75rem;
+          margin: 1.5rem 0;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .article-content figure {
+          margin: 1.5rem 0;
+        }
+
+        .article-content figcaption {
+          text-align: center;
+          font-size: 0.875rem;
+          color: #6b7280;
+          margin-top: 0.5rem;
+          font-style: italic;
+        }
+      `}</style>
+      {processedContent}
+    </div>
+  );
 }
 
 function calculateAdPositions(totalParagraphs: number): number[] {

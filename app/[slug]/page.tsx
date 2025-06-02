@@ -79,7 +79,7 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
       <StickyAd slot={AD_SLOTS.SIDEBAR_STICKY} position="right" />
 
       {/* Hero Section */}
-      <div className="relative h-[60vh] min-h-[400px] w-full">
+      <div className="relative w-full aspect-[16/9] max-h-[60vh] min-h-[400px] overflow-hidden">
         {featuredImageUrl ? (
           <>
             <Image
@@ -88,7 +88,10 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
               fill
               priority
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              sizes="100vw"
+              quality={85}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkrHR4f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+JjHmsnLLKKRnHbwKJ3FlAm2O0UfGYJeO5Jp7Dcp3OHGMYd4b6aLgEJP5SjsNQFZAo9O5B+tWRcWlwJ3txdPGFVKdWKdlL8Whe2ZTBqD7+4I2HHDZ8Q/I4U4Q7XSB8ikEKDMBOGAyMPEtwq57Ck2xD/9k="
             />
             <div
               className="absolute inset-0 bg-gradient-to-t from-black/60
@@ -103,7 +106,7 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
         )}
 
         {/* Hero Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-8">
+        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
           <div className="container mx-auto max-w-4xl">
             {post.categories && post.categories[0] && (
               <Link
@@ -116,7 +119,7 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
               </Link>
             )}
             <h1
-              className="text-4xl md:text-5xl font-bold text-white mb-4"
+              className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 font-sora"
               dangerouslySetInnerHTML={{
                 __html: he.decode(post.title.rendered),
               }}
