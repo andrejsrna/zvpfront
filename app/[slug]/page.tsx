@@ -4,7 +4,7 @@ import { parseHeadings } from '@/app/utils/parseHeadings';
 import he from 'he';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import OptimizedHeroImage from '@/app/components/OptimizedHeroImage';
+import NativeHeroImage from '@/app/components/NativeHeroImage';
 import ArticleContent from '@/app/components/ArticleContent';
 import {
   LazyNewsletter,
@@ -70,168 +70,201 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
     featuredMedia?.alt_text || he.decode(post.title.rendered);
 
   return (
-    <article className="bg-white">
-      {/* Schema.org markup */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-      />
-
-      {/* Ultra-optimized Hero Section for LCP */}
-      <div
-        className="relative w-full h-[60vh] min-h-[400px] max-h-[600px] overflow-hidden"
-        style={{
-          contain: 'layout style paint',
-          willChange: 'auto',
-          contentVisibility: 'auto',
-          containIntrinsicSize: '0 400px',
-        }}
-      >
-        <OptimizedHeroImage
-          src={featuredImageUrl || ''}
-          alt={featuredImageAlt}
-          priority={true}
-          quality={95}
-        />
-
-        {/* Hero Content Overlay - simplified */}
-        <div
-          className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
-          style={{ contain: 'layout style' }}
-        >
-          <div className="container mx-auto max-w-4xl p-4 md:p-8">
-            {post.categories && post.categories[0] && (
-              <Link
-                href={`/kategoria/${post.categories[0].slug}`}
-                className="inline-block px-4 py-1.5 bg-emerald-500 text-white
-                  text-sm font-medium rounded-full mb-4 hover:bg-emerald-600
-                  transition-colors"
-              >
-                {post.categories[0].name}
-              </Link>
-            )}
-            <h1
-              className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4"
-              dangerouslySetInnerHTML={{
-                __html: he.decode(post.title.rendered),
-              }}
-            />
-            <div className="flex items-center text-white/90 space-x-4 text-sm">
-              <time dateTime={post.date}>
-                {new Date(post.date).toLocaleDateString('sk-SK', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </time>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content - Critical Path */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          {/* Table of Contents - Deferred */}
-          <LazyTableOfContents headings={headings} />
-
-          {/* Article Content - Critical but lazy loaded */}
-          <Suspense
-            fallback={
-              <div className="animate-pulse h-96 bg-gray-100 rounded-lg" />
-            }
-          >
-            <ArticleContent
-              content={he.decode(content)}
-              className="prose prose-lg max-w-none prose-headings:font-heading
-                prose-headings:text-gray-900 prose-a:text-emerald-600
-                hover:prose-a:text-emerald-700 prose-img:rounded-xl
-                prose-strong:text-gray-900"
-            />
-          </Suspense>
-
-          {/* References Section */}
-          {references.length > 0 && (
-            <div className="mt-12 pt-8 border-t">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Zdroje a referencie
-              </h2>
-              <div className="space-y-4">
-                {references.map((ref, index) => (
-                  <div key={index} className="flex items-start">
-                    <span className="text-sm text-gray-500 mr-2">
-                      [{index + 1}]
-                    </span>
-                    <div>
-                      <a
-                        href={ref.odkaz}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-emerald-600 hover:text-emerald-700
-                          transition-colors hover:underline"
-                      >
-                        {ref.nazov}
-                      </a>
-                      <span className="text-gray-400 text-sm ml-2">
-                        {new URL(ref.odkaz).hostname}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Tags */}
-          {post.tags && post.tags.length > 0 && (
-            <div className="mt-12 pt-8 border-t">
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map(tag => (
-                  <Link
-                    key={tag.id}
-                    href={`/tag/${tag.slug}`}
-                    className="px-3 py-1 bg-gray-100 text-gray-700 text-sm
-                      rounded-full hover:bg-gray-200 transition-colors"
-                  >
-                    #{tag.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Non-critical components - Lazy loaded */}
-      <LazyShareButtons
-        url={`${process.env.NEXT_PUBLIC_SITE_URL}/${post.slug}`}
-        title={he.decode(post.title.rendered)}
-        description={he.decode(post.excerpt.rendered.replace(/<[^>]*>/g, ''))}
-      />
-
-      {/* Conditional content */}
-      {post.tags?.some(tag => tag.slug === 'klby') && <LazyWeRecommend />}
-
-      {/* Related content - Non-critical */}
-      <LazyRecommendedReads
-        currentPostId={post.id}
-        currentCategoryId={post.categories?.[0]?.id}
-      />
-
-      <LazyNewsletter />
-
-      {post.categories?.[0] && (
-        <LazyReadMore
-          categoryId={post.categories[0].id}
-          categoryName={post.categories[0].name}
-          categorySlug={post.categories[0].slug}
-          currentPostId={post.id}
+    <>
+      {/* Critical above-the-fold preloads */}
+      {featuredImageUrl && (
+        <link
+          rel="preload"
+          as="image"
+          href={`/_next/image?url=${encodeURIComponent(featuredImageUrl)}&w=1600&q=95`}
+          fetchPriority="high"
         />
       )}
 
-      {/* Sticky Ad - Load last */}
-      <LazyStickyAd slot="7890123456" position="right" />
-    </article>
+      <article className="bg-white">
+        {/* Schema.org markup */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        />
+
+        {/* Ultra-fast Hero Section for LCP */}
+        <div
+          className="relative w-full h-[80vh] min-h-[600px] max-h-[800px] overflow-hidden bg-gray-100"
+          style={{
+            contain: 'layout style paint',
+            willChange: 'auto',
+            contentVisibility: 'visible',
+            containIntrinsicSize: '0 80vh',
+            minHeight: '80vh',
+            aspectRatio: '16/9',
+          }}
+          data-lcp-container="true"
+        >
+          <NativeHeroImage
+            src={featuredImageUrl || ''}
+            alt={featuredImageAlt}
+          />
+
+          {/* Hero Content Overlay - much smaller and positioned differently */}
+          <div
+            className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
+            style={{
+              contain: 'layout style',
+              willChange: 'auto',
+              zIndex: 10,
+              height: '40%',
+            }}
+          >
+            <div className="container mx-auto max-w-4xl p-4 md:p-6 h-full flex flex-col justify-end">
+              {post.categories && post.categories[0] && (
+                <Link
+                  href={`/kategoria/${post.categories[0].slug}`}
+                  className="inline-block px-3 py-1 bg-emerald-500 text-white
+                    text-xs font-medium rounded-full mb-2 hover:bg-emerald-600
+                    transition-colors w-fit"
+                  style={{
+                    contain: 'layout style',
+                    zIndex: 20,
+                  }}
+                >
+                  {post.categories[0].name}
+                </Link>
+              )}
+              <h1
+                className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 line-clamp-3"
+                dangerouslySetInnerHTML={{
+                  __html: he.decode(post.title.rendered),
+                }}
+                style={{
+                  contain: 'layout style',
+                  zIndex: 20,
+                  fontSize: 'clamp(1.125rem, 4vw, 1.875rem)',
+                }}
+              />
+              <div
+                className="flex items-center text-white/90 space-x-4 text-xs"
+                style={{
+                  contain: 'layout style',
+                  zIndex: 20,
+                }}
+              >
+                <time dateTime={post.date}>
+                  {new Date(post.date).toLocaleDateString('sk-SK', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </time>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content - Critical Path */}
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto">
+            {/* Table of Contents - Deferred */}
+            <LazyTableOfContents headings={headings} />
+
+            {/* Article Content - Critical but lazy loaded */}
+            <Suspense
+              fallback={
+                <div className="animate-pulse h-96 bg-gray-100 rounded-lg" />
+              }
+            >
+              <ArticleContent
+                content={he.decode(content)}
+                className="prose prose-lg max-w-none prose-headings:font-heading
+                  prose-headings:text-gray-900 prose-a:text-emerald-600
+                  hover:prose-a:text-emerald-700 prose-img:rounded-xl
+                  prose-strong:text-gray-900"
+              />
+            </Suspense>
+
+            {/* References Section */}
+            {references.length > 0 && (
+              <div className="mt-12 pt-8 border-t">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Zdroje a referencie
+                </h2>
+                <div className="space-y-4">
+                  {references.map((ref, index) => (
+                    <div key={index} className="flex items-start">
+                      <span className="text-sm text-gray-500 mr-2">
+                        [{index + 1}]
+                      </span>
+                      <div>
+                        <a
+                          href={ref.odkaz}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-emerald-600 hover:text-emerald-700
+                            transition-colors hover:underline"
+                        >
+                          {ref.nazov}
+                        </a>
+                        <span className="text-gray-400 text-sm ml-2">
+                          {new URL(ref.odkaz).hostname}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Tags */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="mt-12 pt-8 border-t">
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map(tag => (
+                    <Link
+                      key={tag.id}
+                      href={`/tag/${tag.slug}`}
+                      className="px-3 py-1 bg-gray-100 text-gray-700 text-sm
+                        rounded-full hover:bg-gray-200 transition-colors"
+                    >
+                      #{tag.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Non-critical components - Lazy loaded */}
+        <LazyShareButtons
+          url={`${process.env.NEXT_PUBLIC_SITE_URL}/${post.slug}`}
+          title={he.decode(post.title.rendered)}
+          description={he.decode(post.excerpt.rendered.replace(/<[^>]*>/g, ''))}
+        />
+
+        {/* Conditional content */}
+        {post.tags?.some(tag => tag.slug === 'klby') && <LazyWeRecommend />}
+
+        {/* Related content - Non-critical */}
+        <LazyRecommendedReads
+          currentPostId={post.id}
+          currentCategoryId={post.categories?.[0]?.id}
+        />
+
+        <LazyNewsletter />
+
+        {post.categories?.[0] && (
+          <LazyReadMore
+            categoryId={post.categories[0].id}
+            categoryName={post.categories[0].name}
+            categorySlug={post.categories[0].slug}
+            currentPostId={post.id}
+          />
+        )}
+
+        {/* Sticky Ad - Load last */}
+        <LazyStickyAd slot="7890123456" position="right" />
+      </article>
+    </>
   );
 }
 

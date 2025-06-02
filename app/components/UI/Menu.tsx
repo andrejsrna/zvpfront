@@ -1,310 +1,244 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { getCategories, WordPressCategory } from '../../lib/WordPress';
+import { getCategories, type WordPressCategory } from '@/app/lib/WordPress';
 import Search from './Search';
 import Image from 'next/image';
+import {
+  ChevronDownIcon,
+  XMarkIcon,
+  Bars3Icon,
+} from '@heroicons/react/24/outline';
 
 export default function Menu() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [categories, setCategories] = useState<WordPressCategory[]>([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const cats = await getCategories();
-        setCategories(cats);
+        const fetchedCategories = await getCategories();
+        setCategories(fetchedCategories);
       } catch (error) {
         console.error('Error loading categories:', error);
       } finally {
-        setIsLoadingCategories(false);
+        setIsLoading(false);
       }
     }
 
     fetchCategories();
   }, []);
 
-  // Zoberieme len top 6 kategórií podľa počtu článkov
-  const topCategories = categories
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 3);
-
-  const handleMenuItemClick = () => {
-    setIsMenuOpen(false);
-  };
-
-  // Skeleton placeholder for loading categories
-  const CategorySkeleton = () => (
-    <div className="h-4 bg-gray-200 rounded animate-pulse w-20"></div>
-  );
-
   return (
-    <header className="bg-white/95 backdrop-blur-sm shadow-md w-full top-0 z-50">
-      {/* Desktop Top Navigation */}
-      <div className="border-b border-gray-100 hidden md:block">
+    <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+      {/* Search overlay */}
+      {isSearchOpen && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 z-40">
+          <div className="container mx-auto px-4 py-4">
+            <Search onClose={() => setIsSearchOpen(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* Main Navigation */}
+      <nav className="nav-container bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center h-12">
-            <div className="flex items-center space-x-6">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo - reduced size to avoid LCP competition */}
+            <Link href="/" className="flex-shrink-0">
+              <Image
+                src="/logos/zvp.png"
+                alt="Zdravie v praxi"
+                width={120}
+                height={40}
+                priority={false}
+                className="h-8 w-auto"
+                quality={60}
+                loading="lazy"
+                placeholder="empty"
+              />
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
               <Link
                 href="/"
-                className="text-sm text-gray-600 hover:text-emerald-600 transition-colors"
+                className="text-gray-700 hover:text-emerald-600 font-medium transition-colors"
               >
                 Domov
               </Link>
               <Link
+                href="/clanky"
+                className="text-gray-700 hover:text-emerald-600 font-medium transition-colors"
+              >
+                Články
+              </Link>
+
+              {/* Categories Dropdown */}
+              <div
+                className="relative"
+                onMouseEnter={() => setIsOpen(true)}
+                onMouseLeave={() => setIsOpen(false)}
+              >
+                <button className="flex items-center text-gray-700 hover:text-emerald-600 font-medium transition-colors">
+                  Kategórie
+                  <ChevronDownIcon
+                    className={`ml-1 h-4 w-4 transition-transform ${
+                      isOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {isOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    {isLoading ? (
+                      <div className="px-4 py-2">
+                        <div className="animate-pulse space-y-2">
+                          {[...Array(4)].map((_, i) => (
+                            <div key={i} className="h-4 bg-gray-200 rounded" />
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      categories.slice(0, 8).map(category => (
+                        <Link
+                          key={category.id}
+                          href={`/kategoria/${category.slug}`}
+                          className="block px-4 py-2 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
+                        >
+                          {category.name}
+                          <span className="text-sm text-gray-500 ml-2">
+                            ({category.count})
+                          </span>
+                        </Link>
+                      ))
+                    )}
+                    <div className="border-t border-gray-100 mt-2 pt-2">
+                      <Link
+                        href="/kategorie"
+                        className="block px-4 py-2 text-emerald-600 hover:bg-emerald-50 transition-colors font-medium"
+                      >
+                        Zobraziť všetky kategórie →
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <Link
                 href="/kontakt"
-                className="text-sm text-gray-600 hover:text-emerald-600 transition-colors"
+                className="text-gray-700 hover:text-emerald-600 font-medium transition-colors"
               >
                 Kontakt
               </Link>
-              <Link
-                href="/ochrana-sukromia"
-                className="text-sm text-gray-600 hover:text-emerald-600 transition-colors"
+
+              {/* Search Button */}
+              <button
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className="p-2 text-gray-600 hover:text-emerald-600 transition-colors"
+                aria-label="Vyhľadávanie"
               >
-                Ochrana súkromia
-              </Link>
-              <Link
-                href="/podmienky-pouzivania"
-                className="text-sm text-gray-600 hover:text-emerald-600 transition-colors"
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="text-gray-700 hover:text-emerald-600 focus:outline-none focus:text-emerald-600"
               >
-                Podmienky používania
-              </Link>
-              <Link
-                href="/cookies"
-                className="text-sm text-gray-600 hover:text-emerald-600 transition-colors"
-              >
-                Cookies
-              </Link>
+                {isMobileMenuOpen ? (
+                  <XMarkIcon className="h-6 w-6" />
+                ) : (
+                  <Bars3Icon className="h-6 w-6" />
+                )}
+              </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Main Navigation */}
-      <nav className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center">
-              <Image
-                src="/logos/zvp.png"
-                alt="Logo"
-                width={60}
-                height={60}
-                className="md:w-[80px] md:h-[50px]"
-                priority
-                sizes="(max-width: 768px) 60px, 80px"
-              />
-            </Link>
-          </div>
+          {/* Mobile Navigation */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden border-t border-gray-100">
+              <div className="px-2 pt-2 pb-3 space-y-1">
+                <Link
+                  href="/"
+                  className="block px-3 py-2 text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
+                >
+                  Domov
+                </Link>
+                <Link
+                  href="/clanky"
+                  className="block px-3 py-2 text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
+                >
+                  Články
+                </Link>
 
-          {/* Desktop Categories Navigation */}
-          <div className="hidden lg:flex items-center space-x-8 min-h-[24px]">
-            {isLoadingCategories ? (
-              // Show skeleton while loading
-              <>
-                <CategorySkeleton />
-                <CategorySkeleton />
-                <CategorySkeleton />
-              </>
-            ) : (
-              topCategories.map(category => (
-                <div key={category.id}>
-                  <Link
-                    href={`/kategoria/${category.slug}`}
-                    className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
-                  >
-                    {category.name}
-                  </Link>
+                {/* Mobile Categories */}
+                <div className="px-3 py-2">
+                  <span className="block text-gray-900 font-medium mb-2">
+                    Kategórie
+                  </span>
+                  {isLoading ? (
+                    <div className="animate-pulse space-y-2">
+                      {[...Array(4)].map((_, i) => (
+                        <div key={i} className="h-4 bg-gray-200 rounded" />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      {categories.slice(0, 6).map(category => (
+                        <Link
+                          key={category.id}
+                          href={`/kategoria/${category.slug}`}
+                          className="block px-2 py-1 text-sm text-gray-600 hover:text-emerald-600 transition-colors"
+                        >
+                          {category.name} ({category.count})
+                        </Link>
+                      ))}
+                      <Link
+                        href="/kategorie"
+                        className="block px-2 py-1 text-sm text-emerald-600 font-medium"
+                      >
+                        Zobraziť všetky →
+                      </Link>
+                    </div>
+                  )}
                 </div>
-              ))
-            )}
 
-            {/* Statický link na všetky kategórie */}
-            <Link
-              href="/kategorie"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium flex items-center"
-            >
-              Všetky kategórie
-              <svg
-                className="w-4 h-4 ml-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-            </Link>
+                <Link
+                  href="/kontakt"
+                  className="block px-3 py-2 text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
+                >
+                  Kontakt
+                </Link>
 
-            {/* Desktop Search Button */}
-            <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-2 text-gray-600 hover:text-emerald-600 transition-colors"
-              aria-label="Vyhľadávanie"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
-          </div>
-
-          {/* Mobile Actions */}
-          <div className="flex items-center space-x-4 lg:hidden">
-            <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-2 text-gray-600 hover:text-emerald-600 transition-colors"
-              aria-label="Vyhľadávanie"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
-
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-gray-600 hover:text-emerald-600 transition-colors"
-              aria-label="Menu"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d={
-                    isMenuOpen
-                      ? 'M6 18L18 6M6 6l12 12'
-                      : 'M4 6h16M4 12h16M4 18h16'
-                  }
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Search Bar */}
-        <div
-          className={`border-t border-gray-100 transform transition-all duration-300 overflow-hidden
-          ${isSearchOpen ? 'opacity-100 translate-y-0 max-h-20' : 'opacity-0 -translate-y-4 max-h-0'}`}
-        >
-          <div className="py-4">
-            <Search onClose={() => setIsSearchOpen(false)} />
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <div
-          className={`lg:hidden transform transition-all duration-300 overflow-hidden
-          ${isMenuOpen ? 'opacity-100 translate-y-0 max-h-screen' : 'opacity-0 -translate-y-4 max-h-0'}`}
-        >
-          <div className="pt-2 pb-4 border-t border-gray-100 max-h-[calc(100vh-8rem)] overflow-y-auto">
-            <Link
-              href="/kontakt"
-              onClick={handleMenuItemClick}
-              className="block px-4 py-2 text-gray-700 hover:bg-teal-50 
-                hover:text-teal-600 transition-colors"
-            >
-              Kontakt
-            </Link>
-
-            {/* Legal links */}
-            <div className="border-t border-gray-100 mt-2 pt-2">
-              <Link
-                href="/ochrana-sukromia"
-                onClick={handleMenuItemClick}
-                className="block px-4 py-2 text-gray-700 hover:bg-teal-50 
-                  hover:text-teal-600 transition-colors"
-              >
-                Ochrana súkromia
-              </Link>
-              <Link
-                href="/podmienky-pouzivania"
-                onClick={handleMenuItemClick}
-                className="block px-4 py-2 text-gray-700 hover:bg-teal-50 
-                  hover:text-teal-600 transition-colors"
-              >
-                Podmienky používania
-              </Link>
-              <Link
-                href="/cookies"
-                onClick={handleMenuItemClick}
-                className="block px-4 py-2 text-gray-700 hover:bg-teal-50 
-                  hover:text-teal-600 transition-colors"
-              >
-                Cookies
-              </Link>
-            </div>
-
-            {/* Mobile Categories */}
-            <div className="py-2 border-y">
-              <div className="px-4 py-2 text-sm font-medium text-gray-500">
-                Kategórie
+                {/* Mobile Search */}
+                <button
+                  onClick={() => setIsSearchOpen(!isSearchOpen)}
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
+                >
+                  Vyhľadávanie
+                </button>
               </div>
-              {isLoadingCategories ? (
-                // Show skeleton in mobile menu
-                <div className="px-4 py-2 space-y-2">
-                  <CategorySkeleton />
-                  <CategorySkeleton />
-                  <CategorySkeleton />
-                </div>
-              ) : (
-                categories.map(category => (
-                  <div key={category.id}>
-                    <Link
-                      href={`/kategoria/${category.slug}`}
-                      onClick={handleMenuItemClick}
-                      className="block px-4 py-2 text-gray-700 hover:bg-teal-50 
-                        hover:text-teal-600 transition-colors"
-                    >
-                      {category.name}
-                    </Link>
-                  </div>
-                ))
-              )}
             </div>
-
-            <Link
-              href="/o-nas"
-              onClick={handleMenuItemClick}
-              className="block px-4 py-3 text-gray-700 hover:bg-teal-50 
-                hover:text-teal-600 transition-colors"
-            >
-              O nás
-            </Link>
-          </div>
+          )}
         </div>
       </nav>
     </header>

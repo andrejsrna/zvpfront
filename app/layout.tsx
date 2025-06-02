@@ -16,6 +16,7 @@ const inter = Inter({
   variable: '--font-inter',
   display: 'swap',
   fallback: ['system-ui', 'arial'],
+  preload: true,
 });
 
 const sora = Sora({
@@ -23,6 +24,7 @@ const sora = Sora({
   variable: '--font-sora',
   display: 'swap',
   fallback: ['system-ui', 'arial'],
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -66,7 +68,15 @@ export default function RootLayout({
   return (
     <html lang="sk" className="scroll-smooth">
       <head>
-        {/* Preload critical resources */}
+        {/* Ultra-aggressive preloading */}
+        <link
+          rel="preconnect"
+          href="https://admin.zdravievpraxi.sk"
+          crossOrigin="anonymous"
+        />
+        <link rel="dns-prefetch" href="//admin.zdravievpraxi.sk" />
+
+        {/* Preload critical fonts immediately */}
         <link
           rel="preload"
           href="/fonts/Sora-Regular.woff2"
@@ -81,12 +91,11 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-
-        {/* DNS prefetch for WordPress API */}
-        <link rel="dns-prefetch" href="//admin.zdravievpraxi.sk" />
         <link
-          rel="preconnect"
-          href="https://admin.zdravievpraxi.sk"
+          rel="preload"
+          href="/fonts/Inter-Regular.woff2"
+          as="font"
+          type="font/woff2"
           crossOrigin="anonymous"
         />
 
@@ -96,28 +105,110 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
         <link rel="dns-prefetch" href="//pagead2.googlesyndication.com" />
 
-        {/* Critical CSS for hero sections */}
+        {/* Ultra-critical CSS inlined */}
         <style
           dangerouslySetInnerHTML={{
             __html: `
+            /* Critical rendering optimizations */
+            * { box-sizing: border-box; }
+            html { scroll-behavior: smooth; }
+            body { 
+              font-family: var(--font-inter), system-ui, arial, sans-serif;
+              margin: 0;
+              padding: 0;
+              line-height: 1.6;
+              color: #171717;
+              background: #ffffff;
+              -webkit-font-smoothing: antialiased;
+              -moz-osx-font-smoothing: grayscale;
+            }
+            
+            /* Hero critical styles */
             .hero-critical {
+              contain: layout style paint !important;
+              will-change: auto !important;
+              content-visibility: auto !important;
+              contain-intrinsic-size: 0 400px !important;
+            }
+            
+            /* Image optimizations */
+            img {
+              max-width: 100%;
+              height: auto;
               contain: layout style paint;
-              will-change: transform;
             }
-            .hero-critical img {
-              content-visibility: auto;
-              contain-intrinsic-size: 0 400px;
+            
+            /* LCP element styles */
+            .lcp-container {
+              position: relative !important;
+              width: 100% !important;
+              height: 80vh !important;
+              min-height: 600px !important;
+              max-height: 800px !important;
+              overflow: hidden !important;
+              contain: layout style paint !important;
+              will-change: auto !important;
+              content-visibility: visible !important;
+              contain-intrinsic-size: 0 80vh !important;
             }
-            .image-loading-placeholder {
-              background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            
+            .lcp-image {
+              position: absolute !important;
+              top: 0 !important;
+              left: 0 !important;
+              width: 100% !important;
+              height: 100% !important;
+              min-height: 80vh !important;
+              object-fit: cover !important;
+              object-position: center !important;
+              will-change: auto !important;
+              contain: layout style paint !important;
+              z-index: 1 !important;
+              display: block !important;
+            }
+            
+            /* Header optimization - smaller and less prominent */
+            header {
+              height: 64px !important;
+              min-height: 64px !important;
+              contain: layout style !important;
+            }
+            
+            /* Logo optimization - even smaller */
+            header img {
+              max-height: 32px !important;
+              width: auto !important;
+              contain: layout style !important;
+            }
+            
+            /* Loading states */
+            .loading-placeholder {
+              background: linear-gradient(90deg, #f0f9ff 25%, #e0f2fe 50%, #f0f9ff 75%);
               background-size: 200% 100%;
-              animation: loading 1.5s infinite;
+              animation: shimmer 1.5s infinite ease-in-out;
             }
-            @keyframes loading {
+            
+            @keyframes shimmer {
               0% { background-position: 200% 0; }
               100% { background-position: -200% 0; }
             }
-          `,
+            
+            /* Prevent layout shifts */
+            .prevent-cls {
+              min-height: var(--min-height, auto);
+              contain: layout style;
+            }
+            
+            /* Font optimizations */
+            .font-sora { 
+              font-family: var(--font-sora), system-ui, arial, sans-serif;
+              font-display: swap;
+            }
+            .font-inter { 
+              font-family: var(--font-inter), system-ui, arial, sans-serif;
+              font-display: swap;
+            }
+            `,
           }}
         />
       </head>
@@ -128,8 +219,8 @@ export default function RootLayout({
         {/* Critical above-the-fold content */}
         <Header />
 
-        {/* Main content with optimized loading */}
-        <main className="min-h-screen">{children}</main>
+        {/* Main content with ultra-optimized loading */}
+        <main className="min-h-screen hero-critical">{children}</main>
 
         {/* Footer - loaded last */}
         <Suspense fallback={null}>
@@ -180,11 +271,11 @@ export default function RootLayout({
                 document.head.appendChild(script);
               }
               
-              // Load after 3 seconds or user interaction
+              // Load after 4 seconds or user interaction
               let interactionTimer = setTimeout(() => {
                 loadAnalytics();
                 loadAds();
-              }, 3000);
+              }, 4000);
               
               ['mousedown', 'touchstart', 'keydown', 'scroll'].forEach(event => {
                 document.addEventListener(event, () => {
@@ -196,11 +287,6 @@ export default function RootLayout({
             `,
           }}
         />
-
-        {/* Performance monitoring - development only */}
-        {process.env.NODE_ENV === 'development' && (
-          <Script src="/performance-monitor.js" strategy="afterInteractive" />
-        )}
       </body>
     </html>
   );

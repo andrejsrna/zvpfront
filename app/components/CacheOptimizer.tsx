@@ -56,14 +56,11 @@ export default function CacheOptimizer({
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/sw.js')
-        .then(registration => {
-          console.log(
-            'SW: Service Worker registered successfully:',
-            registration
-          );
+        .then(() => {
+          // Service Worker registered successfully
         })
-        .catch(error => {
-          console.log('SW: Service Worker registration failed:', error);
+        .catch(() => {
+          // Service Worker registration failed
         });
     }
 
@@ -83,13 +80,13 @@ export default function CacheOptimizer({
                 if (response.ok) {
                   await cache.put(request, response);
                 }
-              } catch (error) {
-                console.warn('Cache warming failed for:', request.url, error);
+              } catch {
+                // Cache warming failed silently
               }
             })
           );
-        } catch (error) {
-          console.warn('Cache warming initialization failed:', error);
+        } catch {
+          // Cache warming initialization failed silently
         }
       };
 
