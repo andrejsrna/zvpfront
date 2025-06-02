@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { getPostBySlug } from '@/app/lib/WordPress';
+import { getPostBySlug, WordPressPost } from '@/app/lib/WordPress';
 import { parseHeadings } from '@/app/utils/parseHeadings';
 import he from 'he';
 import Link from 'next/link';
@@ -30,7 +30,7 @@ interface Reference {
 export default async function PostPage({ params: paramsPromise }: PageProps) {
   const params = await paramsPromise;
 
-  let post: any;
+  let post: WordPressPost | null;
   try {
     // Add timeout for API call
     const controller = new AbortController();
@@ -38,7 +38,7 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
 
     post = await Promise.race([
       getPostBySlug(params.slug),
-      new Promise((_, reject) =>
+      new Promise<null>((_, reject) =>
         setTimeout(() => reject(new Error('API timeout')), 3000)
       ),
     ]);
@@ -247,16 +247,18 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
             {post.tags && post.tags.length > 0 && (
               <div className="mt-12 pt-8 border-t">
                 <div className="flex flex-wrap gap-2">
-                  {post.tags.map(tag => (
-                    <Link
-                      key={tag.id}
-                      href={`/tag/${tag.slug}`}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 text-sm
+                  {post.tags.map(
+                    (tag: { id: number; name: string; slug: string }) => (
+                      <Link
+                        key={tag.id}
+                        href={`/tag/${tag.slug}`}
+                        className="px-3 py-1 bg-gray-100 text-gray-700 text-sm
                         rounded-full hover:bg-gray-200 transition-colors"
-                    >
-                      #{tag.name}
-                    </Link>
-                  ))}
+                      >
+                        #{tag.name}
+                      </Link>
+                    )
+                  )}
                 </div>
               </div>
             )}
@@ -271,7 +273,9 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
         />
 
         {/* Conditional content */}
-        {post.tags?.some(tag => tag.slug === 'klby') && <LazyWeRecommend />}
+        {post.tags?.some((tag: { slug: string }) => tag.slug === 'klby') && (
+          <LazyWeRecommend />
+        )}
 
         {/* Related content - Non-critical */}
         <LazyRecommendedReads
