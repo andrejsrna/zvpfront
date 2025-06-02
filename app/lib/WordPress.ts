@@ -1,31 +1,34 @@
+import { unstable_cache } from 'next/cache';
+
 // Types
-type WordPressTerm = {
+interface WordPressTerm {
   id: number;
   name: string;
   slug: string;
   taxonomy?: 'category' | 'post_tag';
-};
+}
 
-type WordPressMedia = {
+interface WordPressMedia {
   source_url: string;
   alt_text: string;
   media_details?: {
-    sizes?: {
-      [key: string]: {
+    sizes?: Record<
+      string,
+      {
         source_url: string;
         width: number;
         height: number;
-      };
-    };
+      }
+    >;
   };
-};
+}
 
-type WordPressReference = {
+interface WordPressReference {
   nazov: string;
   odkaz: string;
-};
+}
 
-export type WordPressPost = {
+export interface WordPressPost {
   id: number;
   date: string;
   modified: string;
@@ -44,16 +47,16 @@ export type WordPressPost = {
     'wp:featuredmedia'?: WordPressMedia[];
     'wp:term'?: WordPressTerm[][];
   };
-};
+}
 
-export type WordPressCategory = WordPressTerm & {
+export interface WordPressCategory extends WordPressTerm {
   count: number;
   description: string;
   link: string;
-  taxonomy: string;
+  taxonomy: 'category' | 'post_tag';
   parent: number;
   children?: WordPressCategory[];
-};
+}
 
 // Constants
 const API_CONFIG = {
@@ -78,7 +81,7 @@ class WordPressClient {
     url: string,
     options: RequestInit = {},
     timeout: number = API_CONFIG.TIMEOUT
-  ) {
+  ): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -96,12 +99,17 @@ class WordPressClient {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+        throw new Error(
+          `API Error: ${response.status} - ${response.statusText}`
+        );
       }
 
       return response;
     } catch (error) {
       clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`Request timeout after ${timeout}ms`);
+      }
       throw error;
     }
   }
@@ -117,12 +125,17 @@ class WordPressClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const url = `${this.getApiUrl()}${endpoint}`;
-    const response = await this.fetchWithTimeout(url, options);
-    return response.json();
+    try {
+      const url = `${this.getApiUrl()}${endpoint}`;
+      const response = await this.fetchWithTimeout(url, options);
+      return response.json();
+    } catch (error) {
+      console.error(`WordPress API Error for ${endpoint}:`, error);
+      throw error;
+    }
   }
 
-  static async getPosts(
+  private static async getPostsUncached(
     perPage: number = 12,
     orderby: string = 'date',
     categoryId?: number,
@@ -132,26 +145,57 @@ class WordPressClient {
       ? `&categories=${categoryId}&include_children=true`
       : '';
     return this.fetch<WordPressPost[]>(
-      `/wp/v2/posts?_embed&per_page=${perPage}&orderby=${orderby}&order=desc${categoryParam}&page=${page}`,
-      {
-        next: {
-          revalidate: API_CONFIG.REVALIDATE.POSTS,
-          tags: ['posts', categoryId ? `category-${categoryId}` : 'all-posts'],
-        },
-      }
+      `/wp/v2/posts?_embed&per_page=${perPage}&orderby=${orderby}&order=desc${categoryParam}&page=${page}`
     );
   }
+
+  private static async getCategoriesUncached(): Promise<WordPressCategory[]> {
+    return this.fetch<WordPressCategory[]>(
+      '/wp/v2/categories?per_page=100&orderby=count&order=desc'
+    );
+  }
+
+  static getPosts = unstable_cache(
+    async (
+      perPage: number = 12,
+      orderby: string = 'date',
+      categoryId?: number,
+      page: number = 1
+    ) => {
+      try {
+        return await this.getPostsUncached(perPage, orderby, categoryId, page);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        return [];
+      }
+    },
+    ['wordpress-posts'],
+    {
+      revalidate: API_CONFIG.REVALIDATE.POSTS,
+      tags: ['posts'],
+    }
+  );
+
+  static getCategories = unstable_cache(
+    async () => {
+      try {
+        return await this.getCategoriesUncached();
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        return [];
+      }
+    },
+    ['wordpress-categories'],
+    {
+      revalidate: API_CONFIG.REVALIDATE.CATEGORIES,
+      tags: ['categories'],
+    }
+  );
 
   static async getPostBySlug(slug: string): Promise<WordPressPost | null> {
     try {
       const posts = await this.fetch<WordPressPost[]>(
-        `/wp/v2/posts?_embed&slug=${slug}`,
-        {
-          next: {
-            revalidate: API_CONFIG.REVALIDATE.SINGLE_POST,
-            tags: [`post-${slug}`],
-          },
-        }
+        `/wp/v2/posts?_embed&slug=${slug}`
       );
 
       if (posts.length === 0) return null;
@@ -169,25 +213,13 @@ class WordPressClient {
     }
   }
 
-  static async getCategories(): Promise<WordPressCategory[]> {
-    return this.fetch<WordPressCategory[]>(
-      '/wp/v2/categories?per_page=100&orderby=count&order=desc',
-      {
-        next: {
-          revalidate: API_CONFIG.REVALIDATE.CATEGORIES,
-          tags: ['categories'],
-        },
-      }
-    );
-  }
-
   static async getRandomPost(): Promise<WordPressPost[]> {
-    return this.fetch<WordPressPost[]>('/custom/v1/random-posts', {
-      next: {
-        revalidate: 60,
-        tags: ['random-posts'],
-      },
-    });
+    try {
+      return await this.fetch<WordPressPost[]>('/custom/v1/random-posts');
+    } catch (error) {
+      console.error('Error fetching random posts:', error);
+      return [];
+    }
   }
 
   static async searchPosts(
@@ -195,20 +227,27 @@ class WordPressClient {
     perPage: number = 10,
     page: number = 1
   ): Promise<{ posts: WordPressPost[]; total: number; totalPages: number }> {
-    const url = `${this.getApiUrl()}/wp/v2/posts?_embed&search=${encodeURIComponent(
-      query
-    )}&per_page=${perPage}&page=${page}`;
+    try {
+      const url = `${this.getApiUrl()}/wp/v2/posts?_embed&search=${encodeURIComponent(
+        query
+      )}&per_page=${perPage}&page=${page}`;
 
-    const response = await this.fetchWithTimeout(
-      url,
-      {},
-      API_CONFIG.SEARCH_TIMEOUT
-    );
-    const posts = await response.json();
-    const total = parseInt(response.headers.get('X-WP-Total') || '0');
-    const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '0');
+      const response = await this.fetchWithTimeout(
+        url,
+        {},
+        API_CONFIG.SEARCH_TIMEOUT
+      );
+      const posts = await response.json();
+      const total = parseInt(response.headers.get('X-WP-Total') || '0');
+      const totalPages = parseInt(
+        response.headers.get('X-WP-TotalPages') || '0'
+      );
 
-    return { posts, total, totalPages };
+      return { posts, total, totalPages };
+    } catch (error) {
+      console.error('Error searching posts:', error);
+      return { posts: [], total: 0, totalPages: 0 };
+    }
   }
 }
 

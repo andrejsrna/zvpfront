@@ -2,11 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  searchPosts,
-  WordPressPost,
-  transformWordPressUrl,
-} from '@/app/lib/WordPress';
+import { searchPosts, WordPressPost, transformUrl } from '@/app/lib/WordPress';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -115,7 +111,7 @@ export default function Search({ onClose }: SearchProps) {
                     {post._embedded?.['wp:featuredmedia'] && (
                       <div className="relative w-16 h-16 flex-shrink-0">
                         <Image
-                          src={transformWordPressUrl(
+                          src={transformUrl(
                             post._embedded['wp:featuredmedia'][0].source_url
                           )}
                           alt={post.title.rendered}
