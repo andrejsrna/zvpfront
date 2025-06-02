@@ -222,6 +222,14 @@ export default function RootLayout({
                 adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7459831240640476';
                 document.head.appendChild(adsScript);
                 
+                // Handle frame communication for Google AdSense
+                window.addEventListener('message', function(event) {
+                  if (event.origin.includes('google') || event.origin.includes('doubleclick')) {
+                    // Allow messages from Google domains
+                    console.log('AdSense frame message received:', event.origin);
+                  }
+                }, false);
+                
                 window.adsLoaded = true;
               }, 5000);
             `,

@@ -54,9 +54,23 @@ const nextConfig: NextConfig = {
           value: 'strict-origin-when-cross-origin',
         },
         {
+          key: 'Cross-Origin-Embedder-Policy',
+          value: 'unsafe-none',
+        },
+        {
+          key: 'Cross-Origin-Opener-Policy',
+          value: 'same-origin-allow-popups',
+        },
+        {
+          key: 'Cross-Origin-Resource-Policy',
+          value: 'cross-origin',
+        },
+        {
           key: 'Content-Security-Policy',
           value:
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://www.google-analytics.com https://fundingchoicesmessages.google.com; connect-src 'self' https://pagead2.googlesyndication.com https://www.google-analytics.com https://admin.zdravievpraxi.sk https://fundingchoicesmessages.google.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://fundingchoicesmessages.google.com; img-src 'self' data: https: *; object-src 'none'; base-uri 'self';",
+            process.env.NODE_ENV === 'development'
+              ? "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:; connect-src 'self' https: wss: data:; frame-src 'self' https:; img-src 'self' data: blob: https: *; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; object-src 'none'; base-uri 'self'; worker-src 'self' blob:; child-src 'self' https:;"
+              : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.google.com https://*.googlesyndication.com https://*.googletagmanager.com https://*.googleadservices.com https://*.doubleclick.net https://*.gstatic.com https://*.googleapis.com https://*.adsystem.com; connect-src 'self' https://*.google.com https://*.googlesyndication.com https://*.googletagmanager.com https://*.googleadservices.com https://*.doubleclick.net https://*.gstatic.com https://*.googleapis.com https://*.adsystem.com https://admin.zdravievpraxi.sk; frame-src https://*.google.com https://*.googlesyndication.com https://*.googleadservices.com https://*.doubleclick.net https://*.gstatic.com https://*.adsystem.com; img-src 'self' data: blob: https: *; style-src 'self' 'unsafe-inline' https://*.google.com https://*.googleapis.com https://*.gstatic.com; font-src 'self' https://*.gstatic.com https://*.googleapis.com; object-src 'none'; base-uri 'self'; worker-src 'self' blob:; child-src https://*.google.com https://*.googlesyndication.com https://*.doubleclick.net https://*.adsystem.com;",
         },
       ],
     },
