@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getRandomPost, WordPressPost } from '../lib/WordPress';
+import {
+  getRandomPost,
+  WordPressPost,
+  transformWordPressUrl,
+} from '../lib/WordPress';
 import Image from 'next/image';
 import Link from 'next/link';
 import AdUnit from './ads/AdUnit';
@@ -82,13 +86,13 @@ export default function RecommendedReads({
             <div className="relative aspect-[4/3] md:aspect-auto">
               {recommendedPost._embedded?.['wp:featuredmedia'] ? (
                 <Image
-                  src={
+                  src={transformWordPressUrl(
                     recommendedPost._embedded['wp:featuredmedia'][0].source_url
-                  }
+                  )}
                   alt={recommendedPost.title.rendered}
                   fill
-                  sizes="(max-width: 768px) 100vw, 45vw"
-                  className="object-cover transition-transform duration-500 
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover transition-transform duration-300 
                     group-hover:scale-105"
                   loading="lazy"
                   quality={80}

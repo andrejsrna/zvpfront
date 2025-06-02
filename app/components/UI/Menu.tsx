@@ -1,140 +1,65 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { getCategories, type WordPressCategory } from '@/app/lib/WordPress';
 import Search from './Search';
-import {
-  ChevronDownIcon,
-  XMarkIcon,
-  Bars3Icon,
-} from '@heroicons/react/24/outline';
+import { XMarkIcon, Bars3Icon } from '@heroicons/react/24/outline';
 
 export default function Menu() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [categories, setCategories] = useState<WordPressCategory[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const fetchedCategories = await getCategories();
-        setCategories(fetchedCategories);
-      } catch (error) {
-        console.error('Error loading categories:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchCategories();
-  }, []);
-
   return (
-    <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-black/80 to-gray-900/80 backdrop-blur-md shadow-xl border-b border-white/10">
       {/* Search overlay */}
       {isSearchOpen && (
-        <div className="absolute inset-0 bg-black bg-opacity-50 z-40">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
           <div className="container mx-auto px-4 py-4">
             <Search onClose={() => setIsSearchOpen(false)} />
           </div>
         </div>
       )}
 
-      {/* Main Navigation */}
-      <nav className="nav-container bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+      {/* Enhanced navigation with better visibility */}
+      <nav className="relative z-10">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* Logo - replaced with text to avoid LCP issues */}
+            {/* Logo with better contrast */}
             <Link href="/" className="flex-shrink-0">
-              <span className="text-xl font-bold text-emerald-600 font-sora">
+              <span className="text-xl font-bold text-white drop-shadow-2xl">
                 Zdravie v praxi
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation with enhanced styling */}
             <div className="hidden md:flex items-center space-x-8">
               <Link
                 href="/"
-                className="text-gray-700 hover:text-emerald-600 font-medium transition-colors"
+                className="text-gray-100 hover:text-white font-medium transition-colors drop-shadow-lg px-3 py-2 rounded-md hover:bg-white/10"
               >
                 Domov
               </Link>
               <Link
                 href="/clanky"
-                className="text-gray-700 hover:text-emerald-600 font-medium transition-colors"
+                className="text-gray-100 hover:text-white font-medium transition-colors drop-shadow-lg px-3 py-2 rounded-md hover:bg-white/10"
               >
                 Články
               </Link>
-
-              {/* Categories Dropdown */}
-              <div
-                className="relative"
-                onMouseEnter={() => setIsOpen(true)}
-                onMouseLeave={() => setIsOpen(false)}
-              >
-                <button className="flex items-center text-gray-700 hover:text-emerald-600 font-medium transition-colors">
-                  Kategórie
-                  <ChevronDownIcon
-                    className={`ml-1 h-4 w-4 transition-transform ${
-                      isOpen ? 'rotate-180' : ''
-                    }`}
-                  />
-                </button>
-
-                {isOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                    {isLoading ? (
-                      <div className="px-4 py-2">
-                        <div className="animate-pulse space-y-2">
-                          {[...Array(4)].map((_, i) => (
-                            <div key={i} className="h-4 bg-gray-200 rounded" />
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      categories.slice(0, 8).map(category => (
-                        <Link
-                          key={category.id}
-                          href={`/kategoria/${category.slug}`}
-                          className="block px-4 py-2 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
-                        >
-                          {category.name}
-                          <span className="text-sm text-gray-500 ml-2">
-                            ({category.count})
-                          </span>
-                        </Link>
-                      ))
-                    )}
-                    <div className="border-t border-gray-100 mt-2 pt-2">
-                      <Link
-                        href="/kategorie"
-                        className="block px-4 py-2 text-emerald-600 hover:bg-emerald-50 transition-colors font-medium"
-                      >
-                        Zobraziť všetky kategórie →
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-
               <Link
                 href="/kontakt"
-                className="text-gray-700 hover:text-emerald-600 font-medium transition-colors"
+                className="text-gray-100 hover:text-white font-medium transition-colors drop-shadow-lg px-3 py-2 rounded-md hover:bg-white/10"
               >
                 Kontakt
               </Link>
 
-              {/* Search Button */}
+              {/* Search Button with enhanced styling */}
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-gray-600 hover:text-emerald-600 transition-colors"
+                className="p-3 text-gray-100 hover:text-white transition-colors drop-shadow-lg rounded-md hover:bg-white/10"
                 aria-label="Vyhľadávanie"
               >
                 <svg
-                  className="w-6 h-6"
+                  className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -149,11 +74,11 @@ export default function Menu() {
               </button>
             </div>
 
-            {/* Mobile menu button */}
+            {/* Mobile menu button with better styling */}
             <div className="md:hidden">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-gray-700 hover:text-emerald-600 focus:outline-none focus:text-emerald-600"
+                className="text-gray-100 hover:text-white focus:outline-none drop-shadow-lg p-2 rounded-md hover:bg-white/10"
               >
                 {isMobileMenuOpen ? (
                   <XMarkIcon className="h-6 w-6" />
@@ -164,66 +89,31 @@ export default function Menu() {
             </div>
           </div>
 
-          {/* Mobile Navigation */}
+          {/* Mobile Navigation with enhanced styling */}
           {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-100">
-              <div className="px-2 pt-2 pb-3 space-y-1">
+            <div className="md:hidden">
+              <div className="px-2 pt-2 pb-3 space-y-1 bg-black/90 backdrop-blur-md rounded-lg mt-2 shadow-2xl border border-white/20">
                 <Link
                   href="/"
-                  className="block px-3 py-2 text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
+                  className="block px-4 py-3 text-gray-100 hover:text-white hover:bg-white/20 rounded-md transition-colors"
                 >
                   Domov
                 </Link>
                 <Link
                   href="/clanky"
-                  className="block px-3 py-2 text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
+                  className="block px-4 py-3 text-gray-100 hover:text-white hover:bg-white/20 rounded-md transition-colors"
                 >
                   Články
                 </Link>
-
-                {/* Mobile Categories */}
-                <div className="px-3 py-2">
-                  <span className="block text-gray-900 font-medium mb-2">
-                    Kategórie
-                  </span>
-                  {isLoading ? (
-                    <div className="animate-pulse space-y-2">
-                      {[...Array(4)].map((_, i) => (
-                        <div key={i} className="h-4 bg-gray-200 rounded" />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      {categories.slice(0, 6).map(category => (
-                        <Link
-                          key={category.id}
-                          href={`/kategoria/${category.slug}`}
-                          className="block px-2 py-1 text-sm text-gray-600 hover:text-emerald-600 transition-colors"
-                        >
-                          {category.name} ({category.count})
-                        </Link>
-                      ))}
-                      <Link
-                        href="/kategorie"
-                        className="block px-2 py-1 text-sm text-emerald-600 font-medium"
-                      >
-                        Zobraziť všetky →
-                      </Link>
-                    </div>
-                  )}
-                </div>
-
                 <Link
                   href="/kontakt"
-                  className="block px-3 py-2 text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
+                  className="block px-4 py-3 text-gray-100 hover:text-white hover:bg-white/20 rounded-md transition-colors"
                 >
                   Kontakt
                 </Link>
-
-                {/* Mobile Search */}
                 <button
                   onClick={() => setIsSearchOpen(!isSearchOpen)}
-                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
+                  className="block w-full text-left px-4 py-3 text-gray-100 hover:text-white hover:bg-white/20 rounded-md transition-colors"
                 >
                   Vyhľadávanie
                 </button>

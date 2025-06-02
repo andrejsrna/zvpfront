@@ -74,26 +74,55 @@ const REVALIDATE_TIME = {
   SEARCH: 0, // bez cache
 };
 
-const API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
+// Helper function to transform WordPress URLs to use local proxy
+export function transformWordPressUrl(url: string): string {
+  if (!url) return url;
 
-if (!API_URL) {
-  throw new Error('WordPress API URL is not configured');
+  // Transform WordPress content URLs to use proxy in client-side
+  if (typeof window !== 'undefined' && url.includes('admin.zdravievpraxi.sk')) {
+    return url.replace('https://admin.zdravievpraxi.sk', '');
+  }
+
+  return url;
 }
 
+// Helper function to get WordPress API URL
+const getWordPressApiUrl = () => {
+  // Check if we're running on the server
+  if (typeof window === 'undefined') {
+    // Server-side: connect directly to WordPress API
+    return 'https://admin.zdravievpraxi.sk/wp-json';
+  }
+  // Client-side: use relative URL that gets proxied by middleware
+  return '/wp-json';
+};
+
+// Helper function to fetch with error handling and timeout
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
+  const WORDPRESS_API_URL = getWordPressApiUrl();
+  const url = `${WORDPRESS_API_URL}${endpoint}`;
+
   try {
-    const response = await fetch(`${API_URL}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
+    const response = await fetch(url, {
       ...options,
+      signal: controller.signal,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
     }
 
-    return response;
+    return response.json();
   } catch (error) {
     console.error(`Failed fetching ${endpoint}:`, error);
     throw error;
@@ -109,7 +138,7 @@ export async function getPosts(
   const categoryParam = categoryId
     ? `&categories=${categoryId}&include_children=true`
     : '';
-  const response = await fetchAPI(
+  return fetchAPI(
     `/wp/v2/posts?_embed&per_page=${perPage}&orderby=${orderby}&order=desc${categoryParam}&page=${page}`,
     {
       next: {
@@ -118,8 +147,6 @@ export async function getPosts(
       },
     }
   );
-
-  return response.json();
 }
 
 export async function getPostBySlug(
@@ -127,22 +154,20 @@ export async function getPostBySlug(
 ): Promise<WordPressPost | null> {
   try {
     // Najprv získame post
-    const postResponse = await fetchAPI(`/wp/v2/posts?_embed&slug=${slug}`, {
+    const posts = await fetchAPI(`/wp/v2/posts?_embed&slug=${slug}`, {
       next: {
         revalidate: REVALIDATE_TIME.SINGLE_POST,
         tags: [`post-${slug}`],
       },
     });
 
-    const posts = await postResponse.json();
     if (posts.length === 0) return null;
-
     const post = posts[0];
 
     // Získame informácie o kategóriách
     if (post.categories && post.categories.length > 0) {
       const categoryIds = post.categories.join(',');
-      const categoriesResponse = await fetchAPI(
+      const categoriesData = await fetchAPI(
         `/wp/v2/categories?include=${categoryIds}`,
         {
           next: {
@@ -150,8 +175,6 @@ export async function getPostBySlug(
           },
         }
       );
-
-      const categoriesData = await categoriesResponse.json();
       post.categories = categoriesData;
     }
 
@@ -168,28 +191,21 @@ export async function getPostBySlug(
 }
 
 export async function getCategories(): Promise<WordPressCategory[]> {
-  const response = await fetchAPI(
-    '/wp/v2/categories?per_page=100&orderby=count&order=desc',
-    {
-      next: {
-        revalidate: REVALIDATE_TIME.CATEGORIES,
-        tags: ['categories'],
-      },
-    }
-  );
-
-  return response.json();
+  return fetchAPI('/wp/v2/categories?per_page=100&orderby=count&order=desc', {
+    next: {
+      revalidate: REVALIDATE_TIME.CATEGORIES,
+      tags: ['categories'],
+    },
+  });
 }
 
 export async function getRandomPost(): Promise<WordPressPost[]> {
-  const response = await fetchAPI('/custom/v1/random-posts', {
+  return fetchAPI('/custom/v1/random-posts', {
     next: {
       revalidate: 60, // Cache na 1 minútu
       tags: ['random-posts'],
     },
   });
-
-  return response.json();
 }
 
 interface SearchResult {
@@ -203,22 +219,42 @@ export async function searchPosts(
   perPage: number = 10,
   page: number = 1
 ): Promise<SearchResult> {
-  const response = await fetchAPI(
-    `/wp/v2/posts?_embed&search=${encodeURIComponent(query)}&per_page=${perPage}&page=${page}`,
-    {
+  // For search, we need to access headers, so we'll use direct fetch
+  const WORDPRESS_API_URL = getWordPressApiUrl();
+  const url = `${WORDPRESS_API_URL}/wp/v2/posts?_embed&search=${encodeURIComponent(query)}&per_page=${perPage}&page=${page}`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
       next: {
         revalidate: REVALIDATE_TIME.SEARCH,
       },
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`Search API Error: ${response.status}`);
     }
-  );
 
-  const posts = await response.json();
-  const total = parseInt(response.headers.get('X-WP-Total') || '0');
-  const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '0');
+    const posts = await response.json();
+    const total = parseInt(response.headers.get('X-WP-Total') || '0');
+    const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '0');
 
-  return {
-    posts,
-    total,
-    totalPages,
-  };
+    return {
+      posts,
+      total,
+      totalPages,
+    };
+  } catch (error) {
+    console.error('Search error:', error);
+    throw error;
+  }
 }

@@ -29,7 +29,25 @@ interface Reference {
 
 export default async function PostPage({ params: paramsPromise }: PageProps) {
   const params = await paramsPromise;
-  const post = await getPostBySlug(params.slug);
+
+  let post: any;
+  try {
+    // Add timeout for API call
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
+
+    post = await Promise.race([
+      getPostBySlug(params.slug),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('API timeout')), 3000)
+      ),
+    ]);
+
+    clearTimeout(timeoutId);
+  } catch (error) {
+    console.error('Failed to fetch post:', error);
+    notFound();
+  }
 
   if (!post) {
     notFound();
@@ -124,9 +142,9 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
             alt={featuredImageAlt}
           />
 
-          {/* Minimal overlay only for category - NO H1 HERE */}
+          {/* Minimal overlay only for category - MOVED DOWN to avoid menu collision */}
           <div
-            className="absolute top-8 left-8"
+            className="absolute top-20 left-8"
             style={{
               contain: 'layout style',
               willChange: 'auto',
@@ -136,9 +154,9 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
             {post.categories && post.categories[0] && (
               <Link
                 href={`/kategoria/${post.categories[0].slug}`}
-                className="inline-block px-3 py-1 bg-emerald-500/90 backdrop-blur text-white
-                  text-xs font-medium rounded-full hover:bg-emerald-600/90
-                  transition-colors"
+                className="inline-block px-4 py-2 bg-emerald-500/95 backdrop-blur-sm text-white
+                  text-sm font-medium rounded-full hover:bg-emerald-600/95
+                  transition-colors shadow-xl border border-emerald-400/20"
                 style={{
                   contain: 'layout style',
                   zIndex: 20,

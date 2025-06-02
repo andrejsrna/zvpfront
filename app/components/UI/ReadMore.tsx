@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { WordPressPost } from '@/app/lib/WordPress';
+import {
+  WordPressPost,
+  getPosts,
+  transformWordPressUrl,
+} from '@/app/lib/WordPress';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -24,19 +28,10 @@ export default function ReadMore({
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_WORDPRESS_API_URL}/wp/v2/posts?_embed&per_page=20&categories=${categoryId}&exclude=${currentPostId}`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        if (!response.ok) throw new Error('Failed to fetch posts');
-
-        const data = await response.json();
-        setPosts(data);
+        const data = await getPosts(20, 'date', categoryId);
+        // Filter out current post
+        const filteredPosts = data.filter(post => post.id !== currentPostId);
+        setPosts(filteredPosts);
       } catch (error) {
         console.error('Error fetching related posts:', error);
       } finally {
@@ -109,7 +104,9 @@ export default function ReadMore({
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-4">
                   {post._embedded?.['wp:featuredmedia'] ? (
                     <Image
-                      src={post._embedded['wp:featuredmedia'][0].source_url}
+                      src={transformWordPressUrl(
+                        post._embedded['wp:featuredmedia'][0].source_url
+                      )}
                       alt={post.title.rendered}
                       fill
                       sizes="(max-width: 768px) 45vw, (max-width: 1200px) 22vw, 18vw"

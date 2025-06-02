@@ -1,8 +1,12 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { searchPosts, WordPressPost } from '@/app/lib/WordPress';
+import {
+  searchPosts,
+  WordPressPost,
+  transformWordPressUrl,
+} from '@/app/lib/WordPress';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -60,7 +64,7 @@ export default function Search({ onClose }: SearchProps) {
           <input
             type="text"
             value={query}
-            onChange={(e) => {
+            onChange={e => {
               setQuery(e.target.value);
               setIsOpen(true);
             }}
@@ -68,14 +72,23 @@ export default function Search({ onClose }: SearchProps) {
             className="w-full px-4 py-3 rounded-xl border border-gray-200 
               focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
-          <button 
+          <button
             type="submit"
             className="absolute right-3 top-1/2 transform -translate-y-1/2
               text-gray-400 hover:text-emerald-600 transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </button>
         </div>
@@ -83,15 +96,15 @@ export default function Search({ onClose }: SearchProps) {
 
       {/* Výsledky vyhľadávania */}
       {isOpen && (query.length >= 2 || isLoading) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg 
-          shadow-lg border border-gray-100 max-h-96 overflow-y-auto z-50">
+        <div
+          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg 
+          shadow-lg border border-gray-100 max-h-96 overflow-y-auto z-50"
+        >
           {isLoading ? (
-            <div className="p-4 text-center text-gray-500">
-              Vyhľadávam...
-            </div>
+            <div className="p-4 text-center text-gray-500">Vyhľadávam...</div>
           ) : results.length > 0 ? (
             <div>
-              {results.map((post) => (
+              {results.map(post => (
                 <Link
                   key={post.id}
                   href={`/${post.slug}`}
@@ -102,19 +115,30 @@ export default function Search({ onClose }: SearchProps) {
                     {post._embedded?.['wp:featuredmedia'] && (
                       <div className="relative w-16 h-16 flex-shrink-0">
                         <Image
-                          src={post._embedded['wp:featuredmedia'][0].source_url}
+                          src={transformWordPressUrl(
+                            post._embedded['wp:featuredmedia'][0].source_url
+                          )}
                           alt={post.title.rendered}
                           fill
-                          className="object-cover rounded"
+                          sizes="80px"
+                          className="object-cover"
+                          loading="lazy"
+                          quality={60}
                         />
                       </div>
                     )}
                     <div>
-                      <h3 className="font-medium text-gray-900"
-                        dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+                      <h3
+                        className="font-medium text-gray-900"
+                        dangerouslySetInnerHTML={{
+                          __html: post.title.rendered,
+                        }}
                       />
-                      <p className="text-sm text-gray-500 line-clamp-2"
-                        dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
+                      <p
+                        className="text-sm text-gray-500 line-clamp-2"
+                        dangerouslySetInnerHTML={{
+                          __html: post.excerpt.rendered,
+                        }}
                       />
                     </div>
                   </div>
@@ -132,12 +156,10 @@ export default function Search({ onClose }: SearchProps) {
               )}
             </div>
           ) : (
-            <div className="p-4 text-center text-gray-500">
-              Žiadne výsledky
-            </div>
+            <div className="p-4 text-center text-gray-500">Žiadne výsledky</div>
           )}
         </div>
       )}
     </div>
   );
-} 
+}
