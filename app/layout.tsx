@@ -14,17 +14,33 @@ import '@wordpress/block-library/build-style/theme.css';
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  display: 'optional',
-  fallback: ['system-ui', 'arial'],
-  preload: false,
+  display: 'swap',
+  fallback: [
+    'system-ui',
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'Arial',
+    'sans-serif',
+  ],
+  weight: ['400', '500', '600', '700'],
+  preload: true,
 });
 
 const sora = Sora({
   subsets: ['latin'],
   variable: '--font-sora',
-  display: 'optional',
-  fallback: ['system-ui', 'arial'],
-  preload: false,
+  display: 'swap',
+  fallback: [
+    'system-ui',
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'Arial',
+    'sans-serif',
+  ],
+  weight: ['400', '500', '600', '700', '800'],
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -89,12 +105,30 @@ export default function RootLayout({
             /* Ultra-minimal critical CSS */
             * { box-sizing: border-box; }
             body { 
-              font-family: system-ui, arial, sans-serif;
+              font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
               margin: 0;
               padding: 0;
               line-height: 1.6;
               color: #171717;
               background: #ffffff;
+              font-display: swap;
+            }
+            
+            /* Font optimization */
+            @font-face {
+              font-family: 'Inter';
+              font-display: swap;
+            }
+            
+            @font-face {
+              font-family: 'Sora';
+              font-display: swap;
+            }
+            
+            /* Heading fonts */
+            h1, h2, h3, h4, h5, h6 {
+              font-family: var(--font-sora), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+              font-display: swap;
             }
             
             /* Immediate visibility */
