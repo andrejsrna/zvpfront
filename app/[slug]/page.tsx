@@ -1,18 +1,20 @@
-import Newsletter from '@/app/components/Newsletter';
-import RecommendedReads from '@/app/components/RecommendedReads';
-import ReadMore from '@/app/components/UI/ReadMore';
-import WeRecommend from '@/app/components/UI/WeRecommend';
+import { Suspense } from 'react';
 import { getPostBySlug } from '@/app/lib/WordPress';
 import { parseHeadings } from '@/app/utils/parseHeadings';
 import he from 'he';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import ShareButtons from '../components/UI/ShareButtons';
-import StickyAd from '@/app/components/ads/StickyAd';
+import OptimizedHeroImage from '@/app/components/OptimizedHeroImage';
 import ArticleContent from '@/app/components/ArticleContent';
-import TableOfContents from '@/app/components/TableOfContents';
-import { AD_SLOTS } from '@/app/config/adSlots';
+import {
+  LazyNewsletter,
+  LazyRecommendedReads,
+  LazyReadMore,
+  LazyWeRecommend,
+  LazyShareButtons,
+  LazyStickyAd,
+  LazyTableOfContents,
+} from '@/app/components/LazyComponents';
 
 interface PageProps {
   params: Promise<{
@@ -75,39 +77,29 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
 
-      {/* Sticky Ad */}
-      <StickyAd slot={AD_SLOTS.SIDEBAR_STICKY} position="right" />
+      {/* Ultra-optimized Hero Section for LCP */}
+      <div
+        className="relative w-full h-[60vh] min-h-[400px] max-h-[600px] overflow-hidden"
+        style={{
+          contain: 'layout style paint',
+          willChange: 'auto',
+          contentVisibility: 'auto',
+          containIntrinsicSize: '0 400px',
+        }}
+      >
+        <OptimizedHeroImage
+          src={featuredImageUrl || ''}
+          alt={featuredImageAlt}
+          priority={true}
+          quality={95}
+        />
 
-      {/* Hero Section */}
-      <div className="relative w-full aspect-[16/9] max-h-[60vh] min-h-[400px] overflow-hidden">
-        {featuredImageUrl ? (
-          <>
-            <Image
-              src={featuredImageUrl}
-              alt={featuredImageAlt}
-              fill
-              priority
-              className="object-cover"
-              sizes="100vw"
-              quality={85}
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkrHR4f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+JjHmsnLLKKRnHbwKJ3FlAm2O0UfGYJeO5Jp7Dcp3OHGMYd4b6aLgEJP5SjsNQFZAo9O5B+tWRcWlwJ3txdPGFVKdWKdlL8Whe2ZTBqD7+4I2HHDZ8Q/I4U4Q7XSB8ikEKDMBOGAyMPEtwq57Ck2xD/9k="
-            />
-            <div
-              className="absolute inset-0 bg-gradient-to-t from-black/60
-              via-transparent to-transparent"
-            />
-          </>
-        ) : (
-          <div
-            className="w-full h-full bg-gradient-to-br from-emerald-500
-            to-teal-600"
-          />
-        )}
-
-        {/* Hero Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
-          <div className="container mx-auto max-w-4xl">
+        {/* Hero Content Overlay - simplified */}
+        <div
+          className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+          style={{ contain: 'layout style' }}
+        >
+          <div className="container mx-auto max-w-4xl p-4 md:p-8">
             {post.categories && post.categories[0] && (
               <Link
                 href={`/kategoria/${post.categories[0].slug}`}
@@ -119,7 +111,7 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
               </Link>
             )}
             <h1
-              className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 font-sora"
+              className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4"
               dangerouslySetInnerHTML={{
                 __html: he.decode(post.title.rendered),
               }}
@@ -137,20 +129,26 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
         </div>
       </div>
 
-      {/* Article Content */}
+      {/* Main Content - Critical Path */}
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          {/* Table of Contents */}
-          <TableOfContents headings={headings} />
+          {/* Table of Contents - Deferred */}
+          <LazyTableOfContents headings={headings} />
 
-          {/* Main Content */}
-          <ArticleContent
-            content={he.decode(content)}
-            className="prose prose-lg max-w-none prose-headings:font-heading
-              prose-headings:text-gray-900 prose-a:text-emerald-600
-              hover:prose-a:text-emerald-700 prose-img:rounded-xl
-              prose-strong:text-gray-900"
-          />
+          {/* Article Content - Critical but lazy loaded */}
+          <Suspense
+            fallback={
+              <div className="animate-pulse h-96 bg-gray-100 rounded-lg" />
+            }
+          >
+            <ArticleContent
+              content={he.decode(content)}
+              className="prose prose-lg max-w-none prose-headings:font-heading
+                prose-headings:text-gray-900 prose-a:text-emerald-600
+                hover:prose-a:text-emerald-700 prose-img:rounded-xl
+                prose-strong:text-gray-900"
+            />
+          </Suspense>
 
           {/* References Section */}
           {references.length > 0 && (
@@ -203,26 +201,36 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
           )}
         </div>
       </div>
-      <ShareButtons
+
+      {/* Non-critical components - Lazy loaded */}
+      <LazyShareButtons
         url={`${process.env.NEXT_PUBLIC_SITE_URL}/${post.slug}`}
         title={he.decode(post.title.rendered)}
         description={he.decode(post.excerpt.rendered.replace(/<[^>]*>/g, ''))}
       />
-      {post.tags?.some(tag => tag.slug === 'klby') && <WeRecommend />}
-      {/* Related Posts */}
-      <RecommendedReads
+
+      {/* Conditional content */}
+      {post.tags?.some(tag => tag.slug === 'klby') && <LazyWeRecommend />}
+
+      {/* Related content - Non-critical */}
+      <LazyRecommendedReads
         currentPostId={post.id}
         currentCategoryId={post.categories?.[0]?.id}
       />
-      <Newsletter />
+
+      <LazyNewsletter />
+
       {post.categories?.[0] && (
-        <ReadMore
+        <LazyReadMore
           categoryId={post.categories[0].id}
           categoryName={post.categories[0].name}
           categorySlug={post.categories[0].slug}
           currentPostId={post.id}
         />
       )}
+
+      {/* Sticky Ad - Load last */}
+      <LazyStickyAd slot="7890123456" position="right" />
     </article>
   );
 }

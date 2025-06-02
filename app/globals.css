@@ -86,3 +86,243 @@ img {
   size-adjust: 100%;
   font-display: swap;
 }
+
+/* Critical CSS for LCP optimization */
+@layer base {
+  /* CSS Containment for performance */
+  .hero-container {
+    contain: layout style paint;
+    content-visibility: auto;
+    contain-intrinsic-size: 0 400px;
+  }
+
+  /* Immediate image rendering */
+  .lcp-image {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 400px;
+    will-change: auto;
+  }
+
+  /* Prevent render blocking */
+  .non-critical {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 100px;
+  }
+
+  /* Optimize font loading */
+  .font-sora {
+    font-family:
+      var(--font-sora),
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-display: swap;
+  }
+
+  .font-inter {
+    font-family:
+      var(--font-inter),
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-display: swap;
+  }
+
+  /* Critical loading states */
+  .loading-shimmer {
+    background: linear-gradient(90deg, #f0f9ff 25%, #e0f2fe 50%, #f0f9ff 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite ease-in-out;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Prevent layout shifts */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Critical above-the-fold optimizations */
+  .hero-critical {
+    min-height: 400px;
+    contain: layout style paint;
+    will-change: auto;
+  }
+
+  /* Optimize main thread */
+  .main-content {
+    contain: layout style;
+  }
+
+  /* Lazy loading optimizations */
+  .lazy-section {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 200px;
+    contain: layout style;
+  }
+}
+
+/* Component optimizations */
+@layer components {
+  /* Hero section critical styles */
+  .hero-optimized {
+    position: relative;
+    width: 100%;
+    height: 60vh;
+    min-height: 400px;
+    max-height: 600px;
+    overflow: hidden;
+    contain: layout style paint;
+    content-visibility: auto;
+    contain-intrinsic-size: 0 400px;
+  }
+
+  .hero-image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    contain: layout style paint;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    contain: layout style;
+  }
+
+  /* Article content optimization */
+  .article-content {
+    contain: layout style;
+    content-visibility: auto;
+  }
+
+  /* Ad containers */
+  .ad-container {
+    contain: layout style paint;
+    content-visibility: auto;
+    contain-intrinsic-size: 0 250px;
+  }
+
+  /* Navigation optimization */
+  .nav-container {
+    contain: layout style;
+    will-change: auto;
+  }
+}
+
+/* Performance utilities */
+@layer utilities {
+  .critical-resource {
+    content-visibility: auto;
+    will-change: auto;
+  }
+
+  .non-critical-resource {
+    content-visibility: auto;
+    contain: layout style;
+  }
+
+  .optimize-paint {
+    contain: layout style paint;
+  }
+
+  .optimize-layout {
+    contain: layout style;
+  }
+
+  .will-change-auto {
+    will-change: auto;
+  }
+
+  .content-visibility-auto {
+    content-visibility: auto;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .hero-optimized {
+    height: 50vh;
+    min-height: 300px;
+  }
+
+  .hero-overlay {
+    padding: 1rem;
+  }
+}
+
+/* Prevent CLS from dynamic content */
+.prevent-cls {
+  min-height: var(--min-height, auto);
+  contain: layout style;
+}
+
+/* Critical font fallbacks */
+@font-face {
+  font-family: 'Sora-fallback';
+  src: local('Arial'), local('Helvetica'), local('system-ui');
+  font-display: swap;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+@font-face {
+  font-family: 'Inter-fallback';
+  src: local('Arial'), local('Helvetica'), local('system-ui');
+  font-display: swap;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
+}
+
+/* Hide content until fonts load */
+.font-loading .font-sora,
+.font-loading .font-inter {
+  visibility: hidden;
+}
+
+.fonts-loaded .font-sora,
+.fonts-loaded .font-inter {
+  visibility: visible;
+}
+
+/* Scrollbar optimizations */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Line clamping */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
