@@ -218,7 +218,7 @@ export default function RootLayout({
                 
                 const adsScript = document.createElement('script');
                 adsScript.async = true;
-                adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_ID}';
+                adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7459831240640476';
                 adsScript.crossOrigin = 'anonymous';
                 document.head.appendChild(adsScript);
               }, 5000);
