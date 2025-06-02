@@ -5,7 +5,10 @@ import Script from 'next/script';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import CacheOptimizer from './components/CacheOptimizer';
+import CookieConsentModal from './components/CookieConsentModal';
+import CookieConsentInit from './components/CookieConsentInit';
 import './globals.css';
+import './styles/cookie-modal.css';
 
 // Import WordPress block library styles
 import '@wordpress/block-library/build-style/style.css';
@@ -161,6 +164,12 @@ export default function RootLayout({
         className={`${sora.variable} ${inter.variable} font-sans bg-white 
           text-gray-900 antialiased`}
       >
+        {/* Cookie Consent Initialization */}
+        <CookieConsentInit />
+
+        {/* Cookie Consent Modal */}
+        <CookieConsentModal />
+
         {/* Header - overlay on hero without blocking LCP */}
         <div
           style={{
@@ -168,7 +177,7 @@ export default function RootLayout({
             top: 0,
             left: 0,
             right: 0,
-            zIndex: 100, // Lower than LCP image (999)
+            zIndex: 100, // Lower than LCP image (999) and cookie modal (50)
             pointerEvents: 'auto',
             boxShadow:
               '0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 16px rgba(0, 0, 0, 0.2)',

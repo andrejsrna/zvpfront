@@ -1,260 +1,223 @@
+// Types
+type WordPressTerm = {
+  id: number;
+  name: string;
+  slug: string;
+  taxonomy?: 'category' | 'post_tag';
+};
+
+type WordPressMedia = {
+  source_url: string;
+  alt_text: string;
+  media_details?: {
+    sizes?: {
+      [key: string]: {
+        source_url: string;
+        width: number;
+        height: number;
+      };
+    };
+  };
+};
+
+type WordPressReference = {
+  nazov: string;
+  odkaz: string;
+};
+
 export type WordPressPost = {
   id: number;
   date: string;
   modified: string;
-  title: {
-    rendered: string;
-  };
-  content: {
-    rendered: string;
-  };
-  excerpt: {
-    rendered: string;
-  };
+  title: { rendered: string };
+  content: { rendered: string };
+  excerpt: { rendered: string };
   slug: string;
-  categories: {
-    id: number;
-    name: string;
-    slug: string;
-  }[];
+  categories: WordPressTerm[];
   meta: {
     post_views: number;
-    _zdroje_referencie: {
-      nazov: string;
-      odkaz: string;
-    }[];
+    _zdroje_referencie: WordPressReference[];
   };
-  tags: {
-    id: number;
-    name: string;
-    slug: string;
-  }[];
+  tags: WordPressTerm[];
   featured_media?: number;
   _embedded?: {
-    'wp:featuredmedia'?: Array<{
-      source_url: string;
-      alt_text: string;
-      media_details?: {
-        sizes?: {
-          [key: string]: {
-            source_url: string;
-            width: number;
-            height: number;
-          };
-        };
-      };
-    }>;
-    'wp:term'?: Array<
-      Array<{
-        id: number;
-        name: string;
-        slug: string;
-        taxonomy: 'category' | 'post_tag';
-      }>
-    >;
+    'wp:featuredmedia'?: WordPressMedia[];
+    'wp:term'?: WordPressTerm[][];
   };
 };
 
-export type WordPressCategory = {
-  id: number;
+export type WordPressCategory = WordPressTerm & {
   count: number;
   description: string;
   link: string;
-  name: string;
-  slug: string;
   taxonomy: string;
   parent: number;
   children?: WordPressCategory[];
 };
 
-const REVALIDATE_TIME = {
-  POSTS: 3600, // 1 hodina
-  CATEGORIES: 7200, // 2 hodiny
-  SINGLE_POST: 1800, // 30 minút
-  SEARCH: 0, // bez cache
-};
+// Constants
+const API_CONFIG = {
+  BASE_URL: 'https://admin.zdravievpraxi.sk/wp-json',
+  TIMEOUT: 3000,
+  SEARCH_TIMEOUT: 5000,
+  REVALIDATE: {
+    POSTS: 3600,
+    CATEGORIES: 7200,
+    SINGLE_POST: 1800,
+    SEARCH: 0,
+  },
+} as const;
 
-// Helper function to transform WordPress URLs to use local proxy
-export function transformWordPressUrl(url: string): string {
-  if (!url) return url;
-
-  // Transform WordPress content URLs to use proxy in client-side
-  if (typeof window !== 'undefined' && url.includes('admin.zdravievpraxi.sk')) {
-    return url.replace('https://admin.zdravievpraxi.sk', '');
+// API Client
+class WordPressClient {
+  private static getApiUrl(): string {
+    return typeof window === 'undefined' ? API_CONFIG.BASE_URL : '/wp-json';
   }
 
-  return url;
-}
-
-// Helper function to get WordPress API URL
-const getWordPressApiUrl = () => {
-  // Check if we're running on the server
-  if (typeof window === 'undefined') {
-    // Server-side: connect directly to WordPress API
-    return 'https://admin.zdravievpraxi.sk/wp-json';
-  }
-  // Client-side: use relative URL that gets proxied by middleware
-  return '/wp-json';
-};
-
-// Helper function to fetch with error handling and timeout
-async function fetchAPI(endpoint: string, options: RequestInit = {}) {
-  const WORDPRESS_API_URL = getWordPressApiUrl();
-  const url = `${WORDPRESS_API_URL}${endpoint}`;
-
-  try {
+  private static async fetchWithTimeout(
+    url: string,
+    options: RequestInit = {},
+    timeout: number = API_CONFIG.TIMEOUT
+  ) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+      });
 
-    clearTimeout(timeoutId);
+      clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
     }
-
-    return response.json();
-  } catch (error) {
-    console.error(`Failed fetching ${endpoint}:`, error);
-    throw error;
   }
-}
 
-export async function getPosts(
-  perPage: number = 12,
-  orderby: string = 'date',
-  categoryId?: number,
-  page: number = 1
-): Promise<WordPressPost[]> {
-  const categoryParam = categoryId
-    ? `&categories=${categoryId}&include_children=true`
-    : '';
-  return fetchAPI(
-    `/wp/v2/posts?_embed&per_page=${perPage}&orderby=${orderby}&order=desc${categoryParam}&page=${page}`,
-    {
-      next: {
-        revalidate: REVALIDATE_TIME.POSTS,
-        tags: ['posts', categoryId ? `category-${categoryId}` : 'all-posts'],
-      },
-    }
-  );
-}
+  static transformUrl(url: string): string {
+    if (!url) return url;
+    return typeof window !== 'undefined' && url.includes(API_CONFIG.BASE_URL)
+      ? url.replace(API_CONFIG.BASE_URL, '')
+      : url;
+  }
 
-export async function getPostBySlug(
-  slug: string
-): Promise<WordPressPost | null> {
-  try {
-    // Najprv získame post
-    const posts = await fetchAPI(`/wp/v2/posts?_embed&slug=${slug}`, {
-      next: {
-        revalidate: REVALIDATE_TIME.SINGLE_POST,
-        tags: [`post-${slug}`],
-      },
-    });
+  static async fetch<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const url = `${this.getApiUrl()}${endpoint}`;
+    const response = await this.fetchWithTimeout(url, options);
+    return response.json();
+  }
 
-    if (posts.length === 0) return null;
-    const post = posts[0];
+  static async getPosts(
+    perPage: number = 12,
+    orderby: string = 'date',
+    categoryId?: number,
+    page: number = 1
+  ): Promise<WordPressPost[]> {
+    const categoryParam = categoryId
+      ? `&categories=${categoryId}&include_children=true`
+      : '';
+    return this.fetch<WordPressPost[]>(
+      `/wp/v2/posts?_embed&per_page=${perPage}&orderby=${orderby}&order=desc${categoryParam}&page=${page}`,
+      {
+        next: {
+          revalidate: API_CONFIG.REVALIDATE.POSTS,
+          tags: ['posts', categoryId ? `category-${categoryId}` : 'all-posts'],
+        },
+      }
+    );
+  }
 
-    // Získame informácie o kategóriách
-    if (post.categories && post.categories.length > 0) {
-      const categoryIds = post.categories.join(',');
-      const categoriesData = await fetchAPI(
-        `/wp/v2/categories?include=${categoryIds}`,
+  static async getPostBySlug(slug: string): Promise<WordPressPost | null> {
+    try {
+      const posts = await this.fetch<WordPressPost[]>(
+        `/wp/v2/posts?_embed&slug=${slug}`,
         {
           next: {
-            revalidate: REVALIDATE_TIME.CATEGORIES,
+            revalidate: API_CONFIG.REVALIDATE.SINGLE_POST,
+            tags: [`post-${slug}`],
           },
         }
       );
-      post.categories = categoriesData;
-    }
 
-    // Spracuj tagy z _embedded
-    if (post._embedded?.['wp:term']) {
-      post.tags = post._embedded['wp:term'][1] || [];
-    }
+      if (posts.length === 0) return null;
+      const post = posts[0];
 
-    return post;
-  } catch (error) {
-    console.error('Error fetching post:', error);
-    return null;
+      if (post._embedded?.['wp:term']) {
+        post.categories = post._embedded['wp:term'][0] || post.categories;
+        post.tags = post._embedded['wp:term'][1] || post.tags;
+      }
+
+      return post;
+    } catch (error) {
+      console.error('Error fetching post:', error);
+      return null;
+    }
   }
-}
 
-export async function getCategories(): Promise<WordPressCategory[]> {
-  return fetchAPI('/wp/v2/categories?per_page=100&orderby=count&order=desc', {
-    next: {
-      revalidate: REVALIDATE_TIME.CATEGORIES,
-      tags: ['categories'],
-    },
-  });
-}
+  static async getCategories(): Promise<WordPressCategory[]> {
+    return this.fetch<WordPressCategory[]>(
+      '/wp/v2/categories?per_page=100&orderby=count&order=desc',
+      {
+        next: {
+          revalidate: API_CONFIG.REVALIDATE.CATEGORIES,
+          tags: ['categories'],
+        },
+      }
+    );
+  }
 
-export async function getRandomPost(): Promise<WordPressPost[]> {
-  return fetchAPI('/custom/v1/random-posts', {
-    next: {
-      revalidate: 60, // Cache na 1 minútu
-      tags: ['random-posts'],
-    },
-  });
-}
-
-interface SearchResult {
-  posts: WordPressPost[];
-  total: number;
-  totalPages: number;
-}
-
-export async function searchPosts(
-  query: string,
-  perPage: number = 10,
-  page: number = 1
-): Promise<SearchResult> {
-  // For search, we need to access headers, so we'll use direct fetch
-  const WORDPRESS_API_URL = getWordPressApiUrl();
-  const url = `${WORDPRESS_API_URL}/wp/v2/posts?_embed&search=${encodeURIComponent(query)}&per_page=${perPage}&page=${page}`;
-
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+  static async getRandomPost(): Promise<WordPressPost[]> {
+    return this.fetch<WordPressPost[]>('/custom/v1/random-posts', {
       next: {
-        revalidate: REVALIDATE_TIME.SEARCH,
+        revalidate: 60,
+        tags: ['random-posts'],
       },
     });
+  }
 
-    clearTimeout(timeoutId);
+  static async searchPosts(
+    query: string,
+    perPage: number = 10,
+    page: number = 1
+  ): Promise<{ posts: WordPressPost[]; total: number; totalPages: number }> {
+    const url = `${this.getApiUrl()}/wp/v2/posts?_embed&search=${encodeURIComponent(
+      query
+    )}&per_page=${perPage}&page=${page}`;
 
-    if (!response.ok) {
-      throw new Error(`Search API Error: ${response.status}`);
-    }
-
+    const response = await this.fetchWithTimeout(
+      url,
+      {},
+      API_CONFIG.SEARCH_TIMEOUT
+    );
     const posts = await response.json();
     const total = parseInt(response.headers.get('X-WP-Total') || '0');
     const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '0');
 
-    return {
-      posts,
-      total,
-      totalPages,
-    };
-  } catch (error) {
-    console.error('Search error:', error);
-    throw error;
+    return { posts, total, totalPages };
   }
 }
+
+// Export public API
+export const {
+  transformUrl,
+  getPosts,
+  getPostBySlug,
+  getCategories,
+  getRandomPost,
+  searchPosts,
+} = WordPressClient;
