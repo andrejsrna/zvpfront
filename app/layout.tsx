@@ -142,14 +142,13 @@ export default function RootLayout({
             .lcp-container {
               position: relative !important;
               width: 100% !important;
-              height: 80vh !important;
-              min-height: 600px !important;
-              max-height: 800px !important;
+              height: 100vh !important; /* Fullscreen */
+              min-height: 100vh !important; /* Fullscreen */
               overflow: hidden !important;
               contain: layout style paint !important;
               will-change: auto !important;
               content-visibility: visible !important;
-              contain-intrinsic-size: 0 80vh !important;
+              contain-intrinsic-size: 0 100vh !important;
             }
             
             .lcp-image {
@@ -158,7 +157,7 @@ export default function RootLayout({
               left: 0 !important;
               width: 100% !important;
               height: 100% !important;
-              min-height: 80vh !important;
+              min-height: 100vh !important; /* Fullscreen */
               object-fit: cover !important;
               object-position: center !important;
               will-change: auto !important;
@@ -179,6 +178,19 @@ export default function RootLayout({
               max-height: 32px !important;
               width: auto !important;
               contain: layout style !important;
+            }
+            
+            /* Prevent text elements from being LCP candidates */
+            h1, h2, h3, p, div {
+              content-visibility: auto !important;
+              contain-intrinsic-size: 0 50px !important;
+            }
+            
+            /* Force hero image to be LCP */
+            [data-lcp-candidate="true"] {
+              content-visibility: visible !important;
+              contain-intrinsic-size: auto !important;
+              z-index: 999 !important;
             }
             
             /* Loading states */

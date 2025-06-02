@@ -88,15 +88,15 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
         />
 
-        {/* Ultra-fast Hero Section for LCP */}
+        {/* Ultra-fast Hero Section for LCP - FULLSCREEN */}
         <div
-          className="relative w-full h-[80vh] min-h-[600px] max-h-[800px] overflow-hidden bg-gray-100"
+          className="relative w-full h-screen min-h-[100vh] overflow-hidden bg-gray-100"
           style={{
             contain: 'layout style paint',
             willChange: 'auto',
             contentVisibility: 'visible',
-            containIntrinsicSize: '0 80vh',
-            minHeight: '80vh',
+            containIntrinsicSize: '0 100vh',
+            minHeight: '100vh', // Fullscreen
             aspectRatio: '16/9',
           }}
           data-lcp-container="true"
@@ -106,49 +106,47 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
             alt={featuredImageAlt}
           />
 
-          {/* Hero Content Overlay - much smaller and positioned differently */}
+          {/* Minimal overlay only for category - NO H1 HERE */}
           <div
-            className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
+            className="absolute top-8 left-8"
             style={{
               contain: 'layout style',
               willChange: 'auto',
               zIndex: 10,
-              height: '40%',
             }}
           >
-            <div className="container mx-auto max-w-4xl p-4 md:p-6 h-full flex flex-col justify-end">
-              {post.categories && post.categories[0] && (
-                <Link
-                  href={`/kategoria/${post.categories[0].slug}`}
-                  className="inline-block px-3 py-1 bg-emerald-500 text-white
-                    text-xs font-medium rounded-full mb-2 hover:bg-emerald-600
-                    transition-colors w-fit"
-                  style={{
-                    contain: 'layout style',
-                    zIndex: 20,
-                  }}
-                >
-                  {post.categories[0].name}
-                </Link>
-              )}
-              <h1
-                className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 line-clamp-3"
-                dangerouslySetInnerHTML={{
-                  __html: he.decode(post.title.rendered),
-                }}
-                style={{
-                  contain: 'layout style',
-                  zIndex: 20,
-                  fontSize: 'clamp(1.125rem, 4vw, 1.875rem)',
-                }}
-              />
-              <div
-                className="flex items-center text-white/90 space-x-4 text-xs"
+            {post.categories && post.categories[0] && (
+              <Link
+                href={`/kategoria/${post.categories[0].slug}`}
+                className="inline-block px-3 py-1 bg-emerald-500/90 backdrop-blur text-white
+                  text-xs font-medium rounded-full hover:bg-emerald-600/90
+                  transition-colors"
                 style={{
                   contain: 'layout style',
                   zIndex: 20,
                 }}
               >
+                {post.categories[0].name}
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* Content Section - H1 MOVED HERE (below fold) */}
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            {/* H1 Title - NOW BELOW THE FOLD */}
+            <header className="mb-8">
+              <h1
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
+                dangerouslySetInnerHTML={{
+                  __html: he.decode(post.title.rendered),
+                }}
+                style={{
+                  contain: 'layout style',
+                }}
+              />
+              <div className="flex items-center text-gray-600 space-x-4 text-sm">
                 <time dateTime={post.date}>
                   {new Date(post.date).toLocaleDateString('sk-SK', {
                     day: 'numeric',
@@ -157,13 +155,8 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
                   })}
                 </time>
               </div>
-            </div>
-          </div>
-        </div>
+            </header>
 
-        {/* Main Content - Critical Path */}
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto">
             {/* Table of Contents - Deferred */}
             <LazyTableOfContents headings={headings} />
 

@@ -43,7 +43,7 @@ export default function NativeHeroImage({
       <div
         className={`w-full h-full bg-gradient-to-br from-emerald-500 to-teal-600 ${className}`}
         style={{
-          minHeight: '80vh',
+          minHeight: '100vh',
           contain: 'layout style paint',
         }}
       />
@@ -60,7 +60,7 @@ export default function NativeHeroImage({
           left: 0 !important;
           width: 100% !important;
           height: 100% !important;
-          min-height: 80vh !important;
+          min-height: 100vh !important;
           object-fit: cover !important;
           object-position: center !important;
           will-change: auto !important;
@@ -74,7 +74,7 @@ export default function NativeHeroImage({
           position: relative !important;
           width: 100% !important;
           height: 100% !important;
-          min-height: 80vh !important;
+          min-height: 100vh !important;
           contain: layout style paint !important;
           will-change: auto !important;
           content-visibility: visible !important;
@@ -88,7 +88,7 @@ export default function NativeHeroImage({
           left: 0 !important;
           width: 100% !important;
           height: 100% !important;
-          min-height: 80vh !important;
+          min-height: 100vh !important;
           background: linear-gradient(90deg, #f0f9ff 25%, #e0f2fe 50%, #f0f9ff 75%) !important;
           background-size: 200% 100% !important;
           animation: shimmer 1.5s infinite ease-in-out !important;
@@ -119,8 +119,8 @@ export default function NativeHeroImage({
           fetchPriority="high"
           crossOrigin="anonymous"
           style={{
-            transition: 'opacity 0.1s ease',
-            minHeight: '80vh',
+            transition: 'opacity 0.05s ease',
+            minHeight: '100vh',
             fontSize: '0',
           }}
           // Additional LCP hints
