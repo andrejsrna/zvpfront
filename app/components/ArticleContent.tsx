@@ -3,6 +3,7 @@
 import { useEffect, useState, ReactElement } from 'react';
 import InArticleAd from './ads/InArticleAd';
 import { AD_SLOTS } from '@/app/config/adSlots';
+import { sanitizeHTML } from '@/app/lib/sanitizeHTML';
 
 interface ArticleContentProps {
   content: string;
@@ -17,9 +18,12 @@ export default function ArticleContent({
 
   useEffect(() => {
     const insertAds = () => {
+      // Sanitize content first
+      const sanitizedContent = sanitizeHTML(content);
+
       // Parse content
       const parser = new DOMParser();
-      const doc = parser.parseFromString(content, 'text/html');
+      const doc = parser.parseFromString(sanitizedContent, 'text/html');
 
       // Optimize images in content
       const images = doc.querySelectorAll('img');

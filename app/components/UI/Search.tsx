@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { searchPosts, WordPressPost, transformUrl } from '@/app/lib/WordPress';
 import Link from 'next/link';
 import Image from 'next/image';
+import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
+import he from 'he';
 
 interface SearchProps {
   onClose?: () => void;
@@ -130,10 +132,12 @@ export default function Search({ onClose }: SearchProps) {
                           __html: post.title.rendered,
                         }}
                       />
-                      <p
-                        className="text-sm text-gray-500 line-clamp-2"
+                      <div
+                        className="text-gray-600 text-sm line-clamp-2"
                         dangerouslySetInnerHTML={{
-                          __html: post.excerpt.rendered,
+                          __html: sanitizeExcerpt(
+                            he.decode(post.excerpt.rendered)
+                          ),
                         }}
                       />
                     </div>

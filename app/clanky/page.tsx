@@ -1,4 +1,5 @@
 import { getPosts, getCategories, WordPressPost } from '@/app/lib/WordPress';
+import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -135,7 +136,9 @@ export default async function ArticlesPage({
                   />
                   <div
                     className="text-gray-600 mb-4 line-clamp-2"
-                    dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeExcerpt(post.excerpt.rendered),
+                    }}
                   />
                   <div className="flex items-center justify-between">
                     <time className="text-sm text-gray-500">

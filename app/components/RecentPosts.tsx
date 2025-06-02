@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { getPosts, WordPressPost, transformUrl } from '../lib/WordPress';
 import Link from 'next/link';
 import Image from 'next/image';
+import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
 
 export default function RecentPosts() {
   const [posts, setPosts] = useState<WordPressPost[]>([]);
@@ -117,8 +118,10 @@ export default function RecentPosts() {
                 />
 
                 <div
-                  className="text-gray-600 line-clamp-2 mb-4 text-sm font-inter"
-                  dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
+                  className="text-gray-600 text-sm leading-relaxed line-clamp-2"
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeExcerpt(post.excerpt.rendered),
+                  }}
                 />
 
                 <div className="flex items-center justify-between text-sm">

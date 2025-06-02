@@ -7,6 +7,7 @@ import {
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
 
 interface CategoryPageProps {
   params: Promise<{
@@ -149,7 +150,9 @@ export default async function CategoryPage({
                   />
                   <div
                     className="text-gray-600 mb-4 line-clamp-2"
-                    dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeExcerpt(post.excerpt.rendered),
+                    }}
                   />
                   <div className="flex items-center justify-between">
                     <time className="text-sm text-gray-500">

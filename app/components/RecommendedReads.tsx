@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import AdUnit from './ads/AdUnit';
 import { AD_SLOTS } from '../config/adSlots';
+import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
 
 interface RecommendedReadsProps {
   currentPostId?: number;
@@ -140,9 +141,9 @@ export default function RecommendedReads({
                 />
 
                 <div
-                  className="text-gray-600 mb-6 line-clamp-3"
+                  className="text-sm text-gray-600 mb-3 line-clamp-2"
                   dangerouslySetInnerHTML={{
-                    __html: recommendedPost.excerpt.rendered,
+                    __html: sanitizeExcerpt(recommendedPost.excerpt.rendered),
                   }}
                 />
               </div>
