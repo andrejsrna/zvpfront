@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getCategories, type WordPressCategory } from '@/app/lib/WordPress';
 import Search from './Search';
-import Image from 'next/image';
 import {
   ChevronDownIcon,
   XMarkIcon,
@@ -48,19 +47,11 @@ export default function Menu() {
       <nav className="nav-container bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* Logo - reduced size to avoid LCP competition */}
+            {/* Logo - replaced with text to avoid LCP issues */}
             <Link href="/" className="flex-shrink-0">
-              <Image
-                src="/logos/zvp.png"
-                alt="Zdravie v praxi"
-                width={120}
-                height={40}
-                priority={false}
-                className="h-8 w-auto"
-                quality={60}
-                loading="lazy"
-                placeholder="empty"
-              />
+              <span className="text-xl font-bold text-emerald-600 font-sora">
+                Zdravie v praxi
+              </span>
             </Link>
 
             {/* Desktop Navigation */}

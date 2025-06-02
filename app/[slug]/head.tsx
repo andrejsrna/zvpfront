@@ -19,22 +19,38 @@ export default async function Head({ params: paramsPromise }: HeadProps) {
 
   return (
     <>
-      {/* Ultra-critical preloads */}
+      {/* Ultra-critical preloads - MAXIMUM PRIORITY */}
       {featuredImageUrl && (
         <>
-          {/* Preload the optimized Next.js image */}
+          {/* Multiple preload sizes for different devices */}
           <link
             rel="preload"
             as="image"
-            href={`/_next/image?url=${encodeURIComponent(featuredImageUrl)}&w=1600&q=95`}
+            href={`/_next/image?url=${encodeURIComponent(featuredImageUrl)}&w=1920&q=90`}
             fetchPriority="high"
+            crossOrigin="anonymous"
           />
-          {/* Backup preload for original image */}
+          <link
+            rel="preload"
+            as="image"
+            href={`/_next/image?url=${encodeURIComponent(featuredImageUrl)}&w=1600&q=85`}
+            fetchPriority="high"
+            crossOrigin="anonymous"
+          />
+          <link
+            rel="preload"
+            as="image"
+            href={`/_next/image?url=${encodeURIComponent(featuredImageUrl)}&w=1200&q=80`}
+            fetchPriority="high"
+            crossOrigin="anonymous"
+          />
+          {/* Original image backup */}
           <link
             rel="preload"
             as="image"
             href={featuredImageUrl}
             fetchPriority="high"
+            crossOrigin="anonymous"
           />
         </>
       )}
@@ -43,30 +59,35 @@ export default async function Head({ params: paramsPromise }: HeadProps) {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-          .lcp-hero-container {
-            position: relative !important;
-            width: 100% !important;
-            height: 60vh !important;
-            min-height: 400px !important;
-            max-height: 600px !important;
-            overflow: hidden !important;
-            contain: layout style paint !important;
-            will-change: auto !important;
-            content-visibility: auto !important;
-            contain-intrinsic-size: 0 400px !important;
-          }
-          .lcp-hero-image {
+          /* FORCE HERO IMAGE TO BE LCP */
+          [data-lcp-candidate="true"] {
             position: absolute !important;
             top: 0 !important;
             left: 0 !important;
             width: 100% !important;
-            height: 100% !important;
+            height: 100vh !important;
             object-fit: cover !important;
-            object-position: center !important;
-            will-change: auto !important;
+            z-index: 999 !important;
+            content-visibility: visible !important;
+            contain-intrinsic-size: auto !important;
+            display: block !important;
+            opacity: 1 !important;
+          }
+          .lcp-hero-container {
+            position: relative !important;
+            width: 100% !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            overflow: hidden !important;
             contain: layout style paint !important;
+            will-change: auto !important;
+            content-visibility: visible !important;
+            contain-intrinsic-size: 0 100vh !important;
+          }
+          /* Suppress other elements from being LCP */
+          img:not([data-lcp-candidate="true"]) {
             content-visibility: auto !important;
-            contain-intrinsic-size: 0 400px !important;
+            contain-intrinsic-size: 0 20px !important;
           }
         `,
         }}

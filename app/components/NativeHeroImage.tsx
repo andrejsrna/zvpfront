@@ -23,14 +23,29 @@ export default function NativeHeroImage({
       const optimized = `/_next/image?url=${encodeURIComponent(src)}&w=1920&q=90`;
       setOptimizedSrc(optimized);
 
-      // Preload the optimized image
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'image';
-      link.href = optimized;
-      link.fetchPriority = 'high';
-      link.crossOrigin = 'anonymous';
-      document.head.appendChild(link);
+      // ULTRA-AGGRESSIVE preloading - immediate execution
+      const link1 = document.createElement('link');
+      link1.rel = 'preload';
+      link1.as = 'image';
+      link1.href = optimized;
+      link1.fetchPriority = 'high';
+      link1.crossOrigin = 'anonymous';
+      document.head.appendChild(link1);
+
+      // Additional preload for fallback
+      const link2 = document.createElement('link');
+      link2.rel = 'preload';
+      link2.as = 'image';
+      link2.href = src;
+      link2.fetchPriority = 'high';
+      link2.crossOrigin = 'anonymous';
+      document.head.appendChild(link2);
+
+      // Force immediate load
+      const img = new Image();
+      img.fetchPriority = 'high';
+      img.decoding = 'sync';
+      img.src = optimized;
     }
   }, [src]);
 
@@ -52,7 +67,7 @@ export default function NativeHeroImage({
 
   return (
     <>
-      {/* Critical inline styles with enhanced LCP priority */}
+      {/* Critical inline styles with MAXIMUM LCP priority */}
       <style>{`
         .native-hero-image {
           position: absolute !important;
@@ -67,8 +82,9 @@ export default function NativeHeroImage({
           contain: layout style paint !important;
           content-visibility: visible !important;
           contain-intrinsic-size: auto !important;
-          z-index: 1 !important;
+          z-index: 999 !important;
           display: block !important;
+          opacity: 1 !important;
         }
         .native-hero-container {
           position: relative !important;
@@ -104,14 +120,13 @@ export default function NativeHeroImage({
         {/* Loading placeholder */}
         {!imageLoaded && <div className="loading-placeholder" />}
 
-        {/* Native img optimized for LCP */}
+        {/* Native img optimized for INSTANT LCP */}
         <img
           src={optimizedSrc}
           alt={alt}
-          className={`native-hero-image ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`native-hero-image`}
           onLoad={handleLoad}
           onError={() => {
-            // Fallback to original image if Next.js optimized fails
             setOptimizedSrc(src);
           }}
           loading="eager"
@@ -119,11 +134,10 @@ export default function NativeHeroImage({
           fetchPriority="high"
           crossOrigin="anonymous"
           style={{
-            transition: 'opacity 0.05s ease',
             minHeight: '100vh',
             fontSize: '0',
+            opacity: '1 !important',
           }}
-          // Additional LCP hints
           data-lcp-candidate="true"
           data-priority="high"
         />

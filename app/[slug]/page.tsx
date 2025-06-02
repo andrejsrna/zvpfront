@@ -73,12 +73,30 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
     <>
       {/* Critical above-the-fold preloads */}
       {featuredImageUrl && (
-        <link
-          rel="preload"
-          as="image"
-          href={`/_next/image?url=${encodeURIComponent(featuredImageUrl)}&w=1600&q=95`}
-          fetchPriority="high"
-        />
+        <>
+          {/* Ultra-aggressive preloading - multiple strategies */}
+          <link
+            rel="preload"
+            as="image"
+            href={`/_next/image?url=${encodeURIComponent(featuredImageUrl)}&w=1920&q=90`}
+            fetchPriority="high"
+            crossOrigin="anonymous"
+          />
+          <link
+            rel="preload"
+            as="image"
+            href={`/_next/image?url=${encodeURIComponent(featuredImageUrl)}&w=1600&q=85`}
+            fetchPriority="high"
+            crossOrigin="anonymous"
+          />
+          <link
+            rel="preload"
+            as="image"
+            href={featuredImageUrl}
+            fetchPriority="high"
+            crossOrigin="anonymous"
+          />
+        </>
       )}
 
       <article className="bg-white">
