@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  WordPressPost,
-  getPosts,
-  transformWordPressUrl,
-} from '@/app/lib/WordPress';
+import { WordPressPost, getPosts, transformUrl } from '@/app/lib/WordPress';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -104,7 +100,7 @@ export default function ReadMore({
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-4">
                   {post._embedded?.['wp:featuredmedia'] ? (
                     <Image
-                      src={transformWordPressUrl(
+                      src={transformUrl(
                         post._embedded['wp:featuredmedia'][0].source_url
                       )}
                       alt={post.title.rendered}

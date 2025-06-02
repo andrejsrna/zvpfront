@@ -1,11 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  getPosts,
-  WordPressPost,
-  transformWordPressUrl,
-} from '../lib/WordPress';
+import { getPosts, WordPressPost, transformUrl } from '../lib/WordPress';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -68,7 +64,7 @@ export default function RecentPosts() {
               <div className="relative aspect-[16/10] overflow-hidden">
                 {post._embedded?.['wp:featuredmedia'] ? (
                   <Image
-                    src={transformWordPressUrl(
+                    src={transformUrl(
                       post._embedded['wp:featuredmedia'][0].source_url
                     )}
                     alt={post.title.rendered}
