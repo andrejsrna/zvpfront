@@ -12,7 +12,6 @@ import {
   LazyReadMore,
   LazyWeRecommend,
   LazyShareButtons,
-  LazyStickyAd,
   LazyTableOfContents,
 } from '@/app/components/LazyComponents';
 
@@ -268,11 +267,6 @@ async function PostContent({ slug }: { slug: string }) {
               currentPostId={post.id}
             />
           )}
-        </Suspense>
-
-        {/* Ads - Lowest priority */}
-        <Suspense fallback={null}>
-          <LazyStickyAd slot="7890123456" position="right" />
         </Suspense>
       </article>
     </>

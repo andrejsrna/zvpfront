@@ -38,6 +38,8 @@ export default function CookieConsent() {
     setCookiePreferences(allAccepted);
     setShowModal(false);
     document.body.style.overflow = 'unset';
+    // Hard refresh page to apply new cookie settings
+    window.location.reload();
   };
 
   const handleAcceptSelected = () => {
@@ -46,6 +48,8 @@ export default function CookieConsent() {
     setShowModal(false);
     setShowSettings(false);
     document.body.style.overflow = 'unset';
+    // Hard refresh page to apply new cookie settings
+    window.location.reload();
   };
 
   const handleRejectAll = () => {
@@ -59,6 +63,8 @@ export default function CookieConsent() {
     setCookiePreferences(onlyNecessary);
     setShowModal(false);
     document.body.style.overflow = 'unset';
+    // Hard refresh page to apply new cookie settings
+    window.location.reload();
   };
 
   if (!showModal) return null;

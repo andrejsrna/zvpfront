@@ -219,6 +219,7 @@ export default function RootLayout({
                 // Load AdSense script without data-nscript attribute
                 const adsScript = document.createElement('script');
                 adsScript.async = true;
+                adsScript.crossOrigin = 'anonymous';
                 adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7459831240640476';
                 document.head.appendChild(adsScript);
                 

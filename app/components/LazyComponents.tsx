@@ -24,10 +24,6 @@ const ShareButtons = dynamic(() => import('./UI/ShareButtons'), {
   ssr: false,
 });
 
-const StickyAd = dynamic(() => import('./ads/StickyAd'), {
-  ssr: false,
-});
-
 const TableOfContents = dynamic(() => import('./TableOfContents'), {
   ssr: false,
 });
@@ -101,20 +97,6 @@ export function LazyShareButtons({
   return (
     <Suspense fallback={null}>
       <ShareButtons url={url} title={title} description={description} />
-    </Suspense>
-  );
-}
-
-export function LazyStickyAd({
-  slot,
-  position,
-}: {
-  slot: string;
-  position: 'left' | 'right';
-}) {
-  return (
-    <Suspense fallback={null}>
-      <StickyAd slot={slot} position={position} />
     </Suspense>
   );
 }

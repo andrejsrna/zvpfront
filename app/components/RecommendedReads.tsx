@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { getRandomPost, WordPressPost, transformUrl } from '../lib/WordPress';
 import Image from 'next/image';
 import Link from 'next/link';
-import AdUnit from './ads/AdUnit';
-import { AD_SLOTS } from '../config/adSlots';
 import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
 
 interface RecommendedReadsProps {
@@ -61,15 +59,6 @@ export default function RecommendedReads({
           <h2 className="text-3xl font-bold text-gray-900 mt-2">
             Čo čítať ďalej
           </h2>
-        </div>
-
-        {/* Ad before recommended article */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <AdUnit
-            slot={AD_SLOTS.RELATED_ARTICLES}
-            format="horizontal"
-            className="text-center"
-          />
         </div>
 
         <Link

@@ -43,12 +43,16 @@ export default function CookieConsentModal() {
     setCookieConsent(true);
     setCookiePreferences(allAccepted);
     closeModal();
+    // Hard refresh page to apply new cookie settings
+    window.location.reload();
   };
 
   const handleAcceptSelected = () => {
     setCookieConsent(true);
     setCookiePreferences(preferences);
     closeModal();
+    // Hard refresh page to apply new cookie settings
+    window.location.reload();
   };
 
   const handleRejectAll = () => {
@@ -61,6 +65,8 @@ export default function CookieConsentModal() {
     setCookieConsent(true);
     setCookiePreferences(onlyNecessary);
     closeModal();
+    // Hard refresh page to apply new cookie settings
+    window.location.reload();
   };
 
   if (!showModal) return null;
