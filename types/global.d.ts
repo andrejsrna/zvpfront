@@ -6,6 +6,8 @@ declare global {
     adsbygoogle?: Array<Record<string, unknown>>;
     loadAnalytics?: () => void;
     analyticsLoaded?: boolean;
+    debugAds?: () => void;
+    reinitializeAds?: () => void;
   }
 }
 
