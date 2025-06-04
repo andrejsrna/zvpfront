@@ -199,7 +199,7 @@ export default function RootLayout({
           <CacheOptimizer />
         </Suspense>
 
-        {/* Delayed scripts - load after 3 seconds */}
+        {/* Delayed scripts - load after 5 seconds */}
         <Script
           id="delayed-analytics"
           strategy="afterInteractive"
@@ -215,84 +215,23 @@ export default function RootLayout({
                 script.async = true;
                 script.src = 'https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}';
                 document.head.appendChild(script);
-              }, 3000);
-            `,
-          }}
-        />
-
-        <Script
-          id="google-adsense"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Initialize adsbygoogle array immediately
-              window.adsbygoogle = window.adsbygoogle || [];
-              
-              // Add debugging utilities
-              window.debugAds = function() {
-                console.log('=== AdSense Debug Info ===');
-                console.log('adsLoaded:', window.adsLoaded);
-                console.log('adsbygoogle array:', window.adsbygoogle);
-                console.log('adsbygoogle length:', window.adsbygoogle?.length);
                 
-                const adElements = document.querySelectorAll('.adsbygoogle');
-                console.log('Ad elements found:', adElements.length);
+                // Load AdSense script without data-nscript attribute
+                const adsScript = document.createElement('script');
+                adsScript.async = true;
+                adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7459831240640476';
+                document.head.appendChild(adsScript);
                 
-                adElements.forEach((el, index) => {
-                  const rect = el.getBoundingClientRect();
-                  console.log(\`Ad \${index + 1}:\`, {
-                    slot: el.getAttribute('data-ad-slot'),
-                    format: el.getAttribute('data-ad-format'),
-                    client: el.getAttribute('data-ad-client'),
-                    width: rect.width,
-                    height: rect.height,
-                    display: getComputedStyle(el).display,
-                    visibility: getComputedStyle(el).visibility,
-                    innerHTML: el.innerHTML?.substring(0, 100) + '...'
-                  });
-                });
-              };
-              
-              window.reinitializeAds = function() {
-                console.log('Reinitializing all ads...');
-                const adElements = document.querySelectorAll('.adsbygoogle');
-                adElements.forEach(() => {
-                  (window.adsbygoogle = window.adsbygoogle || []).push({});
-                });
-              };
-              
-              // Load AdSense script with proper initialization
-              const adsScript = document.createElement('script');
-              adsScript.async = true;
-              adsScript.crossOrigin = 'anonymous';
-              adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7459831240640476';
-              
-              adsScript.onload = function() {
-                console.log('AdSense script loaded successfully');
+                // Handle frame communication for Google AdSense
+                window.addEventListener('message', function(event) {
+                  if (event.origin.includes('google') || event.origin.includes('doubleclick')) {
+                    // Allow messages from Google domains
+                    console.log('AdSense frame message received:', event.origin);
+                  }
+                }, false);
+                
                 window.adsLoaded = true;
-                
-                // Trigger any waiting ads
-                if (window.adsbygoogle) {
-                  window.adsbygoogle.forEach(() => {});
-                }
-                
-                console.log('Debug: Use window.debugAds() to inspect ad state');
-                console.log('Debug: Use window.reinitializeAds() to retry ad loading');
-              };
-              
-              adsScript.onerror = function() {
-                console.error('Failed to load AdSense script');
-                window.adsLoaded = false;
-              };
-              
-              document.head.appendChild(adsScript);
-              
-              // Handle frame communication for Google AdSense
-              window.addEventListener('message', function(event) {
-                if (event.origin.includes('google') || event.origin.includes('doubleclick')) {
-                  console.log('AdSense frame message received:', event.origin);
-                }
-              }, false);
+              }, 5000);
             `,
           }}
         />

@@ -13,14 +13,11 @@ export default function StickyAd({ slot, position = 'right' }: StickyAdProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrolled = window.scrollY > 200; // Reduced threshold for earlier display
+      const scrolled = window.scrollY > 300;
       setIsVisible(scrolled);
     };
 
-    // Check initial scroll position
-    handleScroll();
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -28,25 +25,17 @@ export default function StickyAd({ slot, position = 'right' }: StickyAdProps) {
 
   return (
     <div
-      className={`fixed top-20 ${
+      className={`fixed top-24 ${
         position === 'right' ? 'right-4' : 'left-4'
-      } z-40 hidden xl:block transition-all duration-300 ease-in-out`}
-      style={{
-        width: '300px',
-        transform: isVisible ? 'translateX(0)' : 'translateX(100%)',
-        opacity: isVisible ? 1 : 0,
-      }}
+      } z-40 hidden xl:block transition-opacity duration-300`}
+      style={{ width: '300px' }}
     >
-      <div className="bg-white rounded-lg shadow-lg p-3 border border-gray-200">
-        <p className="text-xs text-gray-500 text-center mb-2 font-medium">
-          Reklama
-        </p>
+      <div className="bg-white rounded-lg shadow-lg p-4">
+        <p className="text-xs text-gray-500 text-center mb-2">Reklama</p>
         <AdUnit
           slot={slot}
           format="rectangle"
           responsive={false}
-          forceLoad={true}
-          className="sticky-ad-unit"
           style={{
             width: '300px',
             height: '250px',

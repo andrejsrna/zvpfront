@@ -272,7 +272,7 @@ async function PostContent({ slug }: { slug: string }) {
 
         {/* Ads - Lowest priority */}
         <Suspense fallback={null}>
-          <LazyStickyAd slot="3857975607" position="right" />
+          <LazyStickyAd slot="7890123456" position="right" />
         </Suspense>
       </article>
     </>

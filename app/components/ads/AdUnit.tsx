@@ -10,7 +10,6 @@ interface AdUnitProps {
   className?: string;
   style?: React.CSSProperties;
   minHeight?: number;
-  forceLoad?: boolean;
 }
 
 export default function AdUnit({
@@ -20,14 +19,11 @@ export default function AdUnit({
   className = '',
   style = {},
   minHeight = 90,
-  forceLoad = false,
 }: AdUnitProps) {
   const [canShowAds, setCanShowAds] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [adsScriptLoaded, setAdsScriptLoaded] = useState(false);
-  const [adInitialized, setAdInitialized] = useState(false);
   const adRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(forceLoad);
+  const [isVisible, setIsVisible] = useState(false);
 
   // Calculate appropriate min-height based on format
   const getMinHeight = () => {
@@ -45,23 +41,23 @@ export default function AdUnit({
 
   const adMinHeight = getMinHeight();
 
-  // Check if ad is visible using Intersection Observer (skip for forced loads)
+  // Check if ad is visible using Intersection Observer
   useEffect(() => {
-    if (forceLoad || !adRef.current) return;
+    if (!adRef.current) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
+          // Only set visible if the container has actual width
           const rect = entry.target.getBoundingClientRect();
-          if (rect.width > 200) {
-            // Reduced threshold for better compatibility
+          if (rect.width > 250) {
             setIsVisible(true);
             observer.disconnect();
           }
         }
       },
       {
-        rootMargin: '50px', // Reduced margin for faster loading
+        rootMargin: '100px',
         threshold: 0.1,
       }
     );
@@ -69,7 +65,7 @@ export default function AdUnit({
     observer.observe(adRef.current);
 
     return () => observer.disconnect();
-  }, [forceLoad]);
+  }, []);
 
   useEffect(() => {
     const preferences = getCookiePreferences();
@@ -77,61 +73,14 @@ export default function AdUnit({
     setIsLoading(false);
   }, []);
 
-  // Enhanced script loading detection
+  // Initialize ad when script is loaded, component is visible, and consent given
   useEffect(() => {
-    if (!canShowAds || !isVisible || adsScriptLoaded) return;
+    if (!canShowAds || !isVisible) return;
 
-    let checkCount = 0;
-    const maxChecks = 100; // 10 seconds max
-
-    const checkAdsLoaded = setInterval(() => {
-      checkCount++;
-
-      const adsLoaded = window.adsLoaded;
-      const adsbygoogle = window.adsbygoogle;
-
-      // Check if script is loaded and adsbygoogle is available
-      if (adsLoaded && adsbygoogle && Array.isArray(adsbygoogle)) {
-        console.log('AdSense script detected as loaded');
-        setAdsScriptLoaded(true);
-        clearInterval(checkAdsLoaded);
-        return;
-      }
-
-      // Also check if adsbygoogle exists (fallback)
-      if (adsbygoogle && Array.isArray(adsbygoogle)) {
-        console.log('AdSense adsbygoogle array found');
-        setAdsScriptLoaded(true);
-        clearInterval(checkAdsLoaded);
-        return;
-      }
-
-      // Cleanup after max attempts
-      if (checkCount >= maxChecks) {
-        console.warn('AdSense script loading timeout');
-        clearInterval(checkAdsLoaded);
-      }
-    }, 100);
-
-    return () => clearInterval(checkAdsLoaded);
-  }, [canShowAds, isVisible, adsScriptLoaded]);
-
-  // Initialize ad when script is loaded
-  useEffect(() => {
-    if (!adsScriptLoaded || !canShowAds || !isVisible || adInitialized) return;
-
-    // Validate container dimensions
+    // Double-check container width before initializing
     if (adRef.current) {
       const rect = adRef.current.getBoundingClientRect();
-      console.log(`AdUnit debug - Container dimensions:`, {
-        width: rect.width,
-        height: rect.height,
-        slot,
-        format,
-        forceLoad,
-      });
-
-      if (rect.width < 200 && format === 'fluid') {
+      if (rect.width < 250 && format === 'fluid') {
         console.warn(
           'AdSense: Container too narrow for fluid ads:',
           rect.width
@@ -141,46 +90,15 @@ export default function AdUnit({
     }
 
     try {
-      console.log(`Initializing AdSense ad for slot: ${slot}`, {
-        format,
-        responsive,
-        forceLoad,
-        containerWidth: adRef.current?.getBoundingClientRect().width,
-      });
-
+      // Ensure adsbygoogle queue is initialized
       const adsbygoogle = window.adsbygoogle || [];
-
-      // Push empty object to trigger ad loading
+      // Push the ad to the queue
       adsbygoogle.push({});
-      setAdInitialized(true);
-
-      console.log('AdSense ad initialization completed for slot:', slot);
     } catch (err) {
-      console.error('AdSense initialization error:', err);
+      console.error('AdSense error:', err);
     }
-  }, [
-    adsScriptLoaded,
-    canShowAds,
-    isVisible,
-    format,
-    slot,
-    adInitialized,
-    forceLoad,
-  ]);
-
-  // Debug logging for state changes
-  useEffect(() => {
-    if (forceLoad) {
-      console.log(`StickyAd debug state:`, {
-        slot,
-        canShowAds,
-        adsScriptLoaded,
-        isVisible,
-        adInitialized,
-        forceLoad,
-      });
-    }
-  }, [canShowAds, adsScriptLoaded, isVisible, adInitialized, forceLoad, slot]);
+    // Effect dependencies: re-run if ad consent, visibility, or format changes.
+  }, [canShowAds, isVisible, format]);
 
   if (isLoading) {
     return (
@@ -217,7 +135,7 @@ export default function AdUnit({
       className={`ad-container ${className}`}
       style={{
         minHeight: adMinHeight,
-        minWidth: format === 'fluid' ? '280px' : '200px', // Reduced min width
+        minWidth: format === 'fluid' ? '300px' : '250px',
         width: '100%',
         maxWidth: '100%',
         ...style,
@@ -230,7 +148,7 @@ export default function AdUnit({
             display: 'block',
             minHeight: adMinHeight,
             width: '100%',
-            minWidth: format === 'fluid' ? '280px' : '200px',
+            minWidth: format === 'fluid' ? '300px' : '250px',
             ...style,
           }}
           data-ad-client="ca-pub-7459831240640476"
@@ -243,7 +161,7 @@ export default function AdUnit({
           className="ad-placeholder bg-gray-100 rounded-lg flex items-center justify-center"
           style={{
             minHeight: adMinHeight,
-            minWidth: format === 'fluid' ? '280px' : '200px',
+            minWidth: format === 'fluid' ? '300px' : '250px',
           }}
         >
           <div className="text-sm text-gray-500">Loading ad...</div>
