@@ -47,12 +47,26 @@ export default function AdUnit({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        const rect = entry.target.getBoundingClientRect();
+        console.log('[AdUnit IntersectionObserver]', {
+          isIntersecting: entry.isIntersecting,
+          intersectionRatio: entry.intersectionRatio,
+          rect,
+        });
         if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
           // Only set visible if the container has actual width
-          const rect = entry.target.getBoundingClientRect();
           if (rect.width > 250) {
+            console.log(
+              '[AdUnit IntersectionObserver] Setting isVisible = true',
+              { rect }
+            );
             setIsVisible(true);
             observer.disconnect();
+          } else {
+            console.warn(
+              '[AdUnit IntersectionObserver] Container too narrow for visibility check',
+              { rect }
+            );
           }
         }
       },
@@ -80,10 +94,12 @@ export default function AdUnit({
     // Double-check container width before initializing
     if (adRef.current) {
       const rect = adRef.current.getBoundingClientRect();
+      console.log('[AdUnit Pre-Push]', { rect, format, slot });
       if (rect.width < 250 && format === 'fluid') {
         console.warn(
           'AdSense: Container too narrow for fluid ads:',
-          rect.width
+          rect.width,
+          { slot }
         );
         return;
       }
