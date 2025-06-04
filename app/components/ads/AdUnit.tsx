@@ -58,14 +58,14 @@ export default function AdUnit({
           if (rect.width > 250) {
             console.log(
               '[AdUnit IntersectionObserver] Setting isVisible = true',
-              { rect }
+              { rect, slot }
             );
             setIsVisible(true);
             observer.disconnect();
           } else {
             console.warn(
               '[AdUnit IntersectionObserver] Container too narrow for visibility check',
-              { rect }
+              { rect, slot }
             );
           }
         }
