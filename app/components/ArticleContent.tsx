@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { sanitizeHTML } from '@/app/lib/sanitizeHTML';
 
 interface ArticleContentProps {
@@ -12,43 +12,62 @@ export default function ArticleContent({
   content,
   className = '',
 }: ArticleContentProps) {
-  const [processedContent, setProcessedContent] = useState<string>('');
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Sanitize content first
-    const sanitizedContent = sanitizeHTML(content);
+    if (!contentRef.current) {
+      return;
+    }
 
-    // Parse content
+    const sanitizedContent = sanitizeHTML(content);
     const parser = new DOMParser();
     const doc = parser.parseFromString(sanitizedContent, 'text/html');
 
-    // Optimize images in content
     const images = doc.querySelectorAll('img');
     images.forEach((img, index) => {
-      // Add loading optimization
       img.loading = index < 2 ? 'eager' : 'lazy';
       img.decoding = 'async';
-
-      // Add proper sizes attribute
       if (!img.getAttribute('sizes')) {
         img.setAttribute(
           'sizes',
           '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px'
         );
       }
-
-      // Add aspect ratio styles to prevent CLS
       if (!img.style.aspectRatio && img.width && img.height) {
         img.style.aspectRatio = `${img.width}/${img.height}`;
       }
-
-      // Add error handling
       img.onerror = function () {
-        this.style.display = 'none';
+        (this as HTMLImageElement).style.display = 'none';
       };
     });
 
-    setProcessedContent(doc.body.innerHTML);
+    const scripts = Array.from(doc.querySelectorAll('script'));
+    const contentBody = doc.body;
+
+    scripts.forEach(script => script.parentNode?.removeChild(script));
+
+    const contentDiv = contentRef.current;
+    contentDiv.innerHTML = contentBody.innerHTML;
+
+    const addedScripts: HTMLScriptElement[] = [];
+
+    scripts.forEach(script => {
+      const newScript = document.createElement('script');
+      for (const attr of Array.from(script.attributes)) {
+        newScript.setAttribute(attr.name, attr.value);
+      }
+      newScript.innerHTML = script.innerHTML;
+      document.body.appendChild(newScript);
+      addedScripts.push(newScript);
+    });
+
+    return () => {
+      addedScripts.forEach(script => {
+        if (document.body.contains(script)) {
+          document.body.removeChild(script);
+        }
+      });
+    };
   }, [content]);
 
   return (
@@ -74,10 +93,7 @@ export default function ArticleContent({
           font-style: italic;
         }
       `}</style>
-      <div
-        className="article-content"
-        dangerouslySetInnerHTML={{ __html: processedContent }}
-      />
+      <div className="article-content" ref={contentRef} />
     </div>
   );
 }
