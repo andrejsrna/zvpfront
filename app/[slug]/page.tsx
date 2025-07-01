@@ -4,8 +4,8 @@ import { parseHeadings } from '@/app/utils/parseHeadings';
 import he from 'he';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import NativeHeroImage from '@/app/components/NativeHeroImage';
 import ArticleContent from '@/app/components/ArticleContent';
+import FeaturedImage from '@/app/components/FeaturedImage';
 import {
   LazyNewsletter,
   LazyRecommendedReads,
@@ -88,48 +88,23 @@ async function PostContent({ slug }: { slug: string }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
         />
 
-        {/* CRITICAL: Ultra-fast Hero Section for LCP */}
-        <div
-          className="relative w-full h-screen min-h-[100vh] overflow-hidden bg-gray-100"
-          style={{
-            contain: 'layout style paint',
-            willChange: 'auto',
-            contentVisibility: 'visible',
-            containIntrinsicSize: '0 100vh',
-          }}
-          data-lcp-container="true"
-        >
-          <NativeHeroImage
-            src={featuredImageUrl || ''}
-            alt={featuredImageAlt}
-          />
-
-          {/* Category overlay - minimal and fast */}
-          {post.categories && post.categories[0] && (
-            <div className="absolute top-20 left-8 z-10">
-              <Link
-                href={`/kategoria/${post.categories[0].slug}`}
-                className="inline-block px-4 py-2 bg-emerald-500/95 backdrop-blur-sm text-white
-                  text-sm font-medium rounded-full hover:bg-emerald-600/95
-                  transition-colors shadow-xl border border-emerald-400/20"
-              >
-                {post.categories[0].name}
-              </Link>
-            </div>
-          )}
-        </div>
-
         {/* ABOVE FOLD: Critical content */}
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 pt-32 pb-12">
           <div className="max-w-4xl mx-auto">
             {/* H1 Title - CRITICAL for SEO */}
             <header className="mb-8">
-              <h1
-                className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
-                dangerouslySetInnerHTML={{ __html: decodedTitle }}
-              />
-              <div className="flex items-center text-gray-600 space-x-4 text-sm">
-                <time dateTime={post.date}>
+              <div className="flex items-center gap-4 mb-4">
+                {post.categories && post.categories[0] && (
+                  <Link
+                    href={`/kategoria/${post.categories[0].slug}`}
+                    className="inline-block px-4 py-2 bg-[#3e802b] text-white
+                      text-sm font-medium rounded-full hover:bg-[#4a9a35]
+                      transition-colors shadow-lg"
+                  >
+                    {post.categories[0].name}
+                  </Link>
+                )}
+                <time dateTime={post.date} className="text-gray-500 text-sm">
                   {new Date(post.date).toLocaleDateString('sk-SK', {
                     day: 'numeric',
                     month: 'long',
@@ -137,7 +112,16 @@ async function PostContent({ slug }: { slug: string }) {
                   })}
                 </time>
               </div>
+              <h1
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight"
+                dangerouslySetInnerHTML={{ __html: decodedTitle }}
+              />
             </header>
+
+            {/* Featured Image - positioned between title and content */}
+            {featuredImageUrl && (
+              <FeaturedImage src={featuredImageUrl} alt={featuredImageAlt} />
+            )}
 
             {/* DEFERRED: Table of Contents */}
             <Suspense
@@ -162,8 +146,8 @@ async function PostContent({ slug }: { slug: string }) {
               <ArticleContent
                 content={content}
                 className="prose prose-lg max-w-none prose-headings:font-heading
-                  prose-headings:text-gray-900 prose-a:text-emerald-600
-                  hover:prose-a:text-emerald-700 prose-img:rounded-xl
+                  prose-headings:text-gray-900 prose-a:text-[#3e802b]
+                  hover:prose-a:text-[#4a9a35] prose-img:rounded-xl
                   prose-strong:text-gray-900"
               />
             </Suspense>
@@ -190,7 +174,7 @@ async function PostContent({ slug }: { slug: string }) {
                             href={ref.odkaz}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-emerald-600 hover:text-emerald-700
+                            className="text-[#3e802b] hover:text-[#4a9a35]
                               transition-colors hover:underline"
                           >
                             {ref.nazov}

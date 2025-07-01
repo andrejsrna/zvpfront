@@ -144,9 +144,18 @@ class WordPressClient {
     const categoryParam = categoryId
       ? `&categories=${categoryId}&include_children=true`
       : '';
-    return this.fetch<WordPressPost[]>(
+    const posts = await this.fetch<WordPressPost[]>(
       `/wp/v2/posts?_embed&per_page=${perPage}&orderby=${orderby}&order=desc${categoryParam}&page=${page}`
     );
+
+    // Process embedded terms for categories and tags
+    return posts.map(post => {
+      if (post._embedded?.['wp:term']) {
+        post.categories = post._embedded['wp:term'][0] || post.categories;
+        post.tags = post._embedded['wp:term'][1] || post.tags;
+      }
+      return post;
+    });
   }
 
   private static async getCategoriesUncached(): Promise<WordPressCategory[]> {
@@ -280,7 +289,16 @@ class WordPressClient {
         response.headers.get('X-WP-TotalPages') || '0'
       );
 
-      return { posts, total, totalPages };
+      // Process embedded terms for categories and tags
+      const processedPosts = posts.map((post: WordPressPost) => {
+        if (post._embedded?.['wp:term']) {
+          post.categories = post._embedded['wp:term'][0] || post.categories;
+          post.tags = post._embedded['wp:term'][1] || post.tags;
+        }
+        return post;
+      });
+
+      return { posts: processedPosts, total, totalPages };
     } catch (error) {
       console.error('Error searching posts:', error);
       return { posts: [], total: 0, totalPages: 0 };
