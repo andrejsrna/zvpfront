@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Sora } from 'next/font/google';
 import { Suspense } from 'react';
-import Script from 'next/script';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import CacheOptimizer from './components/CacheOptimizer';
@@ -9,10 +8,7 @@ import CookieConsentModal from './components/CookieConsentModal';
 import CookieConsentInit from './components/CookieConsentInit';
 import './globals.css';
 import './styles/cookie-modal.css';
-
-// Import WordPress block library styles
-import '@wordpress/block-library/build-style/style.css';
-import '@wordpress/block-library/build-style/theme.css';
+import GoogleScripts from './components/GoogleScripts';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -199,43 +195,10 @@ export default function RootLayout({
           <CacheOptimizer />
         </Suspense>
 
-        {/* Delayed scripts - load after 5 seconds */}
-        <Script
-          id="delayed-analytics"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              setTimeout(() => {
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
-                
-                const script = document.createElement('script');
-                script.async = true;
-                script.src = 'https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}';
-                document.head.appendChild(script);
-                
-                // Load AdSense script without data-nscript attribute
-                const adsScript = document.createElement('script');
-                adsScript.async = true;
-                adsScript.crossOrigin = 'anonymous';
-                adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7459831240640476';
-                document.head.appendChild(adsScript);
-                
-                // Handle frame communication for Google AdSense
-                window.addEventListener('message', function(event) {
-                  if (event.origin.includes('google') || event.origin.includes('doubleclick')) {
-                    // Allow messages from Google domains
-                    console.log('AdSense frame message received:', event.origin);
-                  }
-                }, false);
-                
-                window.adsLoaded = true;
-              }, 5000);
-            `,
-          }}
-        />
+        {/* Conditionally load Google Scripts based on cookie consent */}
+        <Suspense fallback={null}>
+          <GoogleScripts />
+        </Suspense>
       </body>
     </html>
   );

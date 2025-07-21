@@ -9,14 +9,15 @@ export default function PrivacyPage() {
 
           <div className="prose prose-lg max-w-none">
             <p className="lead text-xl text-gray-600 mb-8">
-              Vaše súkromie je pre nás dôležité. Tento dokument vysvetľuje, ako 
+              Vaše súkromie je pre nás dôležité. Tento dokument vysvetľuje, ako
               zhromažďujeme, používame a chránime vaše osobné údaje.
             </p>
 
             <section className="mb-12">
               <h2>Aké údaje zbierame</h2>
               <p>
-                Pri návšteve našej stránky môžeme zhromažďovať nasledujúce informácie:
+                Pri návšteve našej stránky môžeme zhromažďovať nasledujúce
+                informácie:
               </p>
               <ul>
                 <li>Informácie o vašom prehliadači a zariadení</li>
@@ -41,9 +42,9 @@ export default function PrivacyPage() {
             <section className="mb-12">
               <h2>Cookies</h2>
               <p>
-                Používame cookies na zlepšenie vášho zážitku z prehliadania. 
-                Môžete ich kedykoľvek zakázať v nastaveniach prehliadača, 
-                ale môže to ovplyvniť funkčnosť stránky.
+                Používame cookies na zlepšenie vášho zážitku z prehliadania.
+                Môžete ich kedykoľvek zakázať v nastaveniach prehliadača, ale
+                môže to ovplyvniť funkčnosť stránky.
               </p>
             </section>
 
@@ -56,7 +57,7 @@ export default function PrivacyPage() {
                 <li>Keď je to vyžadované zákonom</li>
                 <li>S vašim výslovným súhlasom</li>
                 <li>
-                  S poskytovateľmi služieb, ktorí nám pomáhajú prevádzkovať web 
+                  S poskytovateľmi služieb, ktorí nám pomáhajú prevádzkovať web
                   (viazaní mlčanlivosťou)
                 </li>
               </ul>
@@ -65,9 +66,9 @@ export default function PrivacyPage() {
             <section className="mb-12">
               <h2>Bezpečnosť</h2>
               <p>
-                Implementujeme primerané bezpečnostné opatrenia na ochranu vašich 
-                údajov pred neoprávneným prístupom, zmenou, zverejnením alebo 
-                zničením.
+                Implementujeme primerané bezpečnostné opatrenia na ochranu
+                vašich údajov pred neoprávneným prístupom, zmenou, zverejnením
+                alebo zničením.
               </p>
             </section>
 
@@ -86,10 +87,12 @@ export default function PrivacyPage() {
             <section className="mb-12">
               <h2>Kontaktujte nás</h2>
               <p>
-                Ak máte akékoľvek otázky týkajúce sa ochrany súkromia, 
+                Ak máte akékoľvek otázky týkajúce sa ochrany súkromia,
                 kontaktujte nás na{' '}
-                <a href="mailto:privacy@zdravievpraxi.sk" 
-                  className="text-emerald-600 hover:text-emerald-700">
+                <a
+                  href="mailto:privacy@zdravievpraxi.sk"
+                  className="text-emerald-800 hover:text-emerald-900"
+                >
                   privacy@zdravievpraxi.sk
                 </a>
               </p>
@@ -98,8 +101,9 @@ export default function PrivacyPage() {
             <section>
               <h2>Zmeny v ochrane súkromia</h2>
               <p>
-                Vyhradzujeme si právo aktualizovať tieto zásady ochrany súkromia. 
-                Zmeny budú účinné ihneď po zverejnení na tejto stránke.
+                Vyhradzujeme si právo aktualizovať tieto zásady ochrany
+                súkromia. Zmeny budú účinné ihneď po zverejnení na tejto
+                stránke.
               </p>
               <p className="text-sm text-gray-500 mt-4">
                 Posledná aktualizácia: {new Date().toLocaleDateString('sk-SK')}

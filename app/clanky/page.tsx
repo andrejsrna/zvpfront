@@ -2,6 +2,7 @@ import { getPosts, getCategories, WordPressPost } from '@/app/lib/WordPress';
 import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
 import Image from 'next/image';
 import Link from 'next/link';
+import { decode } from 'he';
 
 interface ArticlesPageProps {
   searchParams: Promise<{
@@ -120,37 +121,34 @@ export default async function ArticlesPage({
                   )}
                 </div>
                 <div className="p-6">
-                  {post.categories?.[0] && (
+                  <p
+                    className="text-emerald-800 text-sm font-medium mb-2
+                      "
+                  >
+                    {post.categories?.[0]?.name || 'Nezaradené'}
+                  </p>
+                  <h2 className="text-xl font-bold mb-3">
                     <Link
-                      href={`/clanky?kategoria=${post.categories[0].slug}`}
-                      className="text-emerald-600 text-sm font-medium mb-2 
-                        hover:text-emerald-700 transition-colors inline-block"
+                      href={`/${post.slug}`}
+                      className="text-gray-900 hover:text-gray-700 transition-colors"
                     >
-                      {post.categories[0].name}
+                      {decode(post.title.rendered)}
                     </Link>
-                  )}
-                  <h2
-                    className="text-xl font-bold text-gray-900 mb-3 
-                      group-hover:text-emerald-600 transition-colors"
-                    dangerouslySetInnerHTML={{ __html: post.title.rendered }}
-                  />
+                  </h2>
                   <div
-                    className="text-gray-600 mb-4 line-clamp-2"
+                    className="text-gray-600 text-sm mb-4"
                     dangerouslySetInnerHTML={{
                       __html: sanitizeExcerpt(post.excerpt.rendered),
                     }}
                   />
-                  <div className="flex items-center justify-between">
-                    <time className="text-sm text-gray-500">
-                      {new Date(post.date).toLocaleDateString('sk-SK', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    </time>
-                    <span
-                      className="text-emerald-600 font-medium inline-flex 
-                      items-center group-hover:translate-x-1 transition-transform"
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-gray-500 text-sm">
+                      {new Date(post.date).toLocaleDateString('sk-SK')}
+                    </span>
+                    <Link
+                      href={`/${post.slug}`}
+                      className="text-emerald-800 font-medium inline-flex
+                        items-center hover:text-emerald-900 transition-colors"
                     >
                       Čítať viac
                       <svg
@@ -166,7 +164,7 @@ export default async function ArticlesPage({
                           d="M13 7l5 5m0 0l-5 5m5-5H6"
                         />
                       </svg>
-                    </span>
+                    </Link>
                   </div>
                 </div>
               </Link>

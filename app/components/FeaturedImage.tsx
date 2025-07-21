@@ -14,18 +14,13 @@ export default function FeaturedImage({ src, alt }: FeaturedImageProps) {
         <Image
           src={src}
           alt={alt}
-          width={800}
-          height={450}
+          width={896}
+          height={504}
           className="w-full h-full object-cover transition-opacity duration-300"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
+          sizes="(max-width: 928px) calc(100vw - 32px), 896px"
           priority
-          quality={90}
-          onLoad={() => {
-            console.log('Featured image loaded successfully');
-          }}
-          onError={() => {
-            console.error('Featured image failed to load');
-          }}
+          quality={80}
+          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
       </div>

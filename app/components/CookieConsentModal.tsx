@@ -108,13 +108,10 @@ export default function CookieConsentModal() {
                 {/* Cookie Categories Preview */}
                 <div className="mb-8 space-y-3">
                   <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
-                    <div className="flex items-center">
-                      <span className="text-2xl mr-3">🔒</span>
-                      <span className="font-medium text-gray-900">
-                        Nevyhnutné
-                      </span>
-                    </div>
-                    <span className="text-sm text-emerald-600 font-medium">
+                    <span className="text-sm font-medium text-gray-800">
+                      Nevyhnutné
+                    </span>
+                    <span className="text-sm text-emerald-800 font-medium">
                       Vždy aktívne
                     </span>
                   </div>
@@ -176,7 +173,7 @@ export default function CookieConsentModal() {
                   <Link
                     href="/cookies"
                     target="_blank"
-                    className="text-emerald-600 hover:underline font-medium"
+                    className="text-emerald-800 hover:underline font-medium"
                   >
                     zásady používania cookies
                   </Link>

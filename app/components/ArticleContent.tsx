@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { Suspense } from 'react';
+import parse, { domToReact, HTMLReactParserOptions } from 'html-react-parser';
+import Image from 'next/image';
 import { sanitizeHTML } from '@/app/lib/sanitizeHTML';
 
 interface ArticleContentProps {
@@ -8,92 +10,70 @@ interface ArticleContentProps {
   className?: string;
 }
 
+const shimmer = (w: number, h: number) => `
+<svg width="${w}" height="${h}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="g">
+      <stop stop-color="#f0f0f0" offset="20%" />
+      <stop stop-color="#e0e0e0" offset="50%" />
+      <stop stop-color="#f0f0f0" offset="70%" />
+    </linearGradient>
+  </defs>
+  <rect width="${w}" height="${h}" fill="#f0f0f0" />
+  <rect id="r" width="${w}" height="${h}" fill="url(#g)" />
+  <animate xlink:href="#r" attributeName="x" from="-${w}" to="${w}" dur="1s" repeatCount="indefinite"  />
+</svg>`;
+
+const toBase64 = (str: string) =>
+  typeof window === 'undefined'
+    ? Buffer.from(str).toString('base64')
+    : window.btoa(str);
+
 export default function ArticleContent({
   content,
   className = '',
 }: ArticleContentProps) {
-  const contentRef = useRef<HTMLDivElement>(null);
+  const sanitizedContent = sanitizeHTML(content);
 
-  useEffect(() => {
-    if (!contentRef.current) {
-      return;
-    }
+  const options: HTMLReactParserOptions = {
+    replace: domNode => {
+      if (
+        'type' in domNode &&
+        domNode.type === 'tag' &&
+        domNode.name === 'img'
+      ) {
+        const { src, alt, width, height } = domNode.attribs;
 
-    const sanitizedContent = sanitizeHTML(content);
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(sanitizedContent, 'text/html');
+        if (!src) {
+          return null;
+        }
 
-    const images = doc.querySelectorAll('img');
-    images.forEach((img, index) => {
-      img.loading = index < 2 ? 'eager' : 'lazy';
-      img.decoding = 'async';
-      if (!img.getAttribute('sizes')) {
-        img.setAttribute(
-          'sizes',
-          '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px'
+        return (
+          <Suspense fallback={<div>Loading image...</div>}>
+            <div className="relative my-6 overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src={src}
+                alt={alt || 'Image from article'}
+                width={Number(width) || 800}
+                height={Number(height) || 450}
+                className="w-full h-auto object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
+                loading="lazy"
+                placeholder={`data:image/svg+xml;base64,${toBase64(
+                  shimmer(Number(width) || 800, Number(height) || 450)
+                )}`}
+              />
+            </div>
+          </Suspense>
         );
       }
-      if (!img.style.aspectRatio && img.width && img.height) {
-        img.style.aspectRatio = `${img.width}/${img.height}`;
-      }
-      img.onerror = function () {
-        (this as HTMLImageElement).style.display = 'none';
-      };
-    });
-
-    const scripts = Array.from(doc.querySelectorAll('script'));
-    const contentBody = doc.body;
-
-    scripts.forEach(script => script.parentNode?.removeChild(script));
-
-    const contentDiv = contentRef.current;
-    contentDiv.innerHTML = contentBody.innerHTML;
-
-    const addedScripts: HTMLScriptElement[] = [];
-
-    scripts.forEach(script => {
-      const newScript = document.createElement('script');
-      for (const attr of Array.from(script.attributes)) {
-        newScript.setAttribute(attr.name, attr.value);
-      }
-      newScript.innerHTML = script.innerHTML;
-      document.body.appendChild(newScript);
-      addedScripts.push(newScript);
-    });
-
-    return () => {
-      addedScripts.forEach(script => {
-        if (document.body.contains(script)) {
-          document.body.removeChild(script);
-        }
-      });
-    };
-  }, [content]);
+      return domToReact([domNode], options);
+    },
+  };
 
   return (
-    <div className={`article-wrapper ${className}`}>
-      <style jsx>{`
-        .article-content img {
-          max-width: 100%;
-          height: auto;
-          border-radius: 0.75rem;
-          margin: 1.5rem 0;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .article-content figure {
-          margin: 1.5rem 0;
-        }
-
-        .article-content figcaption {
-          text-align: center;
-          font-size: 0.875rem;
-          color: #6b7280;
-          margin-top: 0.5rem;
-          font-style: italic;
-        }
-      `}</style>
-      <div className="article-content" ref={contentRef} />
+    <div className={`article-content prose prose-lg max-w-none ${className}`}>
+      {parse(sanitizedContent, options)}
     </div>
   );
 }

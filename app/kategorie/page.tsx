@@ -1,9 +1,9 @@
-import { getCategories } from "@/app/lib/WordPress";
-import Link from "next/link";
+import { getCategories } from '@/app/lib/WordPress';
+import Link from 'next/link';
 
 export default async function CategoriesPage() {
   const categories = await getCategories();
-  
+
   // Filter len parent kategórie (nultý stupeň)
   const parentCategories = categories.filter(cat => cat.parent === 0);
 
@@ -20,12 +20,15 @@ export default async function CategoriesPage() {
         </h1>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {parentCategories.map((parent) => (
-            <div key={parent.id} className="bg-white rounded-xl shadow-sm p-6 
-              hover:shadow-md transition-shadow">
+          {parentCategories.map(parent => (
+            <div
+              key={parent.id}
+              className="bg-white rounded-xl shadow-sm p-6 
+              hover:shadow-md transition-shadow"
+            >
               <Link
                 href={`/kategoria/${parent.slug}`}
-                className="text-xl font-bold text-gray-900 hover:text-emerald-600 
+                className="text-xl font-bold text-gray-900 hover:text-emerald-800 
                   transition-colors mb-4 block"
               >
                 {parent.name}
@@ -36,17 +39,15 @@ export default async function CategoriesPage() {
 
               {/* Child kategórie */}
               <div className="mt-4 space-y-2">
-                {getChildCategories(parent.id).map((child) => (
+                {getChildCategories(parent.id).map(child => (
                   <Link
                     key={child.id}
                     href={`/kategoria/${child.slug}`}
-                    className="block text-gray-600 hover:text-emerald-600 
+                    className="block text-gray-600 hover:text-emerald-800 
                       transition-colors text-sm"
                   >
                     {child.name}
-                    <span className="text-gray-400 ml-1">
-                      ({child.count})
-                    </span>
+                    <span className="text-gray-400 ml-1">({child.count})</span>
                   </Link>
                 ))}
               </div>
@@ -60,5 +61,6 @@ export default async function CategoriesPage() {
 
 export const metadata = {
   title: 'Kategórie | Zdravie v praxi',
-  description: 'Prehľad všetkých kategórií článkov o zdraví, životnom štýle a wellness',
-}; 
+  description:
+    'Prehľad všetkých kategórií článkov o zdraví, životnom štýle a wellness',
+};

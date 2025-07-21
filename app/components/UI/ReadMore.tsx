@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { WordPressPost, getPosts, transformUrl } from '@/app/lib/WordPress';
-import Image from 'next/image';
+import { WordPressPost, getPosts } from '@/app/lib/WordPress';
 import Link from 'next/link';
+import he from 'he';
 
 interface ReadMoreProps {
   categoryId: number;
@@ -63,7 +63,7 @@ export default function ReadMore({
           <div className="flex justify-between items-center mb-8">
             <div>
               <span
-                className="text-emerald-600 font-semibold text-sm uppercase 
+                className="text-emerald-800 font-semibold text-sm uppercase 
                 tracking-wider"
               >
                 Ďalšie články z kategórie
@@ -74,7 +74,7 @@ export default function ReadMore({
             </div>
             <Link
               href={`/kategoria/${categorySlug}`}
-              className="inline-flex items-center text-emerald-600 hover:text-emerald-700 
+              className="inline-flex items-center text-emerald-800 hover:text-emerald-900 
                 font-medium transition-colors"
             >
               Zobraziť všetky
@@ -96,42 +96,35 @@ export default function ReadMore({
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {posts.slice(0, 8).map(post => (
-              <Link key={post.id} href={`/${post.slug}`} className="group">
-                <div className="relative aspect-[4/3] rounded-lg overflow-hidden mb-4">
-                  {post._embedded?.['wp:featuredmedia'] ? (
-                    <Image
-                      src={transformUrl(
-                        post._embedded['wp:featuredmedia'][0].source_url
-                      )}
-                      alt={post.title.rendered}
-                      fill
-                      sizes="(max-width: 768px) 45vw, (max-width: 1200px) 22vw, 18vw"
-                      className="object-cover transition-transform duration-300 
-                        group-hover:scale-105"
-                      loading="lazy"
-                      quality={80}
-                      placeholder="blur"
-                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkrHR4f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+JjHmsnLLKKRnHbwKJ3FlAm2O0UfGYJeO5Jp7Dcp3OHGMYd4b6aLgEJP5SjsNQFZAo9O5B+tWRcWlwJ3txdPGFVKdWKdlL8Whe2ZTBqD7+4I2HHDZ8Q/I4U4Q7XSB8ikEKDMBOGAyMPEtwq57Ck2xD/9k="
+              <div key={post.id} className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  <Link
+                    href={`/${post.slug}`}
+                    className="hover:text-emerald-900 transition-colors"
+                  >
+                    {he.decode(post.title.rendered)}
+                  </Link>
+                </h3>
+                <div className="flex items-center text-sm text-gray-500">
+                  <svg
+                    className="w-4 h-4 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 0 002-2V7a2 0 00-2-2H5a2 0 00-2 2v12a2 0 002 2z"
                     />
-                  ) : (
-                    <div
-                      className="w-full h-full bg-gradient-to-br from-emerald-500 
-                      to-teal-600"
-                    />
-                  )}
-                </div>
-                <h3
-                  className="text-gray-900 font-medium mb-2 line-clamp-2 
-                    group-hover:text-emerald-600 transition-colors"
-                  dangerouslySetInnerHTML={{ __html: post.title.rendered }}
-                />
-                <time className="text-sm text-gray-500">
+                  </svg>
                   {new Date(post.date).toLocaleDateString('sk-SK', {
                     day: 'numeric',
                     month: 'long',
                   })}
-                </time>
-              </Link>
+                </div>
+              </div>
             ))}
           </div>
         </div>

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
 import he from 'he';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 interface SearchProps {
   onClose?: () => void;
@@ -89,6 +90,14 @@ export default function Search({ onClose }: SearchProps) {
               />
             </svg>
           </button>
+          <button
+            onClick={onClose}
+            aria-label="Zatvoriť vyhľadávanie"
+            className="absolute top-3 right-3 p-2 rounded-full bg-white/10
+              text-gray-400 hover:text-emerald-800 transition-colors"
+          >
+            <XMarkIcon className="w-6 h-6" />
+          </button>
         </div>
       </form>
 
@@ -144,14 +153,14 @@ export default function Search({ onClose }: SearchProps) {
                   </div>
                 </Link>
               ))}
-              {results.length >= 10 && (
-                <div className="p-4 border-t">
-                  <button
-                    onClick={handleSubmit}
-                    className="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
+              {results.length > 0 && (
+                <div className="mt-4 text-right">
+                  <Link
+                    href={`/vyhladavanie?q=${query}`}
+                    className="text-emerald-800 hover:text-emerald-900 text-sm font-medium"
                   >
                     Zobraziť všetky výsledky
-                  </button>
+                  </Link>
                 </div>
               )}
             </div>

@@ -53,8 +53,8 @@ export default function RecommendedReads({
     <section className="bg-gradient-to-b from-gray-50 to-white py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
-          <span className="text-emerald-600 font-semibold text-sm uppercase tracking-wider">
-            Mohlo by vás zaujímať
+          <span className="text-emerald-800 font-semibold text-sm uppercase tracking-wider">
+            Odporúčané články
           </span>
           <h2 className="text-3xl font-bold text-gray-900 mt-2">
             Čo čítať ďalej
@@ -110,7 +110,7 @@ export default function RecommendedReads({
               {recommendedPost.categories && recommendedPost.categories[0] && (
                 <span
                   className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm 
-                  text-emerald-600 text-sm px-4 py-1.5 rounded-full font-medium 
+                  text-emerald-800 text-sm px-4 py-1.5 rounded-full font-medium 
                   shadow-sm"
                 >
                   {recommendedPost.categories[0].name}
@@ -139,7 +139,7 @@ export default function RecommendedReads({
 
               <div className="flex items-center justify-between mt-auto">
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center text-emerald-600 font-medium">
+                  <div className="flex items-center text-emerald-800 font-medium">
                     Čítať článok
                     <svg
                       className="w-5 h-5 ml-1 transform group-hover:translate-x-1 

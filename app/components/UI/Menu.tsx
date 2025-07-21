@@ -131,6 +131,7 @@ export default function Menu() {
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="p-2.5 text-gray-600 hover:text-[#3e802b] transition-all duration-200 rounded-lg hover:bg-[#3e802b]/10 border border-gray-200 hover:border-[#3e802b]/30"
+                aria-label={isMobileMenuOpen ? 'Zatvoriť menu' : 'Otvoriť menu'}
               >
                 {isMobileMenuOpen ? (
                   <XMarkIcon className="h-6 w-6" />

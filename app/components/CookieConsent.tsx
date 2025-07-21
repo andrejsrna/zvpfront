@@ -88,16 +88,15 @@ export default function CookieConsent() {
               </h2>
             </div>
 
-            <p className="text-gray-600 mb-6 text-center">
-              Používame cookies na zlepšenie vášho zážitku, analýzu návštevnosti
-              a zobrazovanie relevantných reklám. Viac informácií nájdete v
-              našich{' '}
+            <p className="text-gray-600 mb-6">
+              Pre fungovanie tejto stránky používame nevyhnutné súbory cookie. S
+              vaším súhlasom môžeme použiť aj ďalšie súbory cookie na účely
+              analýzy, personalizácie a marketingu.{' '}
               <Link
                 href="/cookies"
-                target="_blank"
-                className="text-emerald-600 hover:underline font-medium"
+                className="text-emerald-800 hover:underline font-medium"
               >
-                zásadách používania cookies
+                Zistite viac
               </Link>
               .
             </p>

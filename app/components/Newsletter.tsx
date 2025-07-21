@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState } from 'react';
+import Link from 'next/link';
 
 interface NewsletterFormData {
   email: string;
@@ -10,22 +10,24 @@ interface NewsletterFormData {
 
 export default function Newsletter() {
   const [formData, setFormData] = useState<NewsletterFormData>({
-    email: "",
-    acceptPrivacy: false
+    email: '',
+    acceptPrivacy: false,
   });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [status, setStatus] = useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.acceptPrivacy) {
-      setErrorMessage("Prosím, potvrďte súhlas so spracovaním osobných údajov");
+      setErrorMessage('Prosím, potvrďte súhlas so spracovaním osobných údajov');
       return;
     }
 
     setStatus('loading');
-    setErrorMessage("");
+    setErrorMessage('');
 
     try {
       const response = await fetch('/api/newsletter', {
@@ -41,10 +43,12 @@ export default function Newsletter() {
       }
 
       setStatus('success');
-      setFormData({ email: "", acceptPrivacy: false });
+      setFormData({ email: '', acceptPrivacy: false });
     } catch {
       setStatus('error');
-      setErrorMessage("Nastala chyba pri prihlásení na odber. Skúste to prosím neskôr.");
+      setErrorMessage(
+        'Nastala chyba pri prihlásení na odber. Skúste to prosím neskôr.'
+      );
     }
   };
 
@@ -59,8 +63,8 @@ export default function Newsletter() {
                 Zostaňte v obraze
               </h2>
               <p className="text-gray-600 mb-8">
-                Prihláste sa na odber noviniek a dostávajte pravidelne čerstvé informácie 
-                o zdraví a životnom štýle priamo do vašej schránky.
+                Prihláste sa na odber noviniek a dostávajte pravidelne čerstvé
+                informácie o zdraví a životnom štýle priamo do vašej schránky.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -74,10 +78,12 @@ export default function Newsletter() {
                       id="email"
                       name="email"
                       value={formData.email}
-                      onChange={(e) => setFormData(prev => ({ 
-                        ...prev, 
-                        email: e.target.value 
-                      }))}
+                      onChange={e =>
+                        setFormData(prev => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
+                      }
                       placeholder="Zadajte váš email"
                       required
                       className="w-full px-4 py-3 rounded-lg border border-gray-200 
@@ -90,24 +96,33 @@ export default function Newsletter() {
                 <div className="flex items-start">
                   <div className="flex items-center h-5">
                     <input
-                      id="privacy"
-                      name="privacy"
+                      id="privacy-policy"
+                      name="privacy-policy"
                       type="checkbox"
                       checked={formData.acceptPrivacy}
-                      onChange={(e) => setFormData(prev => ({ 
-                        ...prev, 
-                        acceptPrivacy: e.target.checked 
-                      }))}
-                      className="h-4 w-4 rounded border-gray-300 text-emerald-600 
-                        focus:ring-emerald-500 cursor-pointer"
+                      onChange={e =>
+                        setFormData(prev => ({
+                          ...prev,
+                          acceptPrivacy: e.target.checked,
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-gray-300 text-emerald-800
+                        focus:ring-emerald-500"
                     />
                   </div>
                   <div className="ml-3">
-                    <label htmlFor="privacy" className="text-sm text-gray-600 cursor-pointer">
-                      Súhlasím so spracovaním osobných údajov a{' '}
-                      <Link href="/privacy" className="text-emerald-600 hover:text-emerald-700">
+                    <label
+                      htmlFor="privacy-policy"
+                      className="text-sm text-gray-700"
+                    >
+                      Súhlasím s{' '}
+                      <Link
+                        href="/privacy"
+                        className="text-emerald-800 hover:text-emerald-900"
+                      >
                         podmienkami ochrany súkromia
                       </Link>
+                      .
                     </label>
                   </div>
                 </div>
@@ -127,13 +142,25 @@ export default function Newsletter() {
                 >
                   {status === 'loading' ? (
                     <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" 
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" 
-                          stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" 
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Prihlasujem...
                     </span>
@@ -151,13 +178,23 @@ export default function Newsletter() {
             </div>
 
             {/* Right Decorative Section */}
-            <div className="hidden md:block md:col-span-2 bg-gradient-to-br 
-              from-emerald-500 to-teal-600 p-12 text-white relative overflow-hidden">
+            <div
+              className="hidden md:block md:col-span-2 bg-gradient-to-br 
+              from-emerald-500 to-teal-600 p-12 text-white relative overflow-hidden"
+            >
               <div className="relative z-10">
-                <svg className="w-12 h-12 mb-6 text-white/90" fill="none" 
-                  stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                <svg
+                  className="w-12 h-12 mb-6 text-white/90"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
                 </svg>
                 <div className="space-y-2">
                   <div className="w-32 h-2 rounded bg-white/20"></div>
@@ -166,12 +203,16 @@ export default function Newsletter() {
                 </div>
               </div>
               {/* Decorative circles */}
-              <div className="absolute right-0 bottom-0 transform translate-x-1/3 
-                translate-y-1/3">
+              <div
+                className="absolute right-0 bottom-0 transform translate-x-1/3 
+                translate-y-1/3"
+              >
                 <div className="w-64 h-64 rounded-full border-4 border-white/20"></div>
               </div>
-              <div className="absolute right-0 bottom-0 transform translate-x-1/2 
-                translate-y-1/2">
+              <div
+                className="absolute right-0 bottom-0 transform translate-x-1/2 
+                translate-y-1/2"
+              >
                 <div className="w-80 h-80 rounded-full border-4 border-white/10"></div>
               </div>
             </div>
