@@ -12,50 +12,62 @@ export function parseHeadings(content: string): {
     return { headings: [], content: '' };
   }
 
+  // Safety check for content length
+  if (content.length > 500000) {
+    console.warn('Content too large for heading parsing, returning as-is');
+    return { headings: [], content };
+  }
+
   const headings: Heading[] = [];
   let modifiedContent = content;
 
   try {
-    // Find all h2 and h3 tags with safety limits
-    const headingRegex = /<h([23])[^>]*?>(.*?)<\/h\1>/g;
-    const maxHeadings = 50; // Prevent excessive processing
-    let headingCount = 0;
+    // Simple and safe heading detection
+    const headingMatches = content.match(/<h([23])[^>]*?>(.*?)<\/h\1>/gi);
 
-    modifiedContent = content.replace(headingRegex, (match, level, text) => {
-      // Safety limit to prevent excessive processing
-      if (headingCount >= maxHeadings) {
-        return match;
-      }
-      headingCount++;
+    if (!headingMatches) {
+      return { headings: [], content };
+    }
 
-      // Clean text from any remaining HTML with safety check
-      const cleanText = text ? text.replace(/<[^>]*>/g, '').trim() : '';
+    // Process each heading safely
+    headingMatches.slice(0, 50).forEach(match => {
+      const levelMatch = match.match(/<h([23])[^>]*?>/i);
+      const textMatch = match.match(/<h[23][^>]*?>(.*?)<\/h[23]>/i);
 
-      if (!cleanText) {
-        return match;
-      }
+      if (!levelMatch || !textMatch) return;
 
-      // Create URL-friendly ID with length limit
+      const level = parseInt(levelMatch[1]);
+      const text = textMatch[1];
+
+      // Clean text safely
+      const cleanText = text
+        ? text
+            .replace(/<[^>]*>/g, '')
+            .trim()
+            .substring(0, 200)
+        : '';
+
+      if (!cleanText) return;
+
+      // Create simple ID
       const id = cleanText
         .toLowerCase()
-        .substring(0, 100) // Limit length
-        .replace(/[^a-z0-9\s-]/g, '') // Remove special chars first
-        .replace(/\s+/g, '-') // Replace spaces with hyphens
-        .replace(/-+/g, '-') // Replace multiple hyphens with single
-        .replace(/(^-|-$)/g, ''); // Remove leading/trailing hyphens
+        .substring(0, 50)
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/^-+|-+$/g, '');
 
-      if (!id) {
-        return match;
-      }
+      if (!id) return;
 
       headings.push({
         text: cleanText,
-        level: parseInt(level),
+        level,
         id,
       });
 
-      // Return the heading with an added ID
-      return `<h${level} id="${id}">${text}</h${level}>`;
+      // Safe replacement without backreferences
+      const headingWithId = `<h${level} id="${id}">${text}</h${level}>`;
+      modifiedContent = modifiedContent.replace(match, headingWithId);
     });
 
     return {

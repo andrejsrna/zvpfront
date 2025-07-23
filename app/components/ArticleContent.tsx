@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
-import parse, { domToReact, HTMLReactParserOptions } from 'html-react-parser';
+import parse, { HTMLReactParserOptions } from 'html-react-parser';
 import Image from 'next/image';
 import { sanitizeHTML } from '@/app/lib/sanitizeHTML';
 
@@ -67,7 +67,9 @@ export default function ArticleContent({
           </Suspense>
         );
       }
-      return domToReact([domNode], options);
+      // Let other elements be processed normally by the parser
+      // Don't return domToReact here as it causes infinite recursion
+      return;
     },
   };
 
