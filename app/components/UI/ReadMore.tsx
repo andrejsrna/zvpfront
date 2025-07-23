@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WordPressPost, getPosts } from '@/app/lib/WordPress';
 import Link from 'next/link';
-import he from 'he';
+import { safeHeDecode } from '@/app/lib/sanitizeHTML';
 
 interface ReadMoreProps {
   categoryId: number;
@@ -102,7 +102,7 @@ export default function ReadMore({
                     href={`/${post.slug}`}
                     className="hover:text-emerald-900 transition-colors"
                   >
-                    {he.decode(post.title.rendered)}
+                    {safeHeDecode(post.title.rendered)}
                   </Link>
                 </h3>
                 <div className="flex items-center text-sm text-gray-500">

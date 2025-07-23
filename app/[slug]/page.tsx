@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { getPostBySlug, WordPressPost } from '@/app/lib/WordPress';
 import { parseHeadings } from '@/app/utils/parseHeadings';
-import he from 'he';
+import { safeHeDecode } from '@/app/lib/sanitizeHTML';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ArticleContent from '@/app/components/ArticleContent';
@@ -42,14 +42,16 @@ async function PostContent({ slug }: { slug: string }) {
     notFound();
   }
 
-  // Fast decoding - only for critical parts
-  const decodedTitle = he.decode(post.title.rendered);
-  const decodedExcerpt = he.decode(
+  // Safe decoding - prevent infinite recursion
+  const decodedTitle = safeHeDecode(post.title.rendered);
+  const decodedExcerpt = safeHeDecode(
     post.excerpt.rendered.replace(/<[^>]*>/g, '')
   );
 
-  // Defer heavy operations
-  const { headings, content } = parseHeadings(he.decode(post.content.rendered));
+  // Defer heavy operations with safe decoding
+  const { headings, content } = parseHeadings(
+    safeHeDecode(post.content.rendered)
+  );
   const references: Reference[] = post.meta?._zdroje_referencie || [];
 
   const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0];
@@ -299,10 +301,10 @@ export async function generateMetadata({ params: paramsPromise }: PageProps) {
       };
     }
 
-    const cleanDescription = he
-      .decode(post.excerpt.rendered.replace(/<[^>]*>/g, ''))
-      .slice(0, 160);
-    const decodedTitle = he.decode(post.title.rendered);
+    const cleanDescription = safeHeDecode(
+      post.excerpt.rendered.replace(/<[^>]*>/g, '')
+    ).slice(0, 160);
+    const decodedTitle = safeHeDecode(post.title.rendered);
     const featuredImageUrl =
       post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
 

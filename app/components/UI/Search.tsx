@@ -6,8 +6,8 @@ import { searchPosts, WordPressPost, transformUrl } from '@/app/lib/WordPress';
 import Link from 'next/link';
 import Image from 'next/image';
 import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
-import he from 'he';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { safeHeDecode } from '@/app/lib/sanitizeHTML';
 
 interface SearchProps {
   onClose?: () => void;
@@ -145,7 +145,7 @@ export default function Search({ onClose }: SearchProps) {
                         className="text-gray-600 text-sm line-clamp-2"
                         dangerouslySetInnerHTML={{
                           __html: sanitizeExcerpt(
-                            he.decode(post.excerpt.rendered)
+                            safeHeDecode(post.excerpt.rendered)
                           ),
                         }}
                       />

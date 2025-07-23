@@ -7,8 +7,7 @@ import {
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
-import he from 'he';
+import { sanitizeExcerpt, safeHeDecode } from '@/app/lib/sanitizeHTML';
 
 interface CategoryPageProps {
   params: Promise<{
@@ -155,7 +154,7 @@ export default async function CategoryPage({
                       hover:text-emerald-900 transition-colors"
                   >
                     <Link href={`/${post.slug}`}>
-                      {he.decode(post.title.rendered)}
+                      {safeHeDecode(post.title.rendered)}
                     </Link>
                   </h3>
                   <div

@@ -238,11 +238,24 @@ class WordPressClient {
 
   static async getPostBySlug(slug: string): Promise<WordPressPost | null> {
     try {
-      const url = `${this.getApiUrl()}/wp/v2/posts?_embed&slug=${slug}`;
-      const response = await this.fetchWithTimeout(url);
+      // Validate slug format
+      if (!slug || typeof slug !== 'string' || slug.trim() === '') {
+        console.warn('Invalid slug provided:', slug);
+        return null;
+      }
+
+      // Sanitize slug to prevent issues
+      const cleanSlug = slug.trim().toLowerCase();
+
+      const url = `${this.getApiUrl()}/wp/v2/posts?_embed&slug=${encodeURIComponent(cleanSlug)}`;
+      const response = await this.fetchWithTimeout(url, {}, API_CONFIG.TIMEOUT);
       const posts = await response.json();
 
-      if (posts.length === 0) return null;
+      if (!Array.isArray(posts) || posts.length === 0) {
+        console.info(`No post found for slug: ${cleanSlug}`);
+        return null;
+      }
+
       const post = posts[0];
 
       if (post._embedded?.['wp:term']) {
@@ -252,6 +265,16 @@ class WordPressClient {
 
       return post;
     } catch (error) {
+      if (error instanceof Error) {
+        if (error.message.includes('404')) {
+          console.info(`Post not found for slug: ${slug}`);
+          return null;
+        }
+        if (error.message.includes('timeout')) {
+          console.warn(`Request timeout for slug: ${slug}`);
+          return null;
+        }
+      }
       console.error('Error fetching post:', error);
       return null;
     }
