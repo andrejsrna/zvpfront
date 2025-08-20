@@ -387,7 +387,7 @@ class WordPressClient {
       });
 
       // Score posts based on relevance
-      const scoredPosts = processedPosts.map(post => {
+      const scoredPosts = processedPosts.map((post: WordPressPost) => {
         const title = post.title.rendered.toLowerCase();
         const content = post.content.rendered.toLowerCase();
         const excerpt = post.excerpt.rendered.toLowerCase();
@@ -416,10 +416,15 @@ class WordPressClient {
       });
 
       // Sort by score and take only requested number
-      scoredPosts.sort((a, b) => b.score - a.score);
+      scoredPosts.sort(
+        (
+          a: { post: WordPressPost; score: number },
+          b: { post: WordPressPost; score: number }
+        ) => b.score - a.score
+      );
       const paginatedPosts = scoredPosts
         .slice((page - 1) * perPage, page * perPage)
-        .map(item => item.post);
+        .map((item: { post: WordPressPost; score: number }) => item.post);
 
       const totalPages = Math.ceil(Math.min(total, perPage * 2) / perPage);
 

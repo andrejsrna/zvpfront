@@ -114,3 +114,4 @@ interface SearchAnalytics {
 - **Čas strávený** na vyhľadávacích stránkach
 - **Počet "no results"** vyhľadávaní
 - **Konverzie** z vyhľadávania
+
