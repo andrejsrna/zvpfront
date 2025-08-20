@@ -297,9 +297,23 @@ class WordPressClient {
     page: number = 1
   ): Promise<{ posts: WordPressPost[]; total: number; totalPages: number }> {
     try {
-      const url = `${this.getApiUrl()}/wp/v2/posts?_embed&search=${encodeURIComponent(
-        query
-      )}&per_page=${perPage}&page=${page}`;
+      // Clean and prepare search query
+      const cleanQuery = query.trim().toLowerCase();
+
+      // Use multiple search parameters for better relevance
+      const searchParams = new URLSearchParams({
+        search: cleanQuery,
+        per_page: perPage.toString(),
+        page: page.toString(),
+        _embed: '1',
+        // Add search in title and content
+        search_fields: 'title,content,excerpt',
+        // Order by relevance (WordPress default)
+        orderby: 'relevance',
+        order: 'desc',
+      });
+
+      const url = `${this.getApiUrl()}/wp/v2/posts?${searchParams.toString()}`;
 
       const response = await this.fetchWithTimeout(
         url,
@@ -321,9 +335,101 @@ class WordPressClient {
         return post;
       });
 
-      return { posts: processedPosts, total, totalPages };
+      // Sort posts by relevance using WordPress's built-in relevance ordering
+      // The API already returns posts ordered by relevance when using search parameter
+      return {
+        posts: processedPosts,
+        total,
+        totalPages,
+      };
     } catch (error) {
       console.error('Error searching posts:', error);
+      return { posts: [], total: 0, totalPages: 0 };
+    }
+  }
+
+  // Advanced search with better relevance scoring
+  static async advancedSearch(
+    query: string,
+    perPage: number = 10,
+    page: number = 1
+  ): Promise<{ posts: WordPressPost[]; total: number; totalPages: number }> {
+    try {
+      const cleanQuery = query.trim().toLowerCase();
+      const queryWords = cleanQuery.split(' ').filter(word => word.length > 2);
+
+      // Get more results than needed for better scoring
+      const searchParams = new URLSearchParams({
+        search: cleanQuery,
+        per_page: Math.min(perPage * 2, 50).toString(), // Get more results for better scoring
+        page: '1', // Always get first page for scoring
+        _embed: '1',
+        orderby: 'relevance',
+        order: 'desc',
+      });
+
+      const url = `${this.getApiUrl()}/wp/v2/posts?${searchParams.toString()}`;
+      const response = await this.fetchWithTimeout(
+        url,
+        {},
+        API_CONFIG.SEARCH_TIMEOUT
+      );
+      const allPosts = await response.json();
+      const total = parseInt(response.headers.get('X-WP-Total') || '0');
+
+      // Process embedded terms
+      const processedPosts = allPosts.map((post: WordPressPost) => {
+        if (post._embedded?.['wp:term']) {
+          post.categories = post._embedded['wp:term'][0] || post.categories;
+          post.tags = post._embedded['wp:term'][1] || post.tags;
+        }
+        return post;
+      });
+
+      // Score posts based on relevance
+      const scoredPosts = processedPosts.map(post => {
+        const title = post.title.rendered.toLowerCase();
+        const content = post.content.rendered.toLowerCase();
+        const excerpt = post.excerpt.rendered.toLowerCase();
+
+        let score = 0;
+
+        // Score individual words
+        queryWords.forEach(word => {
+          if (title.includes(word)) score += 15;
+          if (content.includes(word)) score += 5;
+          if (excerpt.includes(word)) score += 3;
+        });
+
+        // Exact phrase matches get bonus
+        if (title.includes(cleanQuery)) score += 30;
+        if (content.includes(cleanQuery)) score += 15;
+
+        // Recent posts get small bonus
+        const postDate = new Date(post.date);
+        const daysSincePublished =
+          (Date.now() - postDate.getTime()) / (1000 * 60 * 60 * 24);
+        if (daysSincePublished < 30) score += 2;
+        if (daysSincePublished < 7) score += 3;
+
+        return { post, score };
+      });
+
+      // Sort by score and take only requested number
+      scoredPosts.sort((a, b) => b.score - a.score);
+      const paginatedPosts = scoredPosts
+        .slice((page - 1) * perPage, page * perPage)
+        .map(item => item.post);
+
+      const totalPages = Math.ceil(Math.min(total, perPage * 2) / perPage);
+
+      return {
+        posts: paginatedPosts,
+        total: Math.min(total, perPage * 2),
+        totalPages,
+      };
+    } catch (error) {
+      console.error('Error in advanced search:', error);
       return { posts: [], total: 0, totalPages: 0 };
     }
   }
@@ -339,3 +445,5 @@ export const getCategories =
 export const getRandomPost =
   WordPressClient.getRandomPost.bind(WordPressClient);
 export const searchPosts = WordPressClient.searchPosts.bind(WordPressClient);
+export const advancedSearch =
+  WordPressClient.advancedSearch.bind(WordPressClient);

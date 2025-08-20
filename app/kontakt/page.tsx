@@ -8,7 +8,7 @@ import {
 
 export default function KontaktPage() {
   return (
-    <div className="bg-white text-gray-900 py-16">
+    <div className="bg-white text-gray-900 pt-32 pb-16">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold text-gray-900 mb-8">
@@ -23,13 +23,13 @@ export default function KontaktPage() {
 
             {/* Kontaktné informácie */}
             <section className="grid gap-8 mb-12">
-              <div className="bg-emerald-50 p-6 rounded-lg">
+              <div className="bg-primary/10 p-6 rounded-lg">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">
                   Kontaktné údaje
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start">
-                    <MailIcon className="w-6 h-6 text-emerald-800 mt-1 mr-3" />
+                    <MailIcon className="w-6 h-6 text-primary mt-1 mr-3" />
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">
                         Email
@@ -38,7 +38,7 @@ export default function KontaktPage() {
                         Napíšte nám na{' '}
                         <a
                           href="mailto:info@zdravievpraxi.sk"
-                          className="text-emerald-800 hover:text-emerald-900"
+                          className="text-primary hover:text-primary/80"
                         >
                           info@zdravievpraxi.sk
                         </a>
@@ -47,7 +47,7 @@ export default function KontaktPage() {
                   </div>
 
                   <div className="flex items-start">
-                    <LocationMarkerIcon className="w-6 h-6 text-emerald-800 mt-1 mr-3" />
+                    <LocationMarkerIcon className="w-6 h-6 text-primary mt-1 mr-3" />
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">
                         Adresa
@@ -63,7 +63,7 @@ export default function KontaktPage() {
                   </div>
 
                   <div className="flex items-start">
-                    <PhoneIcon className="w-6 h-6 text-emerald-800 mt-1 mr-3" />
+                    <PhoneIcon className="w-6 h-6 text-primary mt-1 mr-3" />
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">
                         Fakturačné údaje

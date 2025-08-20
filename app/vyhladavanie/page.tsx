@@ -1,4 +1,4 @@
-import { searchPosts } from '@/app/lib/WordPress';
+import { advancedSearch } from '@/app/lib/WordPress';
 import Link from 'next/link';
 import Image from 'next/image';
 import { safeHeDecode } from '@/app/lib/sanitizeHTML';
@@ -13,7 +13,7 @@ interface SearchPageProps {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const query = (await searchParams).q || '';
   const page = Number((await searchParams).page) || 1;
-  const { posts, total, totalPages } = await searchPosts(query, 12, page);
+  const { posts, total, totalPages } = await advancedSearch(query, 12, page);
 
   return (
     <div className="bg-white pt-24 pb-16">
@@ -41,7 +41,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     />
                   </div>
                   <h2
-                    className="text-xl font-semibold text-gray-900 group-hover:text-blue-600"
+                    className="text-xl font-semibold text-gray-900 group-hover:text-primary"
                     dangerouslySetInnerHTML={{
                       __html: safeHeDecode(post.title.rendered),
                     }}
@@ -59,7 +59,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       href={`/vyhladavanie?q=${query}&page=${pageNum}`}
                       className={`px-4 py-2 rounded ${
                         pageNum === page
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-primary text-white'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >

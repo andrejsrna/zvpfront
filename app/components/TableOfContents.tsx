@@ -71,13 +71,13 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-100 
-          transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 
+          transition-colors focus:outline-none focus:ring-2 focus:ring-primary 
           focus:ring-inset group"
         aria-expanded={isExpanded}
         aria-controls="table-of-contents"
       >
         <h2 className="text-xl font-heading font-bold text-gray-900 flex items-center">
-          <ListBulletIcon className="w-5 h-5 mr-2 text-emerald-800 group-hover:text-emerald-900 transition-colors" />
+          <ListBulletIcon className="w-5 h-5 mr-2 text-primary group-hover:text-primary/80 transition-colors" />
           Obsah článku
         </h2>
         <div className="flex items-center text-sm text-gray-500">
@@ -119,8 +119,8 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
                   className={clsx(
                     'group flex items-center text-sm py-2 px-2 -mx-2 rounded-lg transition-all duration-200',
                     isActive(heading.id)
-                      ? 'bg-emerald-100 text-emerald-800 font-bold'
-                      : 'text-gray-600 hover:text-emerald-800 hover:bg-gray-100'
+                      ? 'bg-primary/10 text-primary font-bold'
+                      : 'text-gray-600 hover:text-primary hover:bg-gray-100'
                   )}
                   style={{ paddingLeft: `${heading.level * 1.5}rem` }}
                 >
@@ -128,15 +128,15 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
                     className={clsx(
                       'w-6 h-6 rounded-full text-xs flex items-center justify-center mr-3 transition-all duration-200 toc-number',
                       isActive(heading.id)
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-gray-200 group-hover:bg-emerald-100 group-hover:text-emerald-600'
+                        ? 'bg-primary text-white'
+                        : 'bg-gray-200 group-hover:bg-primary/10 group-hover:text-primary'
                     )}
                   >
                     {index + 1}
                   </span>
                   <span className="truncate">{heading.text}</span>
                   {isActive(heading.id) && (
-                    <CheckCircleIcon className="w-4 h-4 text-emerald-800 ml-2" />
+                    <CheckCircleIcon className="w-4 h-4 text-primary ml-2" />
                   )}
                 </button>
               </li>

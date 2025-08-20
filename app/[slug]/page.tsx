@@ -267,7 +267,7 @@ export default async function PostPage({ params: paramsPromise }: PageProps) {
       fallback={
         <div className="bg-white">
           {/* Fast loading placeholder for LCP */}
-          <div className="w-full h-screen bg-gradient-to-br from-emerald-500 to-teal-600" />
+          <div className="w-full h-screen bg-gradient-to-br from-primary to-primary/80" />
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-4xl mx-auto">
               <div className="h-12 bg-gray-200 rounded w-3/4 mb-4 animate-pulse" />

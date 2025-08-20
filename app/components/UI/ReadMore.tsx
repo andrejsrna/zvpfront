@@ -63,7 +63,7 @@ export default function ReadMore({
           <div className="flex justify-between items-center mb-8">
             <div>
               <span
-                className="text-emerald-800 font-semibold text-sm uppercase 
+                className="text-primary font-semibold text-sm uppercase 
                 tracking-wider"
               >
                 Ďalšie články z kategórie
@@ -74,7 +74,7 @@ export default function ReadMore({
             </div>
             <Link
               href={`/kategoria/${categorySlug}`}
-              className="inline-flex items-center text-emerald-800 hover:text-emerald-900 
+              className="inline-flex items-center text-primary hover:text-primary/80 
                 font-medium transition-colors"
             >
               Zobraziť všetky
@@ -96,33 +96,38 @@ export default function ReadMore({
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {posts.slice(0, 8).map(post => (
-              <div key={post.id} className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
-                  <Link
-                    href={`/${post.slug}`}
-                    className="hover:text-emerald-900 transition-colors"
-                  >
-                    {safeHeDecode(post.title.rendered)}
-                  </Link>
-                </h3>
-                <div className="flex items-center text-sm text-gray-500">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 0 002-2V7a2 0 00-2-2H5a2 0 00-2 2v12a2 0 002 2z"
-                    />
-                  </svg>
-                  {new Date(post.date).toLocaleDateString('sk-SK', {
-                    day: 'numeric',
-                    month: 'long',
-                  })}
+              <div key={post.id} className="h-full">
+                <div className="h-full bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="p-4 h-full flex flex-col">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      <Link
+                        href={`/${post.slug}`}
+                        className="hover:text-primary/80 transition-colors"
+                      >
+                        {safeHeDecode(post.title.rendered)}
+                      </Link>
+                    </h3>
+                    <div className="mt-auto pt-2 flex items-center text-sm text-gray-500">
+                      <svg
+                        className="w-4 h-4 mr-1 text-gray-400 shrink-0"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M8 7V4m8 3V4M6 11h12M7 20h10a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"
+                          strokeWidth={1.5}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      {new Date(post.date).toLocaleDateString('sk-SK', {
+                        day: 'numeric',
+                        month: 'long',
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}

@@ -74,10 +74,10 @@ export default function CookieConsentModal() {
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 cookie-modal-backdrop" />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] cookie-modal-backdrop" />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
         <div
           ref={focusTrapRef}
           className="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto cookie-modal-content"
@@ -90,7 +90,7 @@ export default function CookieConsentModal() {
               <>
                 {/* Main View */}
                 <div className="text-center mb-8">
-                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full mb-4 shadow-lg">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary/60 to-primary rounded-full mb-4 shadow-lg">
                     <span className="text-4xl">🍪</span>
                   </div>
                   <h2
@@ -107,11 +107,11 @@ export default function CookieConsentModal() {
 
                 {/* Cookie Categories Preview */}
                 <div className="mb-8 space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg">
                     <span className="text-sm font-medium text-gray-800">
                       Nevyhnutné
                     </span>
-                    <span className="text-sm text-emerald-800 font-medium">
+                    <span className="text-sm text-primary font-medium">
                       Vždy aktívne
                     </span>
                   </div>
@@ -142,8 +142,8 @@ export default function CookieConsentModal() {
                   <button
                     onClick={handleAcceptAll}
                     className="w-full px-6 py-4 text-base font-semibold text-white 
-                      bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl 
-                      hover:from-emerald-600 hover:to-emerald-700 transition-all 
+                      bg-gradient-to-r from-primary to-primary/90 rounded-xl 
+                      hover:from-primary/90 hover:to-primary/80 transition-all 
                       transform hover:scale-[1.02] shadow-lg cookie-button"
                   >
                     Prijať všetky cookies
@@ -160,8 +160,8 @@ export default function CookieConsentModal() {
 
                     <button
                       onClick={() => setShowSettings(true)}
-                      className="px-4 py-3 text-sm font-medium text-emerald-600 
-                        bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors cookie-button"
+                      className="px-4 py-3 text-sm font-medium text-primary 
+                        bg-primary/10 rounded-xl hover:bg-primary/20 transition-colors cookie-button"
                     >
                       Upraviť výber
                     </button>
@@ -173,7 +173,7 @@ export default function CookieConsentModal() {
                   <Link
                     href="/cookies"
                     target="_blank"
-                    className="text-emerald-800 hover:underline font-medium"
+                    className="text-primary hover:underline font-medium"
                   >
                     zásady používania cookies
                   </Link>
@@ -214,7 +214,7 @@ export default function CookieConsentModal() {
 
                 <div className="space-y-4 mb-8">
                   {/* Necessary Cookies */}
-                  <div className="bg-emerald-50 border border-emerald-200 p-5 rounded-xl">
+                  <div className="bg-primary/10 border border-primary/20 p-5 rounded-xl">
                     <label className="flex items-start cursor-not-allowed">
                       <input
                         type="checkbox"
@@ -239,7 +239,7 @@ export default function CookieConsentModal() {
                   </div>
 
                   {/* Analytics Cookies */}
-                  <div className="bg-white border border-gray-200 p-5 rounded-xl hover:border-emerald-300 transition-colors">
+                  <div className="bg-white border border-gray-200 p-5 rounded-xl hover:border-primary/30 transition-colors">
                     <label className="flex items-start cursor-pointer">
                       <input
                         type="checkbox"
@@ -269,7 +269,7 @@ export default function CookieConsentModal() {
                   </div>
 
                   {/* Advertising Cookies */}
-                  <div className="bg-white border border-gray-200 p-5 rounded-xl hover:border-emerald-300 transition-colors">
+                  <div className="bg-white border border-gray-200 p-5 rounded-xl hover:border-primary/30 transition-colors">
                     <label className="flex items-start cursor-pointer">
                       <input
                         type="checkbox"
@@ -299,7 +299,7 @@ export default function CookieConsentModal() {
                   </div>
 
                   {/* Functional Cookies */}
-                  <div className="bg-white border border-gray-200 p-5 rounded-xl hover:border-emerald-300 transition-colors">
+                  <div className="bg-white border border-gray-200 p-5 rounded-xl hover:border-primary/30 transition-colors">
                     <label className="flex items-start cursor-pointer">
                       <input
                         type="checkbox"
@@ -331,8 +331,8 @@ export default function CookieConsentModal() {
                 <button
                   onClick={handleAcceptSelected}
                   className="w-full px-6 py-4 text-base font-semibold text-white 
-                    bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl 
-                    hover:from-emerald-600 hover:to-emerald-700 transition-all 
+                    bg-gradient-to-r from-primary to-primary/90 rounded-xl 
+                    hover:from-primary/90 hover:to-primary/80 transition-all 
                     transform hover:scale-[1.02] shadow-lg cookie-button"
                 >
                   Uložiť moje nastavenia

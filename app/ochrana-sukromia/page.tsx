@@ -91,7 +91,7 @@ export default function PrivacyPage() {
                 kontaktujte nás na{' '}
                 <a
                   href="mailto:privacy@zdravievpraxi.sk"
-                  className="text-emerald-800 hover:text-emerald-900"
+                  className="text-primary hover:text-primary/80"
                 >
                   privacy@zdravievpraxi.sk
                 </a>

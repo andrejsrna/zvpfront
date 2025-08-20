@@ -9,7 +9,7 @@ import Image from 'next/image';
 const CATEGORY_DETAILS = {
   vyziva: {
     image: '/categories/nutrition.jpeg',
-    gradient: 'from-green-500/80 to-emerald-700/80',
+    gradient: 'from-green-500/80 to-primary/80',
     icon: (
       <svg
         className="w-6 h-6"
@@ -28,7 +28,7 @@ const CATEGORY_DETAILS = {
   },
   pohyb: {
     image: '/categories/exercise.jpeg',
-    gradient: 'from-blue-500/80 to-cyan-700/80',
+    gradient: 'from-primary/80 to-primary/60',
     icon: (
       <svg
         className="w-6 h-6"

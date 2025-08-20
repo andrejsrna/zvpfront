@@ -53,7 +53,7 @@ export default function RecommendedReads({
     <section className="bg-gradient-to-b from-gray-50 to-white py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
-          <span className="text-emerald-800 font-semibold text-sm uppercase tracking-wider">
+          <span className="text-primary font-semibold text-sm uppercase tracking-wider">
             Odporúčané články
           </span>
           <h2 className="text-3xl font-bold text-gray-900 mt-2">
@@ -91,7 +91,7 @@ export default function RecommendedReads({
                   to-teal-50 flex items-center justify-center"
                 >
                   <svg
-                    className="w-20 h-20 text-emerald-500 opacity-50"
+                    className="w-20 h-20 text-primary opacity-50"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -110,7 +110,7 @@ export default function RecommendedReads({
               {recommendedPost.categories && recommendedPost.categories[0] && (
                 <span
                   className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm 
-                  text-emerald-800 text-sm px-4 py-1.5 rounded-full font-medium 
+                  text-primary text-sm px-4 py-1.5 rounded-full font-medium 
                   shadow-sm"
                 >
                   {recommendedPost.categories[0].name}
@@ -123,7 +123,7 @@ export default function RecommendedReads({
               <div>
                 <h3
                   className="text-2xl font-bold text-gray-900 mb-4 
-                  group-hover:text-emerald-600 transition-colors"
+                  group-hover:text-primary transition-colors"
                   dangerouslySetInnerHTML={{
                     __html: recommendedPost.title.rendered,
                   }}
@@ -139,7 +139,7 @@ export default function RecommendedReads({
 
               <div className="flex items-center justify-between mt-auto">
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center text-emerald-800 font-medium">
+                  <div className="flex items-center text-primary font-medium">
                     Čítať článok
                     <svg
                       className="w-5 h-5 ml-1 transform group-hover:translate-x-1 

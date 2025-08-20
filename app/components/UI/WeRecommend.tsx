@@ -53,7 +53,7 @@ export default function WeRecommend({
               <div className="flex flex-col justify-center">
                 <div className="mb-6">
                   <span
-                    className="text-emerald-800 font-semibold text-sm 
+                    className="text-primary font-semibold text-sm 
                     uppercase tracking-wider"
                   >
                     Zdravie v praxi odporúča
@@ -69,7 +69,7 @@ export default function WeRecommend({
                   {benefits.map((benefit, index) => (
                     <li key={index} className="flex items-start">
                       <svg
-                        className="w-5 h-5 text-emerald-500 mt-1 mr-3"
+                        className="w-5 h-5 text-primary mt-1 mr-3"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -93,7 +93,7 @@ export default function WeRecommend({
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center px-6 py-3 
                     border border-transparent text-base font-medium rounded-lg 
-                    text-white bg-emerald-600 hover:bg-emerald-700 
+                    text-white bg-primary hover:bg-primary/80 
                     transition-colors duration-200"
                 >
                   Zistiť viac

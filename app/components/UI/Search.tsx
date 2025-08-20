@@ -2,11 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { searchPosts, WordPressPost, transformUrl } from '@/app/lib/WordPress';
+import {
+  advancedSearch,
+  WordPressPost,
+  transformUrl,
+} from '@/app/lib/WordPress';
 import Link from 'next/link';
 import Image from 'next/image';
 import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+
 import { safeHeDecode } from '@/app/lib/sanitizeHTML';
 
 interface SearchProps {
@@ -29,7 +33,7 @@ export default function Search({ onClose }: SearchProps) {
 
       setIsLoading(true);
       try {
-        const data = await searchPosts(query);
+        const data = await advancedSearch(query);
         setResults(data.posts);
       } catch (error) {
         console.error('Search error:', error);
@@ -69,12 +73,13 @@ export default function Search({ onClose }: SearchProps) {
             }}
             placeholder="Hľadať články..."
             className="w-full px-4 py-3 rounded-xl border border-gray-200 
-              focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button
             type="submit"
             className="absolute right-3 top-1/2 transform -translate-y-1/2
-              text-gray-400 hover:text-emerald-600 transition-colors"
+              text-gray-400 hover:text-primary transition-colors"
+            aria-label="Vyhľadať"
           >
             <svg
               className="w-5 h-5"
@@ -89,14 +94,6 @@ export default function Search({ onClose }: SearchProps) {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-          </button>
-          <button
-            onClick={onClose}
-            aria-label="Zatvoriť vyhľadávanie"
-            className="absolute top-3 right-3 p-2 rounded-full bg-white/10
-              text-gray-400 hover:text-emerald-800 transition-colors"
-          >
-            <XMarkIcon className="w-6 h-6" />
           </button>
         </div>
       </form>
@@ -157,7 +154,7 @@ export default function Search({ onClose }: SearchProps) {
                 <div className="mt-4 text-right">
                   <Link
                     href={`/vyhladavanie?q=${query}`}
-                    className="text-emerald-800 hover:text-emerald-900 text-sm font-medium"
+                    className="text-primary hover:text-primary/80 text-sm font-medium"
                   >
                     Zobraziť všetky výsledky
                   </Link>

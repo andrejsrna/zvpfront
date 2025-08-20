@@ -38,7 +38,7 @@ export default async function ArticlesPage({
   return (
     <div className="bg-white">
       {/* Header */}
-      <div className="bg-gradient-to-br from-emerald-500 to-teal-600 pt-32 pb-16">
+      <div className="bg-gradient-to-br from-primary to-primary/80 pt-32 pb-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
@@ -62,11 +62,11 @@ export default async function ArticlesPage({
             <Link
               href="/clanky"
               className={`px-4 py-2 rounded-full whitespace-nowrap text-sm 
-                font-medium transition-colors ${
-                  !selectedCategory
-                    ? 'bg-emerald-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                  font-medium transition-colors ${
+                    !selectedCategory
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
             >
               Všetky články
             </Link>
@@ -77,7 +77,7 @@ export default async function ArticlesPage({
                 className={`px-4 py-2 rounded-full whitespace-nowrap text-sm 
                   font-medium transition-colors ${
                     selectedCategory?.id === category.id
-                      ? 'bg-emerald-600 text-white'
+                      ? 'bg-primary text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
               >
@@ -115,14 +115,14 @@ export default async function ArticlesPage({
                     />
                   ) : (
                     <div
-                      className="w-full h-full bg-gradient-to-br from-emerald-500 
-                      to-teal-600"
+                      className="w-full h-full bg-gradient-to-br from-primary 
+                      to-primary/80"
                     />
                   )}
                 </div>
                 <div className="p-6">
                   <p
-                    className="text-emerald-800 text-sm font-medium mb-2
+                    className="text-primary text-sm font-medium mb-2
                       "
                   >
                     {post.categories?.[0]?.name || 'Nezaradené'}
@@ -147,8 +147,8 @@ export default async function ArticlesPage({
                     </span>
                     <Link
                       href={`/${post.slug}`}
-                      className="text-emerald-800 font-medium inline-flex
-                        items-center hover:text-emerald-900 transition-colors"
+                      className="text-primary font-medium inline-flex
+                        items-center hover:text-primary/80 transition-colors"
                     >
                       Čítať viac
                       <svg

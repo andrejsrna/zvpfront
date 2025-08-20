@@ -50,13 +50,13 @@ export default function ArticleContent({
 
         return (
           <Suspense fallback={<div>Loading image...</div>}>
-            <div className="relative my-6 overflow-hidden rounded-lg shadow-lg">
+            <div className="relative my-6 overflow-hidden rounded-lg shadow-lg not-prose">
               <Image
                 src={src}
                 alt={alt || 'Image from article'}
                 width={Number(width) || 800}
                 height={Number(height) || 450}
-                className="w-full h-auto object-cover"
+                className="w-full h-auto object-cover m-0"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
                 loading="lazy"
                 placeholder={`data:image/svg+xml;base64,${toBase64(
@@ -74,7 +74,9 @@ export default function ArticleContent({
   };
 
   return (
-    <div className={`article-content prose prose-lg max-w-none ${className}`}>
+    <div
+      className={`article-content prose prose-lg max-w-none prose-img:m-0 prose-figure:m-0 ${className}`}
+    >
       {parse(sanitizedContent, options)}
     </div>
   );

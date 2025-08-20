@@ -28,7 +28,7 @@ export default async function CategoriesPage() {
             >
               <Link
                 href={`/kategoria/${parent.slug}`}
-                className="text-xl font-bold text-gray-900 hover:text-emerald-800 
+                className="text-xl font-bold text-gray-900 hover:text-primary 
                   transition-colors mb-4 block"
               >
                 {parent.name}
@@ -43,7 +43,7 @@ export default async function CategoriesPage() {
                   <Link
                     key={child.id}
                     href={`/kategoria/${child.slug}`}
-                    className="block text-gray-600 hover:text-emerald-800 
+                    className="block text-gray-600 hover:text-primary 
                       transition-colors text-sm"
                   >
                     {child.name}

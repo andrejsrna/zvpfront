@@ -86,7 +86,7 @@ export default function CookiesPage() {
                     href="https://support.google.com/chrome/answer/95647"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-800 hover:text-emerald-900"
+                    className="text-primary hover:text-primary/80"
                   >
                     Google Chrome
                   </a>
@@ -96,7 +96,7 @@ export default function CookiesPage() {
                     href="https://support.mozilla.org/sk/kb/cookies-informacie-ktore-si-stranky-ukladaju"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-800 hover:text-emerald-900"
+                    className="text-primary hover:text-primary/80"
                   >
                     Mozilla Firefox
                   </a>
@@ -106,7 +106,7 @@ export default function CookiesPage() {
                     href="https://support.microsoft.com/sk-sk/microsoft-edge/odstrániť-súbory-cookie-v-prehliadači-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-800 hover:text-emerald-900"
+                    className="text-primary hover:text-primary/80"
                   >
                     Microsoft Edge
                   </a>
@@ -116,7 +116,7 @@ export default function CookiesPage() {
                     href="https://support.apple.com/sk-sk/guide/safari/sfri11471/mac"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-800 hover:text-emerald-900"
+                    className="text-primary hover:text-primary/80"
                   >
                     Safari
                   </a>
@@ -150,7 +150,7 @@ export default function CookiesPage() {
               prečítajte naše{' '}
               <Link
                 href="/ochrana-sukromia"
-                className="text-emerald-800 hover:text-emerald-900"
+                className="text-primary hover:text-primary/80"
               >
                 Zásady ochrany osobných údajov
               </Link>

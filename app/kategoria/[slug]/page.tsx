@@ -59,7 +59,7 @@ export default async function CategoryPage({
   return (
     <div className="bg-white">
       {/* Category Header */}
-      <div className="bg-gradient-to-br from-emerald-500 to-teal-600 mt-20 py-20">
+      <div className="bg-gradient-to-br from-primary to-primary/80 mt-20 py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
@@ -90,7 +90,7 @@ export default async function CategoryPage({
               <Link
                 href={`/kategoria/${category.slug}`}
                 className={`px-4 py-2 rounded-full whitespace-nowrap text-sm 
-                  font-medium transition-colors bg-emerald-600 text-white`}
+                  font-medium transition-colors bg-primary text-white`}
               >
                 Všetky v {category.name}
               </Link>
@@ -137,21 +137,21 @@ export default async function CategoryPage({
                     />
                   ) : (
                     <div
-                      className="w-full h-full bg-gradient-to-br from-emerald-500 
-                      to-teal-600"
+                      className="w-full h-full bg-gradient-to-br from-primary
+                      to-primary/80"
                     />
                   )}
                 </div>
                 <div className="p-6">
                   <p
-                    className="text-emerald-800 text-sm font-medium mb-2
+                    className="text-primary text-sm font-medium mb-2
                     "
                   >
                     {post.categories?.[0]?.name || 'Nezaradené'}
                   </p>
                   <h3
                     className="text-xl font-bold text-gray-900 mb-3
-                      hover:text-emerald-900 transition-colors"
+                      hover:text-primary/80 transition-colors"
                   >
                     <Link href={`/${post.slug}`}>
                       {safeHeDecode(post.title.rendered)}
@@ -169,8 +169,8 @@ export default async function CategoryPage({
                     </span>
                     <Link
                       href={`/${post.slug}`}
-                      className="text-emerald-800 font-medium inline-flex
-                        items-center hover:text-emerald-900 transition-colors"
+                      className="text-primary font-medium inline-flex
+                        items-center hover:text-primary/80 transition-colors"
                     >
                       Čítať viac
                       <svg
