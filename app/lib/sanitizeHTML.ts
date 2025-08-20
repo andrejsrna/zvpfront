@@ -55,30 +55,38 @@ export function sanitizeHTML(html: string): string {
       'href="https://admin.zdravievpraxi.sk/wp-content/'
     );
 
-    // 3. Handle external links in two safe steps
-    // First, mark internal links to avoid touching them
-    const internalLinkMarker = '___INTERNAL_LINK___';
+    // 3. Add target/rel to truly external links (and only external)
+    //    We rebuild the <a ...> tag safely so attributes are placed before the closing '>'
     sanitized = sanitized.replace(
-      /(<a[^>]*href\s*=\s*["'][^"']*zdravievpraxi\.sk[^"']*["'][^>]*>)/gi,
-      `${internalLinkMarker}$1`
-    );
+      /<a\b([^>]*)>/gi,
+      (fullMatch: string, attrString: string) => {
+        // Find href value
+        const hrefMatch = attrString.match(/href\s*=\s*["']?([^"'\s>]+)["']?/i);
+        if (!hrefMatch) {
+          return fullMatch;
+        }
 
-    // Then add target="_blank" to unmarked external links
-    sanitized = sanitized.replace(
-      /(<a[^>]*href\s*=\s*["']https?:\/\/[^"']*["'][^>]*?)>/gi,
-      match => {
-        if (match.includes(internalLinkMarker)) {
-          return match.replace(internalLinkMarker, '');
+        const hrefValue = hrefMatch[1];
+        const isHttp = /^https?:\/\//i.test(hrefValue);
+        const isInternalDomain = /zdravievpraxi\.sk/i.test(hrefValue);
+        const isExternal = isHttp && !isInternalDomain;
+
+        if (!isExternal) {
+          return fullMatch;
         }
-        if (match.includes('target=')) {
-          return match + '>';
+
+        let updatedAttrString = attrString;
+
+        if (!/\btarget\s*=\s*/i.test(updatedAttrString)) {
+          updatedAttrString += ' target="_blank"';
         }
-        return match + ' target="_blank" rel="noopener noreferrer">';
+        if (!/\brel\s*=\s*/i.test(updatedAttrString)) {
+          updatedAttrString += ' rel="noopener noreferrer"';
+        }
+
+        return `<a${updatedAttrString}>`;
       }
     );
-
-    // Clean up any remaining markers
-    sanitized = sanitized.replace(new RegExp(internalLinkMarker, 'g'), '');
 
     return sanitized;
   } catch (error) {
