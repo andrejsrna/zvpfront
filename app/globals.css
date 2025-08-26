@@ -116,7 +116,6 @@ img {
       system-ui,
       -apple-system,
       sans-serif;
-    font-display: swap;
   }
 
   .font-inter {
@@ -125,7 +124,6 @@ img {
       system-ui,
       -apple-system,
       sans-serif;
-    font-display: swap;
   }
 
   /* Critical loading states */

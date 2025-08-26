@@ -110,24 +110,24 @@ export default function RootLayout({
               line-height: 1.6;
               color: #171717;
               background: #ffffff;
-              font-display: swap;
             }
             
             /* Font optimization */
             @font-face {
               font-family: 'Inter';
+              src: local('Inter');
               font-display: swap;
             }
             
             @font-face {
               font-family: 'Sora';
+              src: local('Sora');
               font-display: swap;
             }
             
             /* Heading fonts */
             h1, h2, h3, h4, h5, h6 {
               font-family: var(--font-sora), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-              font-display: swap;
             }
             
             /* Immediate visibility */

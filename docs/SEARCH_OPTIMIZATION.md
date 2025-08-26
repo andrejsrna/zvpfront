@@ -115,3 +115,4 @@ interface SearchAnalytics {
 - **Počet "no results"** vyhľadávaní
 - **Konverzie** z vyhľadávania
 
+
