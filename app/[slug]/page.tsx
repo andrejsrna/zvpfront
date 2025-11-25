@@ -60,15 +60,21 @@ async function PostContent({ slug }: { slug: string }) {
   const decodedExcerpt = safeHeDecode(
     post.excerpt.rendered.replace(/<[^>]*>/g, '')
   );
-  const rankMathSeo = await getRankMathSeo(post);
-  const seoTitle =
-    rankMathSeo.title ||
-    getRankMathSeoValue(post.meta?.rank_math_title) ||
-    decodedTitle;
+  const inlineSeoTitle = getRankMathSeoValue(
+    post.rank_math_title || post.meta?.rank_math_title
+  );
+  const inlineSeoDescription = getRankMathSeoValue(
+    post.rank_math_description || post.meta?.rank_math_description
+  );
+
+  let apiSeo: { title?: string; description?: string } = {};
+  if (!inlineSeoTitle || !inlineSeoDescription) {
+    apiSeo = await getRankMathSeo(post.slug);
+  }
+
+  const seoTitle = inlineSeoTitle || apiSeo.title || decodedTitle;
   const seoDescription =
-    rankMathSeo.description ||
-    getRankMathSeoValue(post.meta?.rank_math_description) ||
-    decodedExcerpt;
+    inlineSeoDescription || apiSeo.description || decodedExcerpt;
 
   // Defer heavy operations with safe decoding
   const { headings, content } = parseHeadings(
@@ -323,20 +329,29 @@ export async function generateMetadata({ params: paramsPromise }: PageProps) {
       };
     }
 
-    const rankMathSeo = await getRankMathSeo(post);
     const decodedTitle = safeHeDecode(post.title.rendered);
-    const rankMathTitle =
-      rankMathSeo.title || getRankMathSeoValue(post.meta?.rank_math_title);
-    const metaTitle = rankMathTitle || decodedTitle;
+    const inlineSeoTitle = getRankMathSeoValue(
+      post.rank_math_title || post.meta?.rank_math_title
+    );
 
     const baseDescription = safeHeDecode(
       post.excerpt.rendered.replace(/<[^>]*>/g, '')
     );
-    const rankMathDescription =
-      rankMathSeo.description ||
-      getRankMathSeoValue(post.meta?.rank_math_description);
+    const inlineSeoDescription = getRankMathSeoValue(
+      post.rank_math_description || post.meta?.rank_math_description
+    );
+
+    let apiSeo: { title?: string; description?: string } = {};
+    if (!inlineSeoTitle || !inlineSeoDescription) {
+      apiSeo = await getRankMathSeo(post.slug);
+    }
+
+    const metaTitle = (inlineSeoTitle || apiSeo.title || decodedTitle).slice(
+      0,
+      160
+    );
     const cleanDescription = (
-      rankMathDescription || baseDescription
+      inlineSeoDescription || apiSeo.description || baseDescription
     ).slice(0, 160);
     const featuredImageUrl =
       post._embedded?.['wp:featuredmedia']?.[0]?.source_url;

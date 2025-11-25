@@ -38,6 +38,8 @@ export interface WordPressPost {
   excerpt: { rendered: string };
   slug: string;
   categories: WordPressTerm[];
+  rank_math_title?: string;
+  rank_math_description?: string;
   meta?: {
     post_views?: number;
     _zdroje_referencie?: WordPressReference[];
@@ -311,14 +313,17 @@ class WordPressClient {
   }
 
   static async getRankMathSeo(
-    post: WordPressPost
+    slug: string
   ): Promise<{ title?: string; description?: string }> {
-    if (!post?.id || !post.slug) return {};
+    if (!slug) return {};
 
     const baseUrl =
-      process.env.NEXT_PUBLIC_SITE_URL || 'https://admin.zdravievpraxi.sk';
-    const urlParam = `${baseUrl.replace(/\/$/, '')}/${post.slug}`;
-    const apiUrl = `${this.getApiUrl()}/rankmath/v1/getHead?objectID=${post.id}&objectType=post&url=${encodeURIComponent(urlParam)}`;
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      API_CONFIG.BASE_URL.replace('/wp-json', '');
+    const cleanBase = baseUrl.replace(/\/+$/, '');
+    const cleanSlug = slug.replace(/^\/+/, '');
+    const targetUrl = `${cleanBase}/${cleanSlug}/`;
+    const apiUrl = `${this.getApiUrl()}/rankmath/v1/getHead?url=${encodeURIComponent(targetUrl)}`;
 
     try {
       const response = await this.fetchWithTimeout(apiUrl, {});
