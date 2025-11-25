@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import { safeHeDecode } from './sanitizeHTML';
 
 // Types
 interface WordPressTerm {
@@ -37,9 +38,11 @@ export interface WordPressPost {
   excerpt: { rendered: string };
   slug: string;
   categories: WordPressTerm[];
-  meta: {
-    post_views: number;
-    _zdroje_referencie: WordPressReference[];
+  meta?: {
+    post_views?: number;
+    _zdroje_referencie?: WordPressReference[];
+    rank_math_title?: string;
+    rank_math_description?: string;
   };
   tags: WordPressTerm[];
   featured_media?: number;
@@ -75,6 +78,22 @@ const API_CONFIG = {
 class WordPressClient {
   private static getApiUrl(): string {
     return typeof window === 'undefined' ? API_CONFIG.BASE_URL : '/wp-json';
+  }
+
+  private static extractRankMathMeta(
+    head: string
+  ): { title?: string; description?: string } {
+    const titleMatch = head.match(/<title>([^<]*)<\/title>/i);
+    const descriptionMatch = head.match(
+      /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i
+    );
+
+    return {
+      title: titleMatch ? safeHeDecode(titleMatch[1].trim()) : undefined,
+      description: descriptionMatch
+        ? safeHeDecode(descriptionMatch[1].trim())
+        : undefined,
+    };
   }
 
   private static async fetchWithTimeout(
@@ -291,6 +310,31 @@ class WordPressClient {
     }
   }
 
+  static async getRankMathSeo(
+    post: WordPressPost
+  ): Promise<{ title?: string; description?: string }> {
+    if (!post?.id || !post.slug) return {};
+
+    const baseUrl =
+      process.env.NEXT_PUBLIC_SITE_URL || 'https://admin.zdravievpraxi.sk';
+    const urlParam = `${baseUrl.replace(/\/$/, '')}/${post.slug}`;
+    const apiUrl = `${this.getApiUrl()}/rankmath/v1/getHead?objectID=${post.id}&objectType=post&url=${encodeURIComponent(urlParam)}`;
+
+    try {
+      const response = await this.fetchWithTimeout(apiUrl, {});
+      const data = await response.json();
+
+      if (!data?.success || !data.head || typeof data.head !== 'string') {
+        return {};
+      }
+
+      return this.extractRankMathMeta(data.head);
+    } catch (error) {
+      console.warn('Rank Math meta fetch failed:', error);
+      return {};
+    }
+  }
+
   static async searchPosts(
     query: string,
     perPage: number = 10,
@@ -452,3 +496,5 @@ export const getRandomPost =
 export const searchPosts = WordPressClient.searchPosts.bind(WordPressClient);
 export const advancedSearch =
   WordPressClient.advancedSearch.bind(WordPressClient);
+export const getRankMathSeo =
+  WordPressClient.getRankMathSeo.bind(WordPressClient);

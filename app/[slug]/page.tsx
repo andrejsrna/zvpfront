@@ -1,5 +1,9 @@
 import { Suspense } from 'react';
-import { getPostBySlug, WordPressPost } from '@/app/lib/WordPress';
+import {
+  getPostBySlug,
+  getRankMathSeo,
+  WordPressPost,
+} from '@/app/lib/WordPress';
 import { parseHeadings } from '@/app/utils/parseHeadings';
 import { safeHeDecode } from '@/app/lib/sanitizeHTML';
 import Link from 'next/link';
@@ -26,6 +30,15 @@ interface Reference {
   odkaz: string;
 }
 
+const hasRankMathVariables = (value?: string) =>
+  !!value && /%[a-z0-9_-]+%/i.test(value);
+
+const getRankMathSeoValue = (value?: string) => {
+  if (!value) return '';
+  const normalized = safeHeDecode(value.replace(/<[^>]*>/g, '').trim());
+  return hasRankMathVariables(normalized) ? '' : normalized;
+};
+
 // Fast Post component for immediate rendering
 async function PostContent({ slug }: { slug: string }) {
   let post: WordPressPost | null;
@@ -47,6 +60,15 @@ async function PostContent({ slug }: { slug: string }) {
   const decodedExcerpt = safeHeDecode(
     post.excerpt.rendered.replace(/<[^>]*>/g, '')
   );
+  const rankMathSeo = await getRankMathSeo(post);
+  const seoTitle =
+    rankMathSeo.title ||
+    getRankMathSeoValue(post.meta?.rank_math_title) ||
+    decodedTitle;
+  const seoDescription =
+    rankMathSeo.description ||
+    getRankMathSeoValue(post.meta?.rank_math_description) ||
+    decodedExcerpt;
 
   // Defer heavy operations with safe decoding
   const { headings, content } = parseHeadings(
@@ -62,8 +84,8 @@ async function PostContent({ slug }: { slug: string }) {
   const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: decodedTitle,
-    description: decodedExcerpt,
+    headline: seoTitle,
+    description: seoDescription,
     image: featuredImageUrl,
     datePublished: post.date,
     dateModified: post.modified,
@@ -220,8 +242,8 @@ async function PostContent({ slug }: { slug: string }) {
         <Suspense fallback={null}>
           <LazyShareButtons
             url={`${process.env.NEXT_PUBLIC_SITE_URL}/${post.slug}`}
-            title={decodedTitle}
-            description={decodedExcerpt}
+            title={seoTitle}
+            description={seoDescription}
           />
         </Suspense>
 
@@ -301,24 +323,35 @@ export async function generateMetadata({ params: paramsPromise }: PageProps) {
       };
     }
 
-    const cleanDescription = safeHeDecode(
-      post.excerpt.rendered.replace(/<[^>]*>/g, '')
-    ).slice(0, 160);
+    const rankMathSeo = await getRankMathSeo(post);
     const decodedTitle = safeHeDecode(post.title.rendered);
+    const rankMathTitle =
+      rankMathSeo.title || getRankMathSeoValue(post.meta?.rank_math_title);
+    const metaTitle = rankMathTitle || decodedTitle;
+
+    const baseDescription = safeHeDecode(
+      post.excerpt.rendered.replace(/<[^>]*>/g, '')
+    );
+    const rankMathDescription =
+      rankMathSeo.description ||
+      getRankMathSeoValue(post.meta?.rank_math_description);
+    const cleanDescription = (
+      rankMathDescription || baseDescription
+    ).slice(0, 160);
     const featuredImageUrl =
       post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
 
     return {
-      title: decodedTitle,
+      title: metaTitle,
       description: cleanDescription,
       openGraph: {
-        title: decodedTitle,
+        title: metaTitle,
         description: cleanDescription,
         images: featuredImageUrl ? [featuredImageUrl] : [],
       },
       twitter: {
         card: 'summary_large_image',
-        title: decodedTitle,
+        title: metaTitle,
         description: cleanDescription,
         images: featuredImageUrl ? [featuredImageUrl] : [],
       },
