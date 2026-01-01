@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { WordPressPost, transformUrl } from '../lib/WordPress';
+import type { ContentPost } from '@/app/lib/content/types';
 import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
 
 interface PostCardProps {
-  post: WordPressPost;
+  post: ContentPost;
   index?: number;
   showCategory?: boolean;
   showDate?: boolean;
@@ -20,6 +20,8 @@ export default function PostCard({
   showReadMore = true,
   className = '',
 }: PostCardProps) {
+  const featuredSrc = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+  const unoptimized = !!featuredSrc && /^https?:\/\//i.test(featuredSrc);
   return (
     <Link
       href={`/${post.slug}`}
@@ -30,7 +32,7 @@ export default function PostCard({
       <div className="relative aspect-[16/10] overflow-hidden">
         {post._embedded?.['wp:featuredmedia'] ? (
           <Image
-            src={transformUrl(post._embedded['wp:featuredmedia'][0].source_url)}
+            src={post._embedded['wp:featuredmedia'][0].source_url}
             alt={post.title.rendered}
             fill
             sizes="(max-width: 768px) 95vw, (max-width: 1200px) 45vw, 30vw"
@@ -39,6 +41,7 @@ export default function PostCard({
             loading={index < 3 ? 'eager' : 'lazy'}
             priority={index < 3}
             quality={85}
+            unoptimized={unoptimized}
             placeholder="blur"
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkrHR4f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+JjHmsnLLKKRnHbwKJ3FlAm2O0UfGYJeO5Jp7Dcp3OHGMYd4b6aLgEJP5SjsNQFZAo9O5B+tWRcWlwJ3txdPGFVKdWKdlL8Whe2ZTBqD7+4I2HHDZ8Q/I4U4Q7XSB8ikEKDMBOGAyMPEtwq57Ck2xD/9k="
           />

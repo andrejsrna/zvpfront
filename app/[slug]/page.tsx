@@ -1,9 +1,6 @@
 import { Suspense } from 'react';
-import {
-  getPostBySlug,
-  getRankMathSeo,
-  WordPressPost,
-} from '@/app/lib/WordPress';
+import { getPostBySlug } from '@/app/lib/content/server';
+import type { ContentPost } from '@/app/lib/content/types';
 import { parseHeadings } from '@/app/utils/parseHeadings';
 import { safeHeDecode } from '@/app/lib/sanitizeHTML';
 import Link from 'next/link';
@@ -25,26 +22,13 @@ interface PageProps {
   }>;
 }
 
-interface Reference {
-  nazov: string;
-  odkaz: string;
-}
-
-const hasRankMathVariables = (value?: string) =>
-  !!value && /%[a-z0-9_-]+%/i.test(value);
-
-const getRankMathSeoValue = (value?: string) => {
-  if (!value) return '';
-  const normalized = safeHeDecode(value.replace(/<[^>]*>/g, '').trim());
-  return hasRankMathVariables(normalized) ? '' : normalized;
-};
+export const revalidate = 3600;
 
 // Fast Post component for immediate rendering
 async function PostContent({ slug }: { slug: string }) {
-  let post: WordPressPost | null;
+  let post: ContentPost | null;
 
   try {
-    // Faster API call with shorter timeout
     post = await getPostBySlug(slug);
   } catch (error) {
     console.error('Failed to fetch post:', error);
@@ -55,36 +39,22 @@ async function PostContent({ slug }: { slug: string }) {
     notFound();
   }
 
-  // Safe decoding - prevent infinite recursion
-  const decodedTitle = safeHeDecode(post.title.rendered);
-  const decodedExcerpt = safeHeDecode(
-    post.excerpt.rendered.replace(/<[^>]*>/g, '')
+  const seoTitle = safeHeDecode(post.seoTitle || post.title.rendered).slice(
+    0,
+    160
   );
-  const inlineSeoTitle = getRankMathSeoValue(
-    post.rank_math_title || post.meta?.rank_math_title
-  );
-  const inlineSeoDescription = getRankMathSeoValue(
-    post.rank_math_description || post.meta?.rank_math_description
-  );
+  const seoDescription = safeHeDecode(
+    post.seoDescription || post.excerpt.rendered
+  )
+    .replace(/<[^>]*>/g, '')
+    .slice(0, 160);
 
-  let apiSeo: { title?: string; description?: string } = {};
-  if (!inlineSeoTitle || !inlineSeoDescription) {
-    apiSeo = await getRankMathSeo(post.slug);
-  }
-
-  const seoTitle = inlineSeoTitle || apiSeo.title || decodedTitle;
-  const seoDescription =
-    inlineSeoDescription || apiSeo.description || decodedExcerpt;
-
-  // Defer heavy operations with safe decoding
-  const { headings, content } = parseHeadings(
-    safeHeDecode(post.content.rendered)
-  );
-  const references: Reference[] = post.meta?._zdroje_referencie || [];
+  const { headings, content } = parseHeadings(post.content.rendered);
 
   const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0];
   const featuredImageUrl = featuredMedia?.source_url;
-  const featuredImageAlt = featuredMedia?.alt_text || decodedTitle;
+  const featuredImageAlt =
+    featuredMedia?.alt_text || safeHeDecode(post.title.rendered);
 
   // Schema.org Article markup
   const articleSchema = {
@@ -144,7 +114,7 @@ async function PostContent({ slug }: { slug: string }) {
               </div>
               <h1
                 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight"
-                dangerouslySetInnerHTML={{ __html: decodedTitle }}
+                dangerouslySetInnerHTML={{ __html: post.title.rendered }}
               />
             </header>
 
@@ -181,44 +151,6 @@ async function PostContent({ slug }: { slug: string }) {
                   prose-strong:text-gray-900"
               />
             </Suspense>
-
-            {/* DEFERRED: References Section */}
-            {references.length > 0 && (
-              <Suspense
-                fallback={
-                  <div className="h-32 bg-gray-100 rounded-lg animate-pulse mt-12" />
-                }
-              >
-                <div className="mt-12 pt-8 border-t">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                    Zdroje a referencie
-                  </h2>
-                  <div className="space-y-4">
-                    {references.map((ref, index) => (
-                      <div key={index} className="flex items-start">
-                        <span className="text-sm text-gray-500 mr-2">
-                          [{index + 1}]
-                        </span>
-                        <div>
-                          <a
-                            href={ref.odkaz}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#3e802b] hover:text-[#4a9a35]
-                              transition-colors hover:underline"
-                          >
-                            {ref.nazov}
-                          </a>
-                          <span className="text-gray-400 text-sm ml-2">
-                            {new URL(ref.odkaz).hostname}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </Suspense>
-            )}
 
             {/* DEFERRED: Tags */}
             {post.tags && post.tags.length > 0 && (
@@ -329,30 +261,15 @@ export async function generateMetadata({ params: paramsPromise }: PageProps) {
       };
     }
 
-    const decodedTitle = safeHeDecode(post.title.rendered);
-    const inlineSeoTitle = getRankMathSeoValue(
-      post.rank_math_title || post.meta?.rank_math_title
-    );
-
-    const baseDescription = safeHeDecode(
-      post.excerpt.rendered.replace(/<[^>]*>/g, '')
-    );
-    const inlineSeoDescription = getRankMathSeoValue(
-      post.rank_math_description || post.meta?.rank_math_description
-    );
-
-    let apiSeo: { title?: string; description?: string } = {};
-    if (!inlineSeoTitle || !inlineSeoDescription) {
-      apiSeo = await getRankMathSeo(post.slug);
-    }
-
-    const metaTitle = (inlineSeoTitle || apiSeo.title || decodedTitle).slice(
+    const metaTitle = safeHeDecode(post.seoTitle || post.title.rendered).slice(
       0,
       160
     );
-    const cleanDescription = (
-      inlineSeoDescription || apiSeo.description || baseDescription
-    ).slice(0, 160);
+    const cleanDescription = safeHeDecode(
+      post.seoDescription || post.excerpt.rendered
+    )
+      .replace(/<[^>]*>/g, '')
+      .slice(0, 160);
     const featuredImageUrl =
       post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
 

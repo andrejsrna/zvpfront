@@ -8,6 +8,7 @@ interface FeaturedImageProps {
 }
 
 export default function FeaturedImage({ src, alt }: FeaturedImageProps) {
+  const isRemote = /^https?:\/\//i.test(src);
   return (
     <div className="mt-8 mb-8 relative">
       <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-xl bg-gray-100">
@@ -21,6 +22,7 @@ export default function FeaturedImage({ src, alt }: FeaturedImageProps) {
           priority
           quality={80}
           fetchPriority="high"
+          unoptimized={isRemote}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
       </div>

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getCategories, WordPressCategory } from '../lib/WordPress';
+import type { ContentCategory } from '@/app/lib/content/types';
+import { getPopularCategories } from '@/app/lib/content/client';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -105,18 +106,14 @@ const CATEGORY_DETAILS = {
 };
 
 export default function PopularCategories() {
-  const [categories, setCategories] = useState<WordPressCategory[]>([]);
+  const [categories, setCategories] = useState<ContentCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const cats = await getCategories();
-        const mainCategories = cats
-          .filter(cat => !cat.parent && cat.count > 0)
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 4);
-        setCategories(mainCategories);
+        const cats = await getPopularCategories(4);
+        setCategories(cats.filter(cat => cat.count > 0));
       } catch (error) {
         console.error('Error loading categories:', error);
       } finally {

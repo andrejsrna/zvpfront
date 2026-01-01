@@ -2,11 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  advancedSearch,
-  WordPressPost,
-  transformUrl,
-} from '@/app/lib/WordPress';
+import type { ContentPost } from '@/app/lib/content/types';
+import { advancedSearch } from '@/app/lib/content/client';
 import Link from 'next/link';
 import Image from 'next/image';
 import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
@@ -19,7 +16,7 @@ interface SearchProps {
 
 export default function Search({ onClose }: SearchProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<WordPressPost[]>([]);
+  const [results, setResults] = useState<ContentPost[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -49,7 +46,7 @@ export default function Search({ onClose }: SearchProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      router.push(`/vyhladavanie?q=${encodeURIComponent(query)}`);
+      router.push(`/search?q=${encodeURIComponent(query)}`);
       setIsOpen(false);
       if (onClose) onClose();
     }
@@ -119,15 +116,14 @@ export default function Search({ onClose }: SearchProps) {
                     {post._embedded?.['wp:featuredmedia'] && (
                       <div className="relative w-16 h-16 flex-shrink-0">
                         <Image
-                          src={transformUrl(
-                            post._embedded['wp:featuredmedia'][0].source_url
-                          )}
+                          src={post._embedded['wp:featuredmedia'][0].source_url}
                           alt={post.title.rendered}
                           fill
                           sizes="80px"
                           className="object-cover"
                           loading="lazy"
                           quality={60}
+                          unoptimized
                         />
                       </div>
                     )}
@@ -153,7 +149,7 @@ export default function Search({ onClose }: SearchProps) {
               {results.length > 0 && (
                 <div className="mt-4 text-right">
                   <Link
-                    href={`/vyhladavanie?q=${query}`}
+                    href={`/search?q=${query}`}
                     className="text-primary hover:text-primary/80 text-sm font-medium"
                   >
                     Zobraziť všetky výsledky

@@ -1,10 +1,27 @@
 import type { NextConfig } from 'next';
 import withPWA from 'next-pwa';
 import crypto from 'crypto';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import matter from 'gray-matter';
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['zdravievpraxi.sk', 'admin.zdravievpraxi.sk'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'zdravievpraxi.sk',
+      },
+      {
+        protocol: 'https',
+        hostname: '5298afed500a8a74e5b8782dc3dec9d8.r2.cloudflarestorage.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.fitdoplnky.sk',
+      },
+    ],
+    qualities: [60, 75, 80, 85],
     minimumCacheTTL: 3600,
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 768, 1024, 1280, 1600, 1920, 2048],
@@ -103,13 +120,105 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['sharp'],
 
   // Redirects
-  redirects: async () => [
-    {
-      source: '/home',
-      destination: '/',
-      permanent: true,
-    },
-  ],
+  redirects: async () => {
+    const redirects: Array<{
+      source: string;
+      destination: string;
+      permanent: boolean;
+    }> = [
+      { source: '/home', destination: '/', permanent: true },
+
+      // Search route rename
+      { source: '/vyhladavanie', destination: '/search', permanent: true },
+      { source: '/vyhladavanie/', destination: '/search', permanent: true },
+
+      // Common WordPress compat routes
+      { source: '/feed', destination: '/feed.xml', permanent: true },
+      { source: '/feed/', destination: '/feed.xml', permanent: true },
+      { source: '/rss', destination: '/feed.xml', permanent: true },
+      { source: '/rss/', destination: '/feed.xml', permanent: true },
+      { source: '/rss.xml', destination: '/feed.xml', permanent: true },
+      { source: '/sitemap_index.xml', destination: '/sitemap.xml', permanent: true },
+      { source: '/wp-sitemap.xml', destination: '/sitemap.xml', permanent: true },
+      { source: '/category/:slug', destination: '/kategoria/:slug', permanent: true },
+      { source: '/category/:slug/', destination: '/kategoria/:slug', permanent: true },
+      {
+        source: '/category/:slug/page/:page',
+        destination: '/kategoria/:slug?page=:page',
+        permanent: true,
+      },
+      {
+        source: '/category/:slug/page/:page/',
+        destination: '/kategoria/:slug?page=:page',
+        permanent: true,
+      },
+      {
+        source: '/tag/:slug/page/:page',
+        destination: '/tag/:slug?page=:page',
+        permanent: true,
+      },
+      {
+        source: '/tag/:slug/page/:page/',
+        destination: '/tag/:slug?page=:page',
+        permanent: true,
+      },
+      { source: '/clanky/page/:page', destination: '/clanky?page=:page', permanent: true },
+      { source: '/clanky/page/:page/', destination: '/clanky?page=:page', permanent: true },
+      { source: '/:slug/amp', destination: '/:slug', permanent: true },
+      { source: '/:slug/amp/', destination: '/:slug', permanent: true },
+
+      // Date-based permalinks (common WP setting): /YYYY/MM/DD/slug/
+      {
+        source: '/:year(\\d{4})/:month(\\d{1,2})/:day(\\d{1,2})/:slug',
+        destination: '/:slug',
+        permanent: true,
+      },
+      {
+        source: '/:year(\\d{4})/:month(\\d{1,2})/:day(\\d{1,2})/:slug/',
+        destination: '/:slug',
+        permanent: true,
+      },
+    ];
+
+    // Content-driven aliases: frontmatter `aliases: ["old-slug", "/old-path"]`
+    try {
+      const postsDir = path.join(process.cwd(), 'content', 'posts');
+      const entries = await fs.readdir(postsDir);
+      const mdFiles = entries
+        .filter(f => f.toLowerCase().endsWith('.md'))
+        .filter(f => !f.startsWith('_'));
+
+      const seen = new Set<string>();
+
+      for (const file of mdFiles) {
+        const full = path.join(postsDir, file);
+        const raw = await fs.readFile(full, 'utf8');
+        const parsed = matter(raw);
+        const slug =
+          (typeof parsed.data?.slug === 'string' && parsed.data.slug.trim()) ||
+          path.basename(file, path.extname(file));
+
+        const aliases = parsed.data?.aliases;
+        if (!Array.isArray(aliases)) continue;
+
+        for (const aliasRaw of aliases) {
+          if (typeof aliasRaw !== 'string') continue;
+          const cleaned = aliasRaw.trim().replace(/^\/+/, '').replace(/\/+$/, '');
+          if (!cleaned) continue;
+          if (cleaned === slug) continue;
+
+          const source = `/${cleaned}`;
+          if (seen.has(source)) continue;
+          seen.add(source);
+          redirects.push({ source, destination: `/${slug}`, permanent: true });
+        }
+      }
+    } catch {
+      // Ignore if content directory doesn't exist during some environments
+    }
+
+    return redirects;
+  },
 
   // Compression
   compress: true,
@@ -240,7 +349,6 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizeCss: true,
     scrollRestoration: true,
-    optimizePackageImports: ['@wordpress/block-library'],
     webVitalsAttribution: ['CLS', 'LCP', 'FCP', 'FID', 'TTFB'],
     optimizeServerReact: true,
   },
@@ -262,13 +370,6 @@ const nextConfig: NextConfig = {
             test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
             priority: 40,
             enforce: true,
-          },
-          // WordPress libraries
-          wordpress: {
-            test: /[\\/]node_modules[\\/]@wordpress[\\/]/,
-            name: 'wordpress',
-            priority: 35,
-            reuseExistingChunk: true,
           },
           // Large libraries
           lib: {

@@ -83,14 +83,6 @@ export default function RootLayout({
   return (
     <html lang="sk" className="scroll-smooth">
       <head>
-        {/* DNS prefetch only - no blocking preloads */}
-        <link
-          rel="preconnect"
-          href="https://admin.zdravievpraxi.sk"
-          crossOrigin="anonymous"
-        />
-        <link rel="dns-prefetch" href="//admin.zdravievpraxi.sk" />
-
         {/* DNS prefetch for Google services - no blocking */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />

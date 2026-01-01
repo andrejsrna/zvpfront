@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { WordPressPost, getPosts } from '@/app/lib/WordPress';
+import type { ContentPost } from '@/app/lib/content/types';
+import { getPostsByCategory } from '@/app/lib/content/client';
 import Link from 'next/link';
 import { safeHeDecode } from '@/app/lib/sanitizeHTML';
 
@@ -18,16 +19,14 @@ export default function ReadMore({
   categorySlug,
   currentPostId,
 }: ReadMoreProps) {
-  const [posts, setPosts] = useState<WordPressPost[]>([]);
+  const [posts, setPosts] = useState<ContentPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const data = await getPosts(20, 'date', categoryId);
-        // Filter out current post
-        const filteredPosts = data.filter(post => post.id !== currentPostId);
-        setPosts(filteredPosts);
+        const data = await getPostsByCategory(categoryId, 20, currentPostId);
+        setPosts(data);
       } catch (error) {
         console.error('Error fetching related posts:', error);
       } finally {

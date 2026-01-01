@@ -1,18 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getPosts, WordPressPost } from '../lib/WordPress';
+import type { ContentPost } from '@/app/lib/content/types';
+import { getRecentPosts } from '@/app/lib/content/client';
 import Link from 'next/link';
 import PostCard from './PostCard';
 
 export default function RecentPosts() {
-  const [posts, setPosts] = useState<WordPressPost[]>([]);
+  const [posts, setPosts] = useState<ContentPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const fetchedPosts = await getPosts(6);
+        const fetchedPosts = await getRecentPosts(6);
         setPosts(fetchedPosts);
       } catch (error) {
         console.error('Error loading posts:', error);

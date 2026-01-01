@@ -1,4 +1,5 @@
-import { getPosts, getCategories, WordPressPost } from '@/app/lib/WordPress';
+import { getAllPosts, getCategories, getPosts } from '@/app/lib/content/server';
+import type { ContentPost } from '@/app/lib/content/types';
 import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,6 +13,8 @@ interface ArticlesPageProps {
 }
 
 const POSTS_PER_PAGE = 12;
+
+export const revalidate = 3600;
 
 export default async function ArticlesPage({
   searchParams,
@@ -32,7 +35,7 @@ export default async function ArticlesPage({
 
   const totalPosts = selectedCategory
     ? selectedCategory.count
-    : categories.reduce((acc, cat) => acc + cat.count, 0);
+    : (await getAllPosts()).length;
   const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
 
   return (
@@ -92,7 +95,7 @@ export default async function ArticlesPage({
       <div className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post: WordPressPost, index) => (
+            {posts.map((post: ContentPost, index) => (
               <Link
                 key={post.id}
                 href={`/${post.slug}`}
@@ -110,6 +113,7 @@ export default async function ArticlesPage({
                         group-hover:scale-105"
                       loading={index < 6 ? 'eager' : 'lazy'}
                       quality={80}
+                      unoptimized
                       placeholder="blur"
                       blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkrHR4f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+JjHmsnLLKKRnHbwKJ3FlAm2O0UfGYJeO5Jp7Dcp3OHGMYd4b6aLgEJP5SjsNQFZAo9O5B+tWRcWlwJ3txdPGFVKdWKdlL8Whe2ZTBqD7+4I2HHDZ8Q/I4U4Q7XSB8ikEKDMBOGAyMPEtwq57Ck2xD/9k="
                     />

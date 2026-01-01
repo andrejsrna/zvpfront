@@ -1,4 +1,4 @@
-import { getPostBySlug } from '@/app/lib/WordPress';
+import { getPostBySlug } from '@/app/lib/content/server';
 
 interface HeadProps {
   params: Promise<{

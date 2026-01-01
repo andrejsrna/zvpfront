@@ -1,9 +1,8 @@
 import {
   getCategories,
   getPosts,
-  WordPressPost,
-  WordPressCategory,
-} from '@/app/lib/WordPress';
+} from '@/app/lib/content/server';
+import type { ContentCategory, ContentPost } from '@/app/lib/content/types';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -20,6 +19,8 @@ interface CategoryPageProps {
 
 const POSTS_PER_PAGE = 12;
 
+export const revalidate = 3600;
+
 export default async function CategoryPage({
   params: paramsPromise,
   searchParams,
@@ -30,9 +31,9 @@ export default async function CategoryPage({
 
   // Rekurzívne hľadanie kategórie (vrátane podkategórií)
   const findCategory = (
-    cats: WordPressCategory[],
+    cats: ContentCategory[],
     slug: string
-  ): WordPressCategory | undefined => {
+  ): ContentCategory | undefined => {
     for (const cat of cats) {
       if (cat.slug === slug) return cat;
       if (cat.children?.length) {
@@ -114,7 +115,7 @@ export default async function CategoryPage({
       <div className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post: WordPressPost, index) => (
+            {posts.map((post: ContentPost, index) => (
               <Link
                 key={post.id}
                 href={`/${post.slug}`}
@@ -123,18 +124,19 @@ export default async function CategoryPage({
               >
                 <div className="relative aspect-[16/9]">
                   {post._embedded?.['wp:featuredmedia'] ? (
-                    <Image
-                      src={post._embedded['wp:featuredmedia'][0].source_url}
-                      alt={post.title.rendered}
-                      fill
-                      sizes="(max-width: 768px) 95vw, (max-width: 1200px) 45vw, 30vw"
-                      className="object-cover transition-transform duration-300 
-                        group-hover:scale-105"
-                      loading={index < 6 ? 'eager' : 'lazy'}
-                      quality={80}
-                      placeholder="blur"
-                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkrHR4f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+JjHmsnLLKKRnHbwKJ3FlAm2O0UfGYJeO5Jp7Dcp3OHGMYd4b6aLgEJP5SjsNQFZAo9O5B+tWRcWlwJ3txdPGFVKdWKdlL8Whe2ZTBqD7+4I2HHDZ8Q/I4U4Q7XSB8ikEKDMBOGAyMPEtwq57Ck2xD/9k="
-                    />
+	                    <Image
+	                      src={post._embedded['wp:featuredmedia'][0].source_url}
+	                      alt={post.title.rendered}
+	                      fill
+	                      sizes="(max-width: 768px) 95vw, (max-width: 1200px) 45vw, 30vw"
+	                      className="object-cover transition-transform duration-300 
+	                        group-hover:scale-105"
+	                      loading={index < 6 ? 'eager' : 'lazy'}
+	                      quality={80}
+	                      unoptimized
+	                      placeholder="blur"
+	                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkrHR4f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+JjHmsnLLKKRnHbwKJ3FlAm2O0UfGYJeO5Jp7Dcp3OHGMYd4b6aLgEJP5SjsNQFZAo9O5B+tWRcWlwJ3txdPGFVKdWKdlL8Whe2ZTBqD7+4I2HHDZ8Q/I4U4Q7XSB8ikEKDMBOGAyMPEtwq57Ck2xD/9k="
+	                    />
                   ) : (
                     <div
                       className="w-full h-full bg-gradient-to-br from-primary

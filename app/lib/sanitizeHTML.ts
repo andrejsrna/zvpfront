@@ -49,13 +49,7 @@ export function sanitizeHTML(html: string): string {
       ''
     );
 
-    // 2. Fix WordPress content URLs (simple replacement)
-    sanitized = sanitized.replace(
-      /href\s*=\s*["']\/wp-content\//gi,
-      'href="https://admin.zdravievpraxi.sk/wp-content/'
-    );
-
-    // 3. Add target/rel to truly external links (and only external)
+    // 2. Add target/rel to truly external links (and only external)
     //    We rebuild the <a ...> tag safely so attributes are placed before the closing '>'
     sanitized = sanitized.replace(
       /<a\b([^>]*)>/gi,

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getRandomPost, WordPressPost, transformUrl } from '../lib/WordPress';
+import type { ContentPost } from '@/app/lib/content/types';
+import { getRandomPost } from '@/app/lib/content/client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
@@ -15,16 +16,14 @@ export default function RecommendedReads({
   currentPostId,
   currentCategoryId,
 }: RecommendedReadsProps) {
-  const [recommendedPost, setRecommendedPost] = useState<WordPressPost | null>(
-    null
-  );
+  const [recommendedPost, setRecommendedPost] = useState<ContentPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchRecommendedPost() {
       try {
-        const posts = await getRandomPost();
-        setRecommendedPost(posts[0] || null);
+        const post = await getRandomPost();
+        setRecommendedPost(post);
       } catch (error) {
         console.error('Error loading recommended post:', error);
       } finally {
@@ -48,6 +47,9 @@ export default function RecommendedReads({
   if (!recommendedPost) {
     return null;
   }
+  const featuredSrc =
+    recommendedPost._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+  const unoptimized = !!featuredSrc && /^https?:\/\//i.test(featuredSrc);
 
   return (
     <section className="bg-gradient-to-b from-gray-50 to-white py-16">
@@ -72,9 +74,7 @@ export default function RecommendedReads({
             <div className="relative aspect-[4/3] md:aspect-auto">
               {recommendedPost._embedded?.['wp:featuredmedia'] ? (
                 <Image
-                  src={transformUrl(
-                    recommendedPost._embedded['wp:featuredmedia'][0].source_url
-                  )}
+                  src={recommendedPost._embedded['wp:featuredmedia'][0].source_url}
                   alt={recommendedPost.title.rendered}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -82,6 +82,7 @@ export default function RecommendedReads({
                     group-hover:scale-105"
                   loading="lazy"
                   quality={80}
+                  unoptimized={unoptimized}
                   placeholder="blur"
                   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkrHR4f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+JjHmsnLLKKRnHbwKJ3FlAm2O0UfGYJeO5Jp7Dcp3OHGMYd4b6aLgEJP5SjsNQFZAo9O5B+tWRcWlwJ3txdPGFVKdWKdlL8Whe2ZTBqD7+4I2HHDZ8Q/I4U4Q7XSB8ikEKDMBOGAyMPEtwq57Ck2xD/9k="
                 />

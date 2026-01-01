@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { getPosts, getCategories } from '@/app/lib/WordPress';
+import { getAllPosts, getCategories, getTags } from '@/app/lib/content/server';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://zdravievpraxi.sk';
@@ -50,29 +50,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  try {
-    // Get fewer posts to avoid timeout - sitemap will be generated at runtime too
-    const posts = await getPosts(50, 'date');
-    const postUrls = posts.map(post => ({
-      url: `${baseUrl}/${post.slug}`,
-      lastModified: new Date(post.modified),
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    }));
+  const posts = await getAllPosts();
+  const postUrls = posts.map(post => ({
+    url: `${baseUrl}/${post.slug}`,
+    lastModified: new Date(post.modified || post.date),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
 
-    // Get categories for dynamic URLs
-    const categories = await getCategories();
-    const categoryUrls = categories.map(category => ({
-      url: `${baseUrl}/kategoria/${category.slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.6,
-    }));
+  const categories = await getCategories();
+  const categoryUrls = categories.map(category => ({
+    url: `${baseUrl}/kategoria/${category.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.6,
+  }));
 
-    return [...staticPages, ...postUrls, ...categoryUrls];
-  } catch (error) {
-    console.error('Error generating sitemap:', error);
-    // Return at least static pages if API fails
-    return staticPages;
-  }
+  const tags = await getTags();
+  const tagIndexUrl = {
+    url: `${baseUrl}/tag`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
+  };
+  const tagUrls = tags.map(tag => ({
+    url: `${baseUrl}/tag/${tag.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
+  }));
+
+  return [...staticPages, ...postUrls, ...categoryUrls, tagIndexUrl, ...tagUrls];
 }

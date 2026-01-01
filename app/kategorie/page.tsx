@@ -1,4 +1,4 @@
-import { getCategories } from '@/app/lib/WordPress';
+import { getCategories } from '@/app/lib/content/server';
 import Link from 'next/link';
 
 export default async function CategoriesPage() {

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { getPosts } from '../lib/WordPress';
+import { getPosts } from '@/app/lib/content/server';
+import { safeHeDecode } from '@/app/lib/sanitizeHTML';
 
 export default async function Hero() {
   const posts = await getPosts(1);
@@ -18,10 +19,11 @@ export default async function Hero() {
   const imageAlt =
     featuredPost._embedded?.['wp:featuredmedia']?.[0]?.alt_text ||
     featuredPost.title.rendered;
+  const isRemoteImage = !!imageUrl && /^https?:\/\//i.test(imageUrl);
 
   // Strip HTML tags from excerpt and limit to 150 characters
   const excerpt =
-    featuredPost.excerpt.rendered
+    safeHeDecode(featuredPost.excerpt.rendered)
       .replace(/<[^>]*>/g, '')
       .slice(0, 150)
       .trim()
@@ -138,6 +140,7 @@ export default async function Hero() {
                   priority
                   sizes="(max-width: 1024px) 100vw, 45vw"
                   quality={80}
+                  unoptimized={isRemoteImage}
                   placeholder="blur"
                   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkrHR4f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+JjHmsnLLKKRnHbwKJ3FlAm2O0UfGYJeO5Jp7Dcp3OHGMYd4b6aLgEJP5SjsNQFZAo9O5B+tWRcWlwJ3txdPGFVKdWKdlL8Whe2ZTBqD7+4I2HHDZ8Q/I4U4Q7XSB8ikEKDMBOGAyMPEtwq57Ck2xD/9k="
                 />
