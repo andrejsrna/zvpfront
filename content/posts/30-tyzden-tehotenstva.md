@@ -149,6 +149,10 @@ Informujte sa o rôznych pôrodných technikách, ako je napríklad pôrod do vo
 
 Komunikácia s partnerom a rodinou je v tomto období veľmi dôležitá. Podeľte sa s nimi o svoje pocity, obavy a očakávania. Ak máte partnera, zapojte ho do príprav na pôrod a starostlivosť o dieťa. Spoločne sa môžete zúčastniť kurzov prenatálnej prípravy a prediskutovať vaše predstavy o pôrode a rodičovstve.
 
+## Zachytenie spomienok na tehotenstvo
+
+Mnohé budúce mamičky v tomto období zvažujú aj tehotenské fotenie. [Ideálny čas na tehotenské fotografovanie](https://www.kitti-photo.sk/ako-sa-pripravit-a-obliect-na-tehotenske-fotenie/) býva najčastejšie medzi 31. a 35. týždňom tehotenstva, kedy je bruško už krásne výrazné, no žena sa ešte cíti relatívne komfortne. Takéto fotenie môže byť nielen krásnou spomienkou, ale aj príjemným momentom zastavenia sa a uvedomenia si výnimočnosti tohto obdobia.
+
 Pozrite si tiež: [Pupočná šnúra – 10 dôležitých informácií](https://zdravievpraxi.sk/pupocna-snura/)
 
 ## Tipy a rady pre 30. týždeň tehotenstva
