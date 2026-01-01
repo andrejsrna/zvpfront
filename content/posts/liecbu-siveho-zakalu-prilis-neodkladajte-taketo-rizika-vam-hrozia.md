@@ -8,6 +8,7 @@ categories:
   - "choroby"
 wpId: 33680
 featuredImage: "https://cdn.fitdoplnky.sk/wp-media/2025/04/liecba-sedeho-zakalu-1024x683-ebeca668.jpg"
+allowScripts: true
 ---
 
 Sivý zákal je ochorenie podmienené vekom, preto ho nemožno vyliečiť žiadnymi mastičkami či kvapkami. Raz si počká na každého z nás a neúčinkujú naň ani preventívne opatrenia. Jediným riešením, ako sa ho zbaviť, je operačný zákrok. Mnohí ľudia sa operácie sivého zákalu obávajú, pridlho ju odkladať sa však nevypláca.

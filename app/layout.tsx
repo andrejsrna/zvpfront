@@ -50,6 +50,9 @@ export const metadata: Metadata = {
   },
   description:
     'Váš sprievodca zdravým životným štýlom - overené informácie, tipy a rady od odborníkov',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: 'website',
     locale: 'sk_SK',
@@ -57,11 +60,15 @@ export const metadata: Metadata = {
     siteName: 'Zdravie v praxi',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
       },
     ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/twitter-image'],
   },
   robots: {
     index: true,
@@ -80,6 +87,30 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': 'https://zdravievpraxi.sk/#organization',
+        name: 'Zdravie v praxi',
+        url: 'https://zdravievpraxi.sk',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://zdravievpraxi.sk/logos/logo.png',
+        },
+      },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://zdravievpraxi.sk/#website',
+        url: 'https://zdravievpraxi.sk',
+        name: 'Zdravie v praxi',
+        publisher: { '@id': 'https://zdravievpraxi.sk/#organization' },
+        inLanguage: 'sk',
+      },
+    ],
+  };
+
   return (
     <html lang="sk" className="scroll-smooth">
       <head>
@@ -146,6 +177,11 @@ export default function RootLayout({
             }
             `,
           }}
+        />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
       <body

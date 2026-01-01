@@ -9,6 +9,7 @@ categories:
   - "zdrava-krasa-a-kozmetika"
 wpId: 33364
 featuredImage: "https://cdn.fitdoplnky.sk/wp-media/2024/06/rhinoplastika_plasticky-chirurg-1024x576-79b96cf3.jpg"
+allowScripts: true
 ---
 
 Plastická chirurgia je odbor medicíny, ktorý sa zaoberá korekciou a obnovou tvaru a funkcie tela. Jedným z najčastejších zákrokov v tejto oblasti je rhinoplastika, ktorá sa týka korekcie nosa. Rhinoplastika môže byť vykonaná z rôznych dôvodov, vrátane estetických a funkčných.

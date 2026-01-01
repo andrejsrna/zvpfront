@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { getPostBySlug } from '@/app/lib/content/server';
+import { getAllPosts, getPostBySlug } from '@/app/lib/content/server';
 import type { ContentPost } from '@/app/lib/content/types';
 import { parseHeadings } from '@/app/utils/parseHeadings';
 import { safeHeDecode } from '@/app/lib/sanitizeHTML';
@@ -23,6 +23,17 @@ interface PageProps {
 }
 
 export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+  const rawLimit = process.env.PREBUILD_POSTS_COUNT;
+  const parsedLimit = rawLimit ? Number.parseInt(rawLimit, 10) : NaN;
+  const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : 200;
+
+  return posts.slice(0, limit).map(post => ({
+    slug: post.slug,
+  }));
+}
 
 // Fast Post component for immediate rendering
 async function PostContent({ slug }: { slug: string }) {
@@ -272,20 +283,31 @@ export async function generateMetadata({ params: paramsPromise }: PageProps) {
       .slice(0, 160);
     const featuredImageUrl =
       post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+    const canonical = `/${post.slug}`;
+    const images = featuredImageUrl ? [featuredImageUrl] : ['/opengraph-image'];
 
     return {
       title: metaTitle,
       description: cleanDescription,
+      alternates: {
+        canonical,
+      },
       openGraph: {
+        type: 'article',
         title: metaTitle,
         description: cleanDescription,
-        images: featuredImageUrl ? [featuredImageUrl] : [],
+        url: canonical,
+        siteName: 'Zdravie v praxi',
+        locale: 'sk_SK',
+        publishedTime: post.date,
+        modifiedTime: post.modified,
+        images,
       },
       twitter: {
         card: 'summary_large_image',
         title: metaTitle,
         description: cleanDescription,
-        images: featuredImageUrl ? [featuredImageUrl] : [],
+        images,
       },
     };
   } catch (error) {

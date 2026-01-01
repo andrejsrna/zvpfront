@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { sanitizeExcerpt, safeHeDecode } from '@/app/lib/sanitizeHTML';
+import type { Metadata } from 'next';
 
 interface CategoryPageProps {
   params: Promise<{
@@ -228,8 +229,11 @@ export default async function CategoryPage({
 
 export async function generateMetadata({
   params: paramsPromise,
-}: CategoryPageProps) {
+  searchParams,
+}: CategoryPageProps): Promise<Metadata> {
   const params = await paramsPromise;
+  const searchParamsResolved = await searchParams;
+  const page = Number(searchParamsResolved.page) || 1;
   const categories = await getCategories();
   const category = categories.find(cat => cat.slug === params.slug);
 
@@ -240,8 +244,22 @@ export async function generateMetadata({
     };
   }
 
+  const title = `${category.name}${page > 1 ? ` – strana ${page}` : ''} | Zdravie v praxi`;
+  const description = category.description || `Články z kategórie ${category.name}`;
+  const canonical = `/kategoria/${category.slug}${page > 1 ? `?page=${page}` : ''}`;
+
   return {
-    title: `${category.name} | Zdravie v praxi`,
-    description: category.description || `Články z kategórie ${category.name}`,
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: 'website',
+      locale: 'sk_SK',
+      siteName: 'Zdravie v praxi',
+      images: ['/opengraph-image'],
+    },
   };
 }

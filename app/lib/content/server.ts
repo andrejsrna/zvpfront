@@ -124,7 +124,27 @@ function stripMarkdown(md: string): string {
     .trim();
 }
 
-async function markdownToHtml(markdown: string): Promise<string> {
+function wrapStandaloneIifeScripts(markdown: string): string {
+  // Support legacy WP-injected IIFE scripts that were exported as plain text in Markdown.
+  // Only wraps when the IIFE appears as a standalone block (line/paragraph), not inline prose.
+  const re = /(^|\n)\(function\(\)\{[\s\S]*?\}\)\(\);\s*(?=\n|$)/g;
+
+  return markdown.replace(re, (match: string, prefix: string) => {
+    const raw = match.slice(prefix.length).trim();
+    const js = raw
+      .replace(/\\_/g, '_')
+      .replace(/<\/script/gi, '<\\/script');
+
+    return `${prefix}<script>\n${js}\n</script>`;
+  });
+}
+
+async function markdownToHtml(
+  markdown: string,
+  options?: { allowScripts?: boolean }
+): Promise<string> {
+  const allowScripts = Boolean(options?.allowScripts);
+
   const schema = {
     ...defaultSchema,
     tagNames: Array.from(
@@ -142,6 +162,7 @@ async function markdownToHtml(markdown: string): Promise<string> {
         'iframe',
         'video',
         'source',
+        ...(allowScripts ? ['script'] : []),
       ])
     ),
     attributes: {
@@ -153,11 +174,24 @@ async function markdownToHtml(markdown: string): Promise<string> {
       img: Array.from(
         new Set([...(defaultSchema.attributes?.img || []), 'loading', 'decoding'])
       ),
+      ...(allowScripts
+        ? {
+            script: ['src', 'async', 'defer', 'type', 'id', 'crossorigin', 'referrerpolicy'],
+          }
+        : {}),
       table: Array.from(new Set([...(defaultSchema.attributes?.table || []), 'border'])),
       td: Array.from(new Set([...(defaultSchema.attributes?.td || []), 'colspan', 'rowspan'])),
       th: Array.from(new Set([...(defaultSchema.attributes?.th || []), 'colspan', 'rowspan', 'scope'])),
     },
+    protocols: {
+      ...(defaultSchema.protocols || {}),
+      src: ['http', 'https'],
+    },
   };
+
+  const normalizedMarkdown = allowScripts
+    ? wrapStandaloneIifeScripts(markdown)
+    : markdown;
 
   const file = await remark()
     .use(remarkGfm)
@@ -165,7 +199,7 @@ async function markdownToHtml(markdown: string): Promise<string> {
     .use(rehypeRaw)
     .use(rehypeSanitize, schema)
     .use(rehypeStringify)
-    .process(markdown);
+    .process(normalizedMarkdown);
   return String(file);
 }
 
@@ -308,12 +342,18 @@ export const getAllPosts = cache(async (): Promise<ContentPost[]> => {
 });
 
 const renderPostHtmlByFile = unstable_cache(
-  async (filePath: string): Promise<string> => {
+  async (filePath: string, mtimeMs: number): Promise<string> => {
+    void mtimeMs;
     const raw = await fs.readFile(filePath, 'utf8');
     const parsed = matter(raw);
-    return markdownToHtml(parsed.content);
+    const data = parsed.data || {};
+    const allowScripts = Boolean(
+      (data as Record<string, unknown>)?.allowScripts ||
+        (data as Record<string, unknown>)?.unsafeAllowScripts
+    );
+    return markdownToHtml(parsed.content, { allowScripts });
   },
-  ['content-post-html-v2'],
+  ['content-post-html-v4'],
   { revalidate: 3600, tags: ['content'] }
 );
 
@@ -323,7 +363,8 @@ export const getPostBySlug = cache(
     const posts = await loadAllPosts();
     const found = posts.find(p => p.slug === slug);
     if (!found) return null;
-    const html = await renderPostHtmlByFile(found._filePath);
+    const stat = await fs.stat(found._filePath);
+    const html = await renderPostHtmlByFile(found._filePath, stat.mtimeMs);
     return {
       ...stripInternalFields(found),
       content: { rendered: html },

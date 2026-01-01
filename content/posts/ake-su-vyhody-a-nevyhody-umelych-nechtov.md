@@ -10,6 +10,7 @@ tags:
   - "odporucame"
 wpId: 32232
 featuredImage: "https://cdn.fitdoplnky.sk/wp-media/2023/11/gelove-nechty-1024x682-28adbe41.jpg"
+allowScripts: true
 ---
 
 V neustále sa rozvíjajúcej oblasti krásy a starostlivosti o seba sa gélové nechty stali populárnou a všestrannou možnosťou. Ako každý kozmetický trend, aj gélové nechty majú svoje výhody a nevýhody a ich pochopenie je kľúčové pred tým, ako investujete do lakov a pomôcok na ich domácu výrobu.

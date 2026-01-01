@@ -8,6 +8,7 @@ categories:
   - "zdravotnicka-starostlivost-a-sluzby"
 wpId: 32871
 featuredImage: "https://cdn.fitdoplnky.sk/wp-media/2024/03/alergia-1024x682-1ba51600.jpg"
+allowScripts: true
 ---
 
 Každoročne milióny ľudí čelí výzvam spojenými s alergiami. Ich príznaky sú nepríjemné a majú výrazný dopad na kvalitu života. V našom článku preto preskúmame niekoľko účinných spôsobov, ktoré vám pomôžu zmierniť alergické reakcie a nájsť úľavu. Objavte s nami rôzne prístupy, ktoré vám umožnia užiť si život naplno.

@@ -2,6 +2,7 @@ import { advancedSearch } from '@/app/lib/content/server';
 import Link from 'next/link';
 import Image from 'next/image';
 import { safeHeDecode } from '@/app/lib/sanitizeHTML';
+import type { Metadata } from 'next';
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -11,6 +12,21 @@ interface SearchPageProps {
 }
 
 export const revalidate = 300;
+
+export async function generateMetadata({
+  searchParams,
+}: SearchPageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const query = params.q ? safeHeDecode(params.q) : '';
+  const title = query ? `Vyhľadávanie: ${query}` : 'Vyhľadávanie';
+
+  return {
+    title,
+    description: 'Vyhľadávanie článkov na Zdravie v praxi',
+    alternates: { canonical: '/search' },
+    robots: { index: false, follow: true },
+  };
+}
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const query = (await searchParams).q || '';

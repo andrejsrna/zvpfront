@@ -8,6 +8,7 @@ categories:
   - "zdravotnicka-starostlivost-a-sluzby"
 wpId: 33750
 featuredImage: "https://cdn.fitdoplnky.sk/wp-media/2025/11/modernazubnastarostlivost-1024x683-5b81a951.jpg"
+allowScripts: true
 ---
 
 Hľadáte zubnú kliniku, kde sa snúbi profesionalita, najnovšie technológie a ľudský prístup? Práve ste ju našli. [Naša klinika Life Dental](https://lifedental.sk/life-dental-zubna-klinika-bratislava/) v Senci ponúka modernú stomatologickú starostlivosť s dôrazom na pohodlie, odbornosť a spokojnosť každého pacienta.

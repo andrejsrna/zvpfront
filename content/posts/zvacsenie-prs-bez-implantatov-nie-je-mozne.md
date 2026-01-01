@@ -9,6 +9,7 @@ categories:
   - "sexualne-zdravie-a-plodnost"
 wpId: 33713
 featuredImage: "https://cdn.fitdoplnky.sk/wp-media/2025/06/zvacsenieprs-1024x712-81e5a4df.jpg"
+allowScripts: true
 ---
 
 Zväčšenie pŕs bez implantátov? Zistite, aké sú možnosti ako hybridná augmentácia či lipofilling. Prehľad výhod, nevýhod a odborné rady.

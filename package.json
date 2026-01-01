@@ -15,6 +15,7 @@
     "content:normalize-links": "node scripts/normalize-content-links.mjs",
     "content:r2-to-local": "node scripts/convert-r2-links-to-local.mjs",
     "content:local-to-cdn": "node scripts/convert-local-media-to-cdn.mjs",
+    "content:enable-scripts": "node scripts/enable-allow-scripts-for-iife.mjs",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
   },

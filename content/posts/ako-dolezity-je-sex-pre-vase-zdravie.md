@@ -8,6 +8,7 @@ categories:
   - "sexualna-vychova-a-vztahy"
 wpId: 32439
 featuredImage: "https://cdn.fitdoplnky.sk/wp-media/2024/01/sexualny-zivot-1-1024x768-6bf2b1b1.webp"
+allowScripts: true
 ---
 
 Sex a zdravie – dve témy, ktoré sa na prvý pohľad zdajú byť rozdielne, no stále viac výskumov poukazuje na ich hlboké prepojenie. Avšak do akej miery intímne aktivity ovplyvňujú náš zdravý životný štýl? Povieme si o tom v našom článku. Tak poďme na to!

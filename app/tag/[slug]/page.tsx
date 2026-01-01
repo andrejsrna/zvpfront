@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import type { Metadata } from 'next';
 
 import {
   getPostsByTagSlug,
@@ -152,8 +153,13 @@ export default async function TagPage({
   );
 }
 
-export async function generateMetadata({ params: paramsPromise }: TagPageProps) {
+export async function generateMetadata({
+  params: paramsPromise,
+  searchParams,
+}: TagPageProps): Promise<Metadata> {
   const params = await paramsPromise;
+  const searchParamsResolved = await searchParams;
+  const page = Number(searchParamsResolved.page) || 1;
   const tag = await getTagBySlug(params.slug);
   if (!tag) {
     return {
@@ -162,8 +168,22 @@ export async function generateMetadata({ params: paramsPromise }: TagPageProps) 
     };
   }
 
+  const title = `#${tag.name}${page > 1 ? ` – strana ${page}` : ''} | Zdravie v praxi`;
+  const description = `Články s tagom ${tag.name}`;
+  const canonical = `/tag/${tag.slug}${page > 1 ? `?page=${page}` : ''}`;
+
   return {
-    title: `#${tag.name} | Zdravie v praxi`,
-    description: `Články s tagom ${tag.name}`,
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: 'website',
+      locale: 'sk_SK',
+      siteName: 'Zdravie v praxi',
+      images: ['/opengraph-image'],
+    },
   };
 }

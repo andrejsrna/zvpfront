@@ -1,6 +1,7 @@
 import { getAllPosts, getCategories, getPosts } from '@/app/lib/content/server';
 import type { ContentPost } from '@/app/lib/content/types';
 import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { decode } from 'he';
@@ -214,7 +215,38 @@ export default async function ArticlesPage({
   );
 }
 
-export const metadata = {
-  title: 'Články | Zdravie v praxi',
-  description: 'Prehľad všetkých článkov o zdraví, životnom štýle a wellness',
-};
+export async function generateMetadata({
+  searchParams,
+}: ArticlesPageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const page = Number(params.page) || 1;
+
+  const categories = await getCategories();
+  const selectedCategory = categories.find(cat => cat.slug === params.kategoria);
+
+  const baseTitle = selectedCategory ? selectedCategory.name : 'Články';
+  const title = page > 1 ? `${baseTitle} – strana ${page}` : baseTitle;
+  const description =
+    selectedCategory?.description ||
+    'Prehľad všetkých článkov o zdraví, životnom štýle a wellness';
+
+  // If the user filters by category on /clanky, canonicalize to the dedicated category route
+  const canonical = selectedCategory
+    ? `/kategoria/${selectedCategory.slug}${page > 1 ? `?page=${page}` : ''}`
+    : `/clanky${page > 1 ? `?page=${page}` : ''}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: 'website',
+      locale: 'sk_SK',
+      siteName: 'Zdravie v praxi',
+      images: ['/opengraph-image'],
+    },
+  };
+}
