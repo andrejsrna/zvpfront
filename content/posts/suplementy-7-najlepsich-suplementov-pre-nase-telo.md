@@ -46,6 +46,8 @@ Nesmieme zabúdať, že **individuálne potreby a zdravotné stavy sa môžu lí
 
 Výber správnych **suplementov vám môže pomôcť dosiahnuť optimálne zdravie a zvýšiť váš celkový výkon**. Investujte čas do výskumu a konzultácií s odborníkmi, aby ste zabezpečili, že suplementy, ktoré užívate, sú pre vás najlepšie a najefektívnejšie.
 
+Ak hľadáte ďalšiu inšpiráciu, pozrite si aj [Herbafulvo](https://herbafulvo.eu/sk/).
+
 ## Odporúčame vám
 
 ![](https://cdn.fitdoplnky.sk/wp-media/2023/04/omega-advance-d3b7e7dd.png)
