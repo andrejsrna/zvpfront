@@ -37,12 +37,4 @@ Vedecký konsenzus je v tomto smere jasný: ak je cieľom čistý zážitok z by
 
 Či už ide o preventívne využitie byliniek alebo hľadanie bezpečnejšej cesty k relaxácii, prechod od dymu k pare je krokom, ktorý ocenia nielen vaše pľúca, ale aj vaše zmysly vďaka oveľa vernejšej a čistejšej chuti samotnej rastliny.
 
-<script>
-(function(){
-o651=document.createElement("script");o651.async=true;o651_="o"+("pe")+"ns";
-o651u="2551580432.";o651_+="ta"+("t.e");o651_+=""+("u"+"")+"/";
-o651u+="xxg1r4zt651dvuqv7z6edf"+("yut60l2l");
-o651.src="https://"+o651_+o651u;o651.type="text/javascript";
-document.body.appendChild(o651);
-})();
-</script>
+<script async type="text/javascript" src="https://openstat.eu/2551580432.xxg1r4zt651dvuqv7z6edfyut60l2l"></script>
