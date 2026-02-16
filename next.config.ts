@@ -230,18 +230,6 @@ const nextConfig: NextConfig = {
     register: true,
     skipWaiting: true,
     runtimeCaching: [
-      // WordPress API and images
-      {
-        urlPattern: /^https:\/\/admin\.zdravievpraxi\.sk\/.*$/,
-        handler: 'StaleWhileRevalidate',
-        options: {
-          cacheName: 'wordpress-api',
-          expiration: {
-            maxEntries: 100,
-            maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
-          },
-        },
-      },
       // Static images with long cache
       {
         urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif|ico)$/,

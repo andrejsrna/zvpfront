@@ -10,8 +10,6 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint",
-    "wp:export": "node scripts/wp-export-to-md.mjs",
-    "wp:media:r2": "node scripts/wp-upload-media-to-r2.mjs",
     "content:normalize-links": "node scripts/normalize-content-links.mjs",
     "content:r2-to-local": "node scripts/convert-r2-links-to-local.mjs",
     "content:local-to-cdn": "node scripts/convert-local-media-to-cdn.mjs",
