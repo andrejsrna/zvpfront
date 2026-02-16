@@ -8,7 +8,7 @@ Do `.env.local` (a do production secrets) pridaj:
 
 ```env
 BREVO_API_KEY=...
-BREVO_LIST_ID=123
+BREVO_LIST_ID=6
 ```
 
 - `BREVO_API_KEY`: API key z Brevo (SMTP & API → API Keys)
@@ -17,12 +17,9 @@ BREVO_LIST_ID=123
 ## Čo sa do Brevo ukladá
 
 - email
-- (voliteľne) priradenie do listu `BREVO_LIST_ID`
-- attributes:
-  - `PRIVACY_ACCEPTED` (boolean)
-  - `SIGNUP_DATE` (ISO timestamp)
+- priradenie do listu `BREVO_LIST_ID`
 
-Poznámka: tieto attributes musia existovať v Brevo (Contacts → Settings → Attributes), inak ich Brevo môže ignorovať / vrátiť chybu podľa konfigurácie.
+Poznámka: zámerne neposielame custom attributes, aby to nevyžadovalo dodatočnú konfiguráciu v Brevo.
 
 ## Double opt-in
 

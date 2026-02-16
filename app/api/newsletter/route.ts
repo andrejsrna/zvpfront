@@ -38,10 +38,7 @@ export async function POST(request: Request) {
         email,
         updateEnabled: true,
         listIds: listId ? [listId] : undefined,
-        attributes: {
-          PRIVACY_ACCEPTED: Boolean(acceptPrivacy),
-          SIGNUP_DATE: new Date().toISOString(),
-        },
+        // Keep payload minimal to avoid needing custom attributes configured in Brevo
       }),
     });
 
