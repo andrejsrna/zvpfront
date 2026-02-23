@@ -13,45 +13,17 @@
 ### 2. Vylepšené parametre vyhľadávania
 
 - `search_fields`: Vyhľadávanie v nadpisoch, obsahu a výťahoch
-- `orderby: relevance`: WordPress vlastné hodnotenie relevantnosti
+- `orderby: relevance`: Triedenie podľa relevancie (interné skórovanie)
 - Lepšie spracovanie dotazov (trim, lowercase)
 
 ## Odporúčania pre ďalšie vylepšenia
 
-### 1. WordPress Plugin riešenia
+### 1. Elasticsearch / OpenSearch riešenie
 
-#### Relevanssi
+- Najlepšie pre veľké weby a veľa obsahu
+- Rýchle vyhľadávanie, pokročilé filtre, faceted search, autocomplete
 
-```bash
-# Najlepšie riešenie pre WordPress
-# - Pokročilé skórovanie relevantnosti
-# - Fuzzy matching
-# - Synonymá a stopwords
-# - Custom fields vyhľadávanie
-```
-
-#### SearchWP
-
-```bash
-# Alternatíva k Relevanssi
-# - Drag & drop konfigurácia
-# - Custom post types podpora
-# - Analytics
-```
-
-### 2. Elasticsearch riešenie
-
-#### WP Elasticsearch
-
-```bash
-# Najlepšie pre veľké weby
-# - Rýchle vyhľadávanie
-# - Pokročilé filtre
-# - Faceted search
-# - Autocomplete
-```
-
-### 3. Implementácia synonym
+### 2. Implementácia synonym
 
 ```typescript
 // Pridať do advancedSearch funkcie
@@ -65,7 +37,7 @@ const synonyms: Record<string, string[]> = {
 const expandedQuery = expandQueryWithSynonyms(cleanQuery, synonyms);
 ```
 
-### 4. Implementácia autocomplete
+### 3. Implementácia autocomplete
 
 ```typescript
 // Vytvoriť endpoint pre autocomplete
@@ -76,7 +48,7 @@ export async function getSearchSuggestions(query: string) {
 }
 ```
 
-### 5. Analytics a A/B testovanie
+### 4. Analytics a A/B testovanie
 
 ```typescript
 // Sledovať úspešnosť vyhľadávania
@@ -89,13 +61,13 @@ interface SearchAnalytics {
 }
 ```
 
-### 6. Optimalizácia pre mobilné zariadenia
+### 5. Optimalizácia pre mobilné zariadenia
 
 - Touch-friendly vyhľadávacie rozhranie
 - Voice search podpora
 - Autocomplete s touch gestures
 
-### 7. SEO optimalizácie
+### 6. SEO optimalizácie
 
 - Vyhľadávacie sitemapy
 - Structured data pre vyhľadávacie výsledky
@@ -114,5 +86,4 @@ interface SearchAnalytics {
 - **Čas strávený** na vyhľadávacích stránkach
 - **Počet "no results"** vyhľadávaní
 - **Konverzie** z vyhľadávania
-
 

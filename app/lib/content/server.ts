@@ -311,13 +311,6 @@ const loadAllPosts = unstable_cache(
       featuredImage,
       seoTitle: seoTitle ? escapeHtml(seoTitle) : undefined,
       seoDescription: seoDescription ? escapeHtml(seoDescription) : undefined,
-      _embedded: featuredImage
-        ? {
-            'wp:featuredmedia': [
-              { source_url: featuredImage, alt_text: titleText },
-            ],
-          }
-        : undefined,
       _filePath: filePath,
       _searchText: `${titleText} ${excerptText} ${stripMarkdown(parsed.content)}`
         .toLowerCase()

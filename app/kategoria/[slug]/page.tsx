@@ -124,9 +124,9 @@ export default async function CategoryPage({
                   hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="relative aspect-[16/9]">
-                  {post._embedded?.['wp:featuredmedia'] ? (
+                  {post.featuredImage ? (
 	                    <Image
-	                      src={post._embedded['wp:featuredmedia'][0].source_url}
+	                      src={post.featuredImage}
 	                      alt={post.title.rendered}
 	                      fill
 	                      sizes="(max-width: 768px) 95vw, (max-width: 1200px) 45vw, 30vw"

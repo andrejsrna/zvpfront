@@ -113,10 +113,10 @@ export default function Search({ onClose }: SearchProps) {
                   className="block p-4 hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    {post._embedded?.['wp:featuredmedia'] && (
+                    {post.featuredImage && (
                       <div className="relative w-16 h-16 flex-shrink-0">
                         <Image
-                          src={post._embedded['wp:featuredmedia'][0].source_url}
+                          src={post.featuredImage}
                           alt={post.title.rendered}
                           fill
                           sizes="80px"

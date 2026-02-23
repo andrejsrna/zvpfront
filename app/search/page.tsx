@@ -50,7 +50,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   <div className="relative aspect-video mb-4 overflow-hidden rounded-lg">
                     <Image
                       src={
-                        post._embedded?.['wp:featuredmedia']?.[0]?.source_url ??
+                        post.featuredImage ??
                         '/placeholder.jpg'
                       }
                       alt={safeHeDecode(post.title.rendered)}

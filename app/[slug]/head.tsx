@@ -14,8 +14,7 @@ export default async function Head({ params: paramsPromise }: HeadProps) {
     return null;
   }
 
-  const featuredImageUrl =
-    post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+  const featuredImageUrl = post.featuredImage;
 
   return (
     <>

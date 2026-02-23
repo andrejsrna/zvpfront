@@ -27,7 +27,7 @@ export function safeHeDecode(text: string): string {
   }
 }
 
-// Utility function to sanitize HTML content from WordPress
+// Utility function to sanitize imported HTML content
 export function sanitizeHTML(html: string): string {
   if (!html || typeof html !== 'string') return '';
 

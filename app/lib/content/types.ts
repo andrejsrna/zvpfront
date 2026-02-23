@@ -5,11 +5,6 @@ export interface ContentTerm {
   taxonomy: 'category' | 'post_tag';
 }
 
-export interface ContentMedia {
-  source_url: string;
-  alt_text: string;
-}
-
 export interface ContentPost {
   id: number;
   date: string;
@@ -23,9 +18,6 @@ export interface ContentPost {
   featuredImage?: string;
   seoTitle?: string;
   seoDescription?: string;
-  _embedded?: {
-    'wp:featuredmedia'?: ContentMedia[];
-  };
 }
 
 export interface ContentCategory {

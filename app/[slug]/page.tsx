@@ -62,10 +62,8 @@ async function PostContent({ slug }: { slug: string }) {
 
   const { headings, content } = parseHeadings(post.content.rendered);
 
-  const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0];
-  const featuredImageUrl = featuredMedia?.source_url;
-  const featuredImageAlt =
-    featuredMedia?.alt_text || safeHeDecode(post.title.rendered);
+  const featuredImageUrl = post.featuredImage;
+  const featuredImageAlt = safeHeDecode(post.title.rendered);
 
   // Schema.org Article markup
   const articleSchema = {
@@ -281,8 +279,7 @@ export async function generateMetadata({ params: paramsPromise }: PageProps) {
     )
       .replace(/<[^>]*>/g, '')
       .slice(0, 160);
-    const featuredImageUrl =
-      post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+    const featuredImageUrl = post.featuredImage;
     const canonical = `/${post.slug}`;
     const images = featuredImageUrl ? [featuredImageUrl] : ['/opengraph-image'];
 

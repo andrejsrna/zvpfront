@@ -47,8 +47,7 @@ export default function RecommendedReads({
   if (!recommendedPost) {
     return null;
   }
-  const featuredSrc =
-    recommendedPost._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+  const featuredSrc = recommendedPost.featuredImage;
   const unoptimized = !!featuredSrc && /^https?:\/\//i.test(featuredSrc);
 
   return (
@@ -72,9 +71,9 @@ export default function RecommendedReads({
           <div className="grid md:grid-cols-2 gap-0">
             {/* Image Section */}
             <div className="relative aspect-[4/3] md:aspect-auto">
-              {recommendedPost._embedded?.['wp:featuredmedia'] ? (
+              {featuredSrc ? (
                 <Image
-                  src={recommendedPost._embedded['wp:featuredmedia'][0].source_url}
+                  src={featuredSrc}
                   alt={recommendedPost.title.rendered}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"

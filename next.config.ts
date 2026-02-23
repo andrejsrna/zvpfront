@@ -132,7 +132,7 @@ const nextConfig: NextConfig = {
       { source: '/vyhladavanie', destination: '/search', permanent: true },
       { source: '/vyhladavanie/', destination: '/search', permanent: true },
 
-      // Common WordPress compat routes
+      // Legacy feed/sitemap/category/tag routes
       { source: '/feed', destination: '/feed.xml', permanent: true },
       { source: '/feed/', destination: '/feed.xml', permanent: true },
       { source: '/rss', destination: '/feed.xml', permanent: true },

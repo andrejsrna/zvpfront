@@ -20,7 +20,7 @@ export default function PostCard({
   showReadMore = true,
   className = '',
 }: PostCardProps) {
-  const featuredSrc = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+  const featuredSrc = post.featuredImage;
   const unoptimized = !!featuredSrc && /^https?:\/\//i.test(featuredSrc);
   return (
     <Link
@@ -30,9 +30,9 @@ export default function PostCard({
         hover:border-[#3e802b]/20 hover:-translate-y-1 ${className}`}
     >
       <div className="relative aspect-[16/10] overflow-hidden">
-        {post._embedded?.['wp:featuredmedia'] ? (
+        {featuredSrc ? (
           <Image
-            src={post._embedded['wp:featuredmedia'][0].source_url}
+            src={featuredSrc}
             alt={post.title.rendered}
             fill
             sizes="(max-width: 768px) 95vw, (max-width: 1200px) 45vw, 30vw"

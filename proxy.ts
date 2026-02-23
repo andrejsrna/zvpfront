@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function proxy(request: NextRequest) {
-  // WordPress legacy: /?p=123
+  // Legacy query param route: /?p=123
   const p = request.nextUrl.searchParams.get('p');
   if (p && /^\d+$/.test(p)) {
     const url = request.nextUrl.clone();

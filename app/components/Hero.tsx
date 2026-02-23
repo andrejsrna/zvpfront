@@ -14,11 +14,8 @@ export default async function Hero() {
   const randomIndex = Math.floor(Math.random() * posts.length);
   const featuredPost = posts[randomIndex];
 
-  const imageUrl =
-    featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url;
-  const imageAlt =
-    featuredPost._embedded?.['wp:featuredmedia']?.[0]?.alt_text ||
-    featuredPost.title.rendered;
+  const imageUrl = featuredPost.featuredImage;
+  const imageAlt = featuredPost.title.rendered;
   const isRemoteImage = !!imageUrl && /^https?:\/\//i.test(imageUrl);
 
   // Strip HTML tags from excerpt and limit to 150 characters
