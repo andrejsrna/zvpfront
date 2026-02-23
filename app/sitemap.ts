@@ -4,55 +4,62 @@ import { getAllPosts, getCategories, getTags } from '@/app/lib/content/server';
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://zdravievpraxi.sk';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://zdravievpraxi.sk';
+
+  const posts = await getAllPosts();
+  const latestPostModifiedMs = posts.reduce((max, post) => {
+    const t = new Date(post.modified || post.date).getTime();
+    return Number.isFinite(t) ? Math.max(max, t) : max;
+  }, 0);
+  const lastModifiedSiteWide =
+    latestPostModifiedMs > 0 ? new Date(latestPostModifiedMs) : new Date();
 
   // Static pages
   const staticPages = [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: lastModifiedSiteWide,
       changeFrequency: 'daily' as const,
       priority: 1,
     },
     {
       url: `${baseUrl}/clanky`,
-      lastModified: new Date(),
+      lastModified: lastModifiedSiteWide,
       changeFrequency: 'daily' as const,
       priority: 0.9,
     },
     {
       url: `${baseUrl}/kategorie`,
-      lastModified: new Date(),
+      lastModified: lastModifiedSiteWide,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
     {
       url: `${baseUrl}/kontakt`,
-      lastModified: new Date(),
+      lastModified: lastModifiedSiteWide,
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     },
     {
       url: `${baseUrl}/ochrana-sukromia`,
-      lastModified: new Date(),
+      lastModified: lastModifiedSiteWide,
       changeFrequency: 'yearly' as const,
       priority: 0.3,
     },
     {
       url: `${baseUrl}/podmienky-pouzivania`,
-      lastModified: new Date(),
+      lastModified: lastModifiedSiteWide,
       changeFrequency: 'yearly' as const,
       priority: 0.3,
     },
     {
       url: `${baseUrl}/cookies`,
-      lastModified: new Date(),
+      lastModified: lastModifiedSiteWide,
       changeFrequency: 'yearly' as const,
       priority: 0.3,
     },
   ];
 
-  const posts = await getAllPosts();
   const postUrls = posts.map(post => ({
     url: `${baseUrl}/${post.slug}`,
     lastModified: new Date(post.modified || post.date),
@@ -63,7 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categories = await getCategories();
   const categoryUrls = categories.map(category => ({
     url: `${baseUrl}/kategoria/${category.slug}`,
-    lastModified: new Date(),
+    lastModified: lastModifiedSiteWide,
     changeFrequency: 'weekly' as const,
     priority: 0.6,
   }));
@@ -71,16 +78,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const tags = await getTags();
   const tagIndexUrl = {
     url: `${baseUrl}/tag`,
-    lastModified: new Date(),
+    lastModified: lastModifiedSiteWide,
     changeFrequency: 'weekly' as const,
     priority: 0.5,
   };
   const tagUrls = tags.map(tag => ({
     url: `${baseUrl}/tag/${tag.slug}`,
-    lastModified: new Date(),
+    lastModified: lastModifiedSiteWide,
     changeFrequency: 'weekly' as const,
     priority: 0.5,
   }));
 
-  return [...staticPages, ...postUrls, ...categoryUrls, tagIndexUrl, ...tagUrls];
+  // Ensure unique URLs in case of conflicts.
+  const entries = [
+    ...staticPages,
+    ...postUrls,
+    ...categoryUrls,
+    tagIndexUrl,
+    ...tagUrls,
+  ];
+  const unique = new Map<string, (typeof entries)[number]>();
+  for (const entry of entries) unique.set(entry.url, entry);
+  return Array.from(unique.values());
 }
