@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getAllPosts, getCategories, getTags } from '@/app/lib/content/server';
 
+export const dynamic = 'force-static';
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

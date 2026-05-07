@@ -6,26 +6,31 @@ import type { Metadata } from 'next';
 import {
   getPostsByTagSlug,
   getTagBySlug,
+  getTags,
 } from '@/app/lib/content/server';
 import { sanitizeExcerpt, safeHeDecode } from '@/app/lib/sanitizeHTML';
 import type { ContentPost } from '@/app/lib/content/types';
 
 interface TagPageProps {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ page?: string }>;
 }
 
-const POSTS_PER_PAGE = 12;
+const POSTS_PER_PAGE = 1000;
 
 export const revalidate = 3600;
 
+export async function generateStaticParams() {
+  const tags = await getTags();
+  return tags.map(tag => ({
+    slug: tag.slug,
+  }));
+}
+
 export default async function TagPage({
   params: paramsPromise,
-  searchParams,
 }: TagPageProps) {
   const params = await paramsPromise;
-  const searchParamsResolved = await searchParams;
-  const page = Number(searchParamsResolved.page) || 1;
+  const page = 1;
 
   const tag = await getTagBySlug(params.slug);
   if (!tag) notFound();
@@ -155,11 +160,9 @@ export default async function TagPage({
 
 export async function generateMetadata({
   params: paramsPromise,
-  searchParams,
 }: TagPageProps): Promise<Metadata> {
   const params = await paramsPromise;
-  const searchParamsResolved = await searchParams;
-  const page = Number(searchParamsResolved.page) || 1;
+  const page = 1;
   const tag = await getTagBySlug(params.slug);
   if (!tag) {
     return {

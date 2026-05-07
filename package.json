@@ -7,7 +7,9 @@
   },
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "predev": "node scripts/generate-static-content-index.mjs",
+    "prebuild": "node scripts/generate-static-content-index.mjs",
+    "build": "next build --webpack && node scripts/create-static-aliases.mjs",
     "start": "next start",
     "lint": "eslint .",
     "content:normalize-links": "node scripts/normalize-content-links.mjs",

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import he from 'he';
 import { getPosts } from '@/app/lib/content/server';
 
+export const dynamic = 'force-static';
+
 function xmlEscape(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -53,4 +55,3 @@ ${items}
     },
   });
 }
-

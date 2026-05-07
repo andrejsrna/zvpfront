@@ -30,7 +30,16 @@ export default function Newsletter() {
     setErrorMessage('');
 
     try {
-      const response = await fetch('/api/newsletter', {
+      const endpoint = process.env.NEXT_PUBLIC_NEWSLETTER_ENDPOINT;
+      if (!endpoint) {
+        setStatus('error');
+        setErrorMessage(
+          'Odber noviniek momentálne nie je dostupný. Skúste to prosím neskôr.'
+        );
+        return;
+      }
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

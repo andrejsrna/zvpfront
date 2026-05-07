@@ -28,7 +28,8 @@ export async function generateStaticParams() {
   const posts = await getAllPosts();
   const rawLimit = process.env.PREBUILD_POSTS_COUNT;
   const parsedLimit = rawLimit ? Number.parseInt(rawLimit, 10) : NaN;
-  const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : 200;
+  const limit =
+    Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : posts.length;
 
   return posts.slice(0, limit).map(post => ({
     slug: post.slug,

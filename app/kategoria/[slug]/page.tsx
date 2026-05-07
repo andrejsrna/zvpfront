@@ -13,21 +13,23 @@ interface CategoryPageProps {
   params: Promise<{
     slug: string;
   }>;
-  searchParams: Promise<{
-    page?: string;
-  }>;
 }
 
-const POSTS_PER_PAGE = 12;
+const POSTS_PER_PAGE = 1000;
 
 export const revalidate = 3600;
 
+export async function generateStaticParams() {
+  const categories = await getCategories();
+  return categories.map(category => ({
+    slug: category.slug,
+  }));
+}
+
 export default async function CategoryPage({
   params: paramsPromise,
-  searchParams,
 }: CategoryPageProps) {
   const params = await paramsPromise;
-  const searchParamsResolved = await searchParams;
   const categories = await getCategories();
 
   // Rekurzívne hľadanie kategórie (vrátane podkategórií)
@@ -53,7 +55,7 @@ export default async function CategoryPage({
   // Získaj podkategórie aktuálnej kategórie
   const subCategories = categories.filter(cat => cat.parent === category.id);
 
-  const page = Number(searchParamsResolved.page) || 1;
+  const page = 1;
   const posts = await getPosts(POSTS_PER_PAGE, 'date', category.id, page);
   const totalPosts = category.count;
   const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
@@ -229,11 +231,9 @@ export default async function CategoryPage({
 
 export async function generateMetadata({
   params: paramsPromise,
-  searchParams,
 }: CategoryPageProps): Promise<Metadata> {
   const params = await paramsPromise;
-  const searchParamsResolved = await searchParams;
-  const page = Number(searchParamsResolved.page) || 1;
+  const page = 1;
   const categories = await getCategories();
   const category = categories.find(cat => cat.slug === params.slug);
 

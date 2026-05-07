@@ -6,6 +6,8 @@ import path from 'node:path';
 import matter from 'gray-matter';
 
 const nextConfig: NextConfig = {
+  output: 'export',
+  trailingSlash: true,
   images: {
     remotePatterns: [
       {
@@ -28,7 +30,7 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384, 512],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    unoptimized: false,
+    unoptimized: true,
     loader: 'default',
   },
 
@@ -432,8 +434,7 @@ const nextConfig: NextConfig = {
     return config;
   },
 
-  // Output optimization
-  output: 'standalone',
+  // Static export writes to out/.
 };
 
 export default nextConfig;

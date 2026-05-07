@@ -1,4 +1,4 @@
-import { getAllPosts, getCategories, getPosts } from '@/app/lib/content/server';
+import { getAllPosts, getCategories } from '@/app/lib/content/server';
 import type { ContentPost } from '@/app/lib/content/types';
 import { sanitizeExcerpt } from '@/app/lib/sanitizeHTML';
 import type { Metadata } from 'next';
@@ -6,38 +6,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { decode } from 'he';
 
-interface ArticlesPageProps {
-  searchParams: Promise<{
-    page?: string;
-    kategoria?: string;
-  }>;
-}
-
-const POSTS_PER_PAGE = 12;
-
 export const revalidate = 3600;
 
-export default async function ArticlesPage({
-  searchParams,
-}: ArticlesPageProps) {
+export default async function ArticlesPage() {
   const categories = await getCategories();
-  const params = await searchParams;
-  const page = Number(params.page) || 1;
-  const selectedCategory = categories.find(
-    cat => cat.slug === params.kategoria
-  );
-
-  const posts = await getPosts(
-    POSTS_PER_PAGE,
-    'date',
-    selectedCategory?.id,
-    page
-  );
-
-  const totalPosts = selectedCategory
-    ? selectedCategory.count
-    : (await getAllPosts()).length;
-  const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+  const posts = await getAllPosts();
 
   return (
     <div className="bg-white">
@@ -46,11 +19,10 @@ export default async function ArticlesPage({
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              {selectedCategory ? selectedCategory.name : 'Všetky články'}
+              Všetky články
             </h1>
             <p className="text-white/90 text-lg max-w-2xl mx-auto">
-              {selectedCategory?.description ||
-                'Objavte všetky naše články o zdraví, životnom štýle a wellness'}
+              Objavte všetky naše články o zdraví, životnom štýle a wellness
             </p>
           </div>
         </div>
@@ -67,9 +39,7 @@ export default async function ArticlesPage({
               href="/clanky"
               className={`px-4 py-2 rounded-full whitespace-nowrap text-sm 
                   font-medium transition-colors ${
-                    !selectedCategory
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    'bg-primary text-white'
                   }`}
             >
               Všetky články
@@ -77,13 +47,9 @@ export default async function ArticlesPage({
             {categories.map(category => (
               <Link
                 key={category.id}
-                href={`/clanky?kategoria=${category.slug}`}
-                className={`px-4 py-2 rounded-full whitespace-nowrap text-sm 
-                  font-medium transition-colors ${
-                    selectedCategory?.id === category.id
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                href={`/kategoria/${category.slug}`}
+                className="px-4 py-2 rounded-full whitespace-nowrap text-sm
+                  font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200"
               >
                 {category.name}
               </Link>
@@ -175,65 +141,17 @@ export default async function ArticlesPage({
               </Link>
             ))}
           </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="mt-12 flex justify-center gap-2">
-              {page > 1 && (
-                <Link
-                  href={`/clanky?${
-                    selectedCategory
-                      ? `kategoria=${selectedCategory.slug}&`
-                      : ''
-                  }page=${page - 1}`}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white 
-                    border border-gray-300 rounded-lg hover:bg-gray-50 
-                    transition-colors"
-                >
-                  Predchádzajúca
-                </Link>
-              )}
-              {page < totalPages && (
-                <Link
-                  href={`/clanky?${
-                    selectedCategory
-                      ? `kategoria=${selectedCategory.slug}&`
-                      : ''
-                  }page=${page + 1}`}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white 
-                    border border-gray-300 rounded-lg hover:bg-gray-50 
-                    transition-colors"
-                >
-                  Ďalšia
-                </Link>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>
   );
 }
 
-export async function generateMetadata({
-  searchParams,
-}: ArticlesPageProps): Promise<Metadata> {
-  const params = await searchParams;
-  const page = Number(params.page) || 1;
-
-  const categories = await getCategories();
-  const selectedCategory = categories.find(cat => cat.slug === params.kategoria);
-
-  const baseTitle = selectedCategory ? selectedCategory.name : 'Články';
-  const title = page > 1 ? `${baseTitle} – strana ${page}` : baseTitle;
+export async function generateMetadata(): Promise<Metadata> {
+  const title = 'Články';
   const description =
-    selectedCategory?.description ||
     'Prehľad všetkých článkov o zdraví, životnom štýle a wellness';
-
-  // If the user filters by category on /clanky, canonicalize to the dedicated category route
-  const canonical = selectedCategory
-    ? `/kategoria/${selectedCategory.slug}${page > 1 ? `?page=${page}` : ''}`
-    : `/clanky${page > 1 ? `?page=${page}` : ''}`;
+  const canonical = '/clanky';
 
   return {
     title,
