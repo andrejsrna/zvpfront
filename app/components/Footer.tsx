@@ -33,15 +33,14 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <p className="text-xs text-gray-400">
-            &copy; {new Date().getFullYear()} Zdravie v praxi. Všetky práva
-            vyhradené.
-          </p>
-          <p className="text-xs text-gray-400 mt-4 md:mt-0 text-center md:text-right">
-            Informácie na tejto stránke nenahradzujú odborné lekárske
-            poradenstvo. Pred začatím akéhokoľvek cvičebného programu alebo
-            diéty sa poraďte so svojim lekárom.
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-2 text-xs text-gray-400">
+            <span>&copy; {new Date().getFullYear()} Zdravie v praxi. Všetky práva vyhradené.</span>
+            <span className="hidden sm:inline">|</span>
+            <span>Vývoj a technológia: <a href="https://synthbit.sk" target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">SynthBit</a></span>
+          </div>
+          <p className="text-xs text-gray-400 text-center md:text-right">
+            Informácie na tejto stránke nenahradzujú odborné lekárske poradenstvo.
           </p>
         </div>
       </div>
