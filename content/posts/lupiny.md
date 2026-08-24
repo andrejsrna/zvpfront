@@ -12,7 +12,7 @@ featuredImage: "https://cdn.fitdoplnky.sk/wp-media/2023/07/lupiny-4-tipy-ako-sa-
 
 Lupiny sú bežným problémom, ktorý postihuje ľudí bez ohľadu na vek alebo pohlavie. Ide o stav, kedy sa vlasová pokožka nadmerne odlupuje a vytvára viditeľné šupinky, ktoré sa obyčajne hromadia na vlasoch, oblečení alebo ramenách. Tieto bielo alebo šedé šupiny môžu byť jemné a suché alebo mastné a hrubé. Lupiny môžu byť sprevádzané svrbením, začervenaním a podráždením pokožky.
 
-Hoci lupiny samy o sebe nie sú zdravotne nebezpečné, môžu byť pre ľudí, ktorí s nimi bojujú, nepríjemné a frustrujúce. Môžu mať vplyv na sebavedomie a pohodlie, čo vedie k sociálnemu a emocionálnemu stresu. Aj keď je tento problém pomerne bežný, mnoho ľudí nevie, [čo lupiny presne spôsobuje](https://www.zenea.sk/blogs/nase-clanky/preco-vznikaju-lupiny-a-ako-sa-ich-navzdy-zbavit) a [ako sa ich efektívne zbaviť](https://www.zenea.sk/blogs/nase-clanky/preco-vznikaju-lupiny-a-ako-sa-ich-navzdy-zbavit). V tomto článku preto prejdeme príčiny, symptómy, liečbu a prevenciu lupín, aby sme poskytli ucelený pohľad na tento zdravotný stav.
+Hoci lupiny samy o sebe nie sú zdravotne nebezpečné, môžu byť pre ľudí, ktorí s nimi bojujú, nepríjemné a frustrujúce. Môžu mať vplyv na sebavedomie a pohodlie, čo vedie k sociálnemu a emocionálnemu stresu. Aj keď je tento problém pomerne bežný, mnoho ľudí nevie, [čo lupiny presne spôsobuje a ako sa ich efektívne zbaviť](https://www.zenea.sk/blogs/nase-clanky/preco-vznikaju-lupiny-a-ako-sa-ich-navzdy-zbavit). V tomto článku preto prejdeme príčiny, symptómy, liečbu a prevenciu lupín, aby sme poskytli ucelený pohľad na tento zdravotný stav.
 
 ## Príčiny lupín
 
