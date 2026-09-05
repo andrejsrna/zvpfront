@@ -11,12 +11,15 @@ Priebežne udržiavaný backlog. Pred novým článkom overiť duplicitu slugu, 
 - **Cross-link:** FitDoplnky — `/clanky/stukovatena-pecen`, `/clanky/ako-uzivat-pestrec-mariansky`
 - **Externé zdroje:** EASL–EASD–EASO MASLD guidelines, AASLD
 
+## Publikované
+
+- **Spánkové apnoe: príznaky, riziká, vyšetrenie a možnosti liečby**
+
 ## Backlog
 
 1. **Hypotyreóza: príznaky, krvné testy TSH a kedy riešiť liečbu**
 2. **Syndróm karpálneho tunela: príznaky, testy, cviky a liečba**
-3. **Spánkové apnoe: príznaky, riziká a kedy ísť na vyšetrenie**
-4. **Vysoké triglyceridy: príčiny, hodnoty v krvi a jedálniček**
+3. **Vysoké triglyceridy: príčiny, hodnoty v krvi a jedálniček**
 
 ## Pravidlá kvality
 
