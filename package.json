@@ -57,7 +57,7 @@
     "he": "^1.2.0",
     "postcss": "^8.5.23",
     "prettier": "^3.8.1",
-    "prettier-eslint": "^16.4.2",
+    "prettier-eslint": "^17.1.2",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3"
   },
