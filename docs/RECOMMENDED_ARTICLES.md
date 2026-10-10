@@ -7,11 +7,11 @@ Priebežne udržiavaný backlog. Pred novým článkom overiť duplicitu slugu, 
 - **Stukovatená pečeň: príznaky, krvné testy, jedálniček a liečba**
 - **Spánkové apnoe: príznaky, riziká, vyšetrenie a možnosti liečby**
 - **Vysoké triglyceridy: hodnoty v krvi, príčiny, jedálniček a kedy ísť k lekárovi**
+- **Hypotyreóza: príznaky zníženej funkcie štítnej žľazy, TSH a liečba**
 
 ## Backlog
 
-1. **Hypotyreóza: príznaky, krvné testy TSH a kedy riešiť liečbu**
-2. **Aktualizácia existujúceho článku o karpálnom tuneli: príznaky, testy, cviky a liečba**
+1. **Aktualizácia existujúceho článku o karpálnom tuneli: príznaky, testy, cviky a liečba**
 
 ## Pravidlá kvality
 
