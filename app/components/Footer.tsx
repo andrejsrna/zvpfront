@@ -28,6 +28,7 @@ export default function Footer() {
             >
               Zásady cookies
             </Link>
+            <Link href="/pr-clanky" className="text-gray-400 hover:text-gray-300 transition-colors">Reklama a PR články</Link>
             <CookieSettings />
           </div>
         </div>

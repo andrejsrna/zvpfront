@@ -18,6 +18,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
   const staticPages = [
     {
+      url: `${baseUrl}/pr-clanky`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+    },
+    {
       url: baseUrl,
       lastModified: lastModifiedSiteWide,
       changeFrequency: 'daily' as const,
