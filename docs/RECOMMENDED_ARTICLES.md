@@ -4,6 +4,8 @@ Priebežne udržiavaný backlog. Pred novým článkom overiť duplicitu slugu, 
 
 ## Publikované
 
+- **Nedostatok železa a nízky feritín: príznaky, krvné testy a liečba**
+
 - **Stukovatená pečeň: príznaky, krvné testy, jedálniček a liečba**
 - **Spánkové apnoe: príznaky, riziká, vyšetrenie a možnosti liečby**
 - **Vysoké triglyceridy: hodnoty v krvi, príčiny, jedálniček a kedy ísť k lekárovi**
