@@ -45,9 +45,9 @@ RHS odporúča pre Lakemont plné slnko, chránenú polohu a dobre odvodnenú p�
 
 Ak chcete pestovať bezsemenné hrozno Lakemont alebo si vybrať inú odrodu viniča, aktuálnu ponuku sadeníc hrozna nájdete v našom internetovom obchode Slovenské Sady:
 
-? [Pozrieť ponuku hrozna v Slovenské Sady](https://slovenskesady.sk/sk_SK/c/Hrozno/63)
+[Pozrieť ponuku hrozna v Slovenské Sady](https://slovenskesady.sk/sk_SK/c/Hrozno/63)
 
-![Hrozno Lakemont – fotografia z dodaného článku](/articles/bezpestkove-hrozno-lakemont/section_image2.jpg)
+<img src="/articles/bezpestkove-hrozno-lakemont/section_image2.jpg" alt="Hrozno Lakemont – fotografia z dodaného článku" width="450" height="300" />
 
 ## Rez je základom dobrej úrody
 
@@ -73,7 +73,7 @@ Ak máte radi bezsemenné hrozno, Lakemont nie je jedinou možnosťou. Zaujímav
 
 Každá odroda má trochu inú farbu, veľkosť bobúľ, chuť, termín dozrievania a odolnosť. Pri výbere sa preto oplatí zohľadniť najmä miestne klimatické podmienky.
 
-![Hrozno Lakemont – fotografia z dodaného článku](/articles/bezpestkove-hrozno-lakemont/section_image3.png)
+<img src="/articles/bezpestkove-hrozno-lakemont/section_image3.png" alt="Hrozno Lakemont – fotografia z dodaného článku" width="364" height="148" />
 
 ## Hrozno LAKEMONT a zdravie človeka
 

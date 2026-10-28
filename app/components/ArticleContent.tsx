@@ -88,7 +88,10 @@ export default function ArticleContent({
 
         return (
           <Suspense fallback={<div>Loading image...</div>}>
-            <div className="relative my-6 overflow-hidden rounded-lg shadow-lg not-prose">
+            <div
+              className="relative my-6 overflow-hidden rounded-lg shadow-lg not-prose"
+              style={Number(width) > 0 ? { width: Number(width), maxWidth: '100%' } : undefined}
+            >
               <img
                 src={src}
                 alt={alt || 'Image from article'}
